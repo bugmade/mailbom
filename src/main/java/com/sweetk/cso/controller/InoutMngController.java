@@ -1,0 +1,114 @@
+package com.sweetk.cso.controller;
+
+import com.sweetk.cso.dto.StockListReq;
+import com.sweetk.cso.dto.StockListRes;
+import com.sweetk.cso.dto.pharmComp.PharmCompListReq;
+import com.sweetk.cso.dto.pharmComp.PharmCompListRes;
+import com.sweetk.cso.entity.Consumer;
+import com.sweetk.cso.entity.Product;
+import com.sweetk.cso.entity.Stock;
+import com.sweetk.cso.service.InfoMngService;
+import com.sweetk.cso.service.InoutMngService;
+import com.sweetk.cso.service.PharmCompService;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
+import java.util.Map;
+
+@Log4j2
+@Controller
+@RequestMapping("/inoutMng")
+@RequiredArgsConstructor
+public class InoutMngController {
+
+    private final InoutMngService inoutMngService;
+    private final InfoMngService infoMngService;
+
+    @GetMapping("/stock")
+    public String stock(StockListReq req, Model model) {
+        Page<StockListRes> result = inoutMngService.getList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
+        model.addAttribute("result", result);
+
+        log.info("### stock : get select list vvv ");
+
+        List<Product> product = infoMngService.readProductList();
+        log.info(product);
+        model.addAttribute("product", product);
+
+        List<Consumer> consumer = infoMngService.readConsumerList();
+        log.info(consumer);
+        model.addAttribute("consumer", consumer);
+
+        log.info("### stock : get select list ^^^ ");
+
+        return "/web/inoutMng/stock";
+    }
+
+//    @GetMapping("/stock")
+//    public String stock(PharmCompListReq req, Model model) {
+//
+//        log.info("### stock : get select list vvv ");
+//
+//        List<Product> product = infoMngService.readProductList();
+//        log.info(product);
+//        model.addAttribute("product", product);
+//
+//        List<Consumer> consumer = infoMngService.readConsumerList();
+//        log.info(consumer);
+//        model.addAttribute("consumer", consumer);
+//
+//        log.info("### stock : get select list ^^^ ");
+//
+//        return "/web/inoutMng/stock";
+//    }
+
+    // 재품 리스트 반환
+    @GetMapping("/api/readStockList")
+    @ResponseBody
+    public List<StockListRes> readStockList(@RequestParam Map<String, Object> params, HttpServletRequest request){
+        log.info("### readStockList");
+        log.info(params);
+        log.info(request);
+
+        return inoutMngService.readStockList(params);
+    }
+
+    // 재품 상세정보 반환
+    @GetMapping("/api/readStockDetail")
+    @ResponseBody
+    public Stock readStockDetail(@RequestParam Map<String, Object> params, HttpServletRequest request){
+        log.info("### readStockDetail");
+        log.info(params);
+        log.info(request);
+        return inoutMngService.readStockDetail(params);
+    }
+
+    // 재품 등록
+    @RequestMapping("/api/createStock")
+    @ResponseBody
+    public String createStock(@RequestParam Map<String, Object> params, HttpServletRequest request){
+        log.info("### createStock");
+
+        return inoutMngService.createStock(params);
+    }
+
+    // 재품 삭제
+    @RequestMapping("/api/deleteStock")
+    @ResponseBody
+    public String  deleteStock(@RequestParam Map<String, Object> params, HttpServletRequest request){
+        log.info("### deleteStock");
+        log.info(params);
+
+        return inoutMngService.deleteStock(params);
+    }
+}

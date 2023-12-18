@@ -1,0 +1,36 @@
+# 로그 설정의 최상위 요소로 Properties, Appenders, Loggers 요소를 자식을 가짐
+Configuration:
+  name: Default
+  status: info  # 내부 이벤트에 대한 로그 레벨
+
+  Properties: # 파일 내부에서 사용할 변수 목록 ex) ${log-file-name}
+    Property:
+      - name: "log-file-name"
+        value: "sweetk-cso-cms"
+      - name: "log-path"
+        value: "./logs"
+      - name: "pattern"
+        value: "%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{[%-5level]}[%t][%l] %c{1} - %msg%n"
+      - name: "charset-UTF-8"
+        value: "UTF-8"
+
+  Appenders:
+    Console:
+      name: Console_Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        charset: ${charset-UTF-8}
+        pattern: ${pattern}
+        disableAnsi: false
+
+  Loggers:
+    Root:
+      level: info #spring 프레임워크 기본 info만 출력
+      AppenderRef:
+        - ref: Console_Appender
+    Logger:
+      name: com.sweetk.cso
+      additivity: false
+      level: info
+      AppenderRef:
+        - ref: Console_Appender

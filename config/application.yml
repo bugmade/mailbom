@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: sweetk-cso-cms
+
+  profiles:
+    active: local   # local / dev / prod
+
+  # Hibernate 자동 DDL 생성 비활성화
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+  # Web Configuration
+  mvc:
+    view:
+      prefix: /WEB-INF/views
+      suffix: .jsp
+    static-path-pattern: /resources/**
+
+logging:
+  config: ./config/log4j2/log4j2-${spring.profiles.active}.yml
+  level:
+    jdbc:
+      audit: OFF
+      connection: OFF
+      sqlonly: OFF
+      sqltiming: INFO
+      resultset: OFF
+      resultsettable: INFO
+
+#p6spy query logging
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true

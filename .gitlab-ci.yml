@@ -1,0 +1,54 @@
+stages:
+  - build
+  - package
+  - deploy
+
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+build:
+  stage: build
+  before_script:
+    - echo 'build starts'
+    - chmod +x ./gradlew
+  script:
+    - ./gradlew clean build
+    - cp -r config build/libs/
+  artifacts:
+    paths:
+      - build/libs/*
+    expire_in: 120 seconds
+  # 자동/수동 실행 여부 결정
+  when: manual
+  tags:
+    - sweetk-cso
+
+deploy:
+  stage: deploy
+  dependencies:
+    - build
+  before_script:
+    - eval $(ssh-agent -s)  # ssh agent 실행
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts # SSH_KNOWN_HOSTS 변수에 저장된 내용을 원격 host 공개키 저장소에 추가
+    - chmod 644 ~/.ssh/known_hosts  # known_hosts 권한 수정
+    - chmod 600 "$DEPLOY_SERVER_SSH_KEY"
+    - ssh-add "$DEPLOY_SERVER_SSH_KEY"
+
+  script:
+    - docker build -t cso-cms-image .
+    - docker save cso-cms-image:latest > cso-cms-image.tar
+    
+    - scp ./cso-cms-image.tar ubuntu@"$DEPLOY_SERVER":"$PROJECT_PATH"
+    - ssh ubuntu@"$DEPLOY_SERVER" "sudo chmod 666 /var/run/docker.sock"
+
+    - ssh ubuntu@"$DEPLOY_SERVER" "docker stop cso-cms || true"
+    - ssh ubuntu@"$DEPLOY_SERVER" "docker rm cso-cms || true"
+    - ssh ubuntu@"$DEPLOY_SERVER" "docker rmi cso-cms || true"
+    - ssh ubuntu@"$DEPLOY_SERVER" "cd $PROJECT_PATH && docker load -i cso-cms-image.tar"
+    - ssh ubuntu@"$DEPLOY_SERVER" "docker run -d --name cso-cms -p 8090:8090 -v $PROJECT_PATH:$PROJECT_PATH cso-cms-image"
+  # 자동/수동 실행 여부 결정
+  when: manual
+  tags:
+    - sweetk-cso

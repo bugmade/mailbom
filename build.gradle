@@ -1,0 +1,82 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.4'
+	id 'io.spring.dependency-management' version '1.1.3'
+	id 'war'
+}
+
+group = 'com.sweetk'
+version = '0.0.1-SNAPSHOT'
+apply plugin:'war'
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	// all = compile + runtime
+	all {
+		// log4j2와의 충돌 방지를 위해 spring-boot-starter-web 내부 로깅 프레임워크(Logback)을 제외합니다.
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+	}
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+// implementation : 프로젝트 컴파일 시 의존성 (런타임 및 컴파일 클래스패스에 추가)
+// compileOnly : 런타임에는 필요하지 않고 컴파일 시에만 필요한 의존성 (컴파일 클래스패스에 추가)
+// runtimeOnly : 컴파일에는 필요하지 않고 런타임 시에만 필요한 의존성 (런타임 클래스패스에 추가)
+// testImplementation, testCompileOnly, testRuntimeOnly : 테스트 코드를 작성할 때 필요한 의존성
+// annotationProcessor : 컴파일 시에 애너테이션 프로세서를 실행하도록 하는 Gradle 빌드 도구에서 사용되는 설정 (컴파일 클래스패스에 추가)
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'	/* REST API 또는 RESTful 웹 서비스 구축을 위한 의존성. Spring MVC와 함께 필요한 기본적인 구성이 제공 */
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+	implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.13.1'	/* log4j2 yml 파일로 사용하기 위한 설정 */
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
+	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'	/* log4j2 jdbc 설정 */
+	implementation group: 'com.github.gavlyukovskiy', name: 'p6spy-spring-boot-starter', version: '1.9.0'	/* JPA Query formatting 설정 */
+	implementation group: 'org.glassfish.web', name: 'jakarta.servlet.jsp.jstl', version: '2.0.0'	/* jstl 의존성 설정 */
+	implementation "org.apache.tomcat.embed:tomcat-embed-jasper"	/* jsp 사용을 위한 설정 */
+	implementation group: 'net.sargue', name: 'java-time-jsptags', version: '2.0.0'	/* jsp 에서 LocalDateTime 클래스 객체를 출력하기 위한 설정 */
+	implementation 'org.springframework.security:spring-security-taglibs'	/* jsp security taglib 사용 설정 */
+
+	/* querydsl 설정 (참고 : https://lemontia.tistory.com/1089) */
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+	/* // querydsl 설정 */
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+/* querydsl 설정 (참고 : https://lemontia.tistory.com/1089) */
+def querydslSrcDir = 'src/main/generated'
+clean {
+	delete file(querydslSrcDir)
+}
+tasks.withType(JavaCompile) {
+	options.generatedSourceOutputDirectory = file(querydslSrcDir)
+}
+/* // querydsl 설정 */
+
+bootWar{
+	archivesBaseName='cso-cms'	//@@@ 패키지이름
+}
+
+// 'build' 태스크가 'bootWar' 태스크에 의존하도록 설정 (기본값은 bootJar)
+build.dependsOn bootWar

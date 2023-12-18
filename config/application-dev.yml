@@ -1,0 +1,19 @@
+# DB Config
+spring:
+  datasource:
+    hikari:
+      connection-timeout: 10000
+      max-lifetime: 30000
+      maximum-pool-size: 30
+      minimum-idle: 2
+      validation-timeout: 60000 # 아래 테스트 쿼리 주기 설정
+      connection-test-query: select '1'
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:mariadb://183.111.196.133:3306/cso
+    username: sweetk-dev
+    password: sweetk2014!
+
+# App Config
+info:
+  app:
+    description: 'development 환경 입니다.'
