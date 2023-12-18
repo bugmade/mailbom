@@ -134,7 +134,7 @@
                                             <form:option value="2">증정</form:option>
                                             <form:option value="3">기타</form:option>
                                         </form:select>
-                                        <form:input type="text" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="특정 납품처 검색어를 입력하세요"/>
+                                        <form:input type="text" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="특정 납품처 검색시 납품처를 입력하세요"/>
                                         <button id="searchBtn" class="search_btn">
                                             검색
                                             <span class="ir_so">검색버튼</span>
