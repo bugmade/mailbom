@@ -1376,6 +1376,21 @@ input[type=radio]:checked+label:before{background: url('../img/ico_rdbtn.png') c
     margin-left: 10px;
 }
 
+.excel_btn_j {
+    width: 80px;
+    height: 30px;
+    border-radius: 5px;
+    background: #957745 center left 20px no-repeat;
+    background-size: 24px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    padding-left: 25px;
+    text-align: left;
+    vertical-align: bottom;
+    margin-left: 10px;
+}
+
 .init_btn_j {
     width: 100px;
     height: 46px;

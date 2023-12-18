@@ -158,6 +158,7 @@
                         총 <span >${totalCount}</span> 건
                         <button class="input_btn_j" onclick="showStockPopup('CREATE_INPUT')">입고</button>
                         <button class="output_btn_j" onclick="showStockPopup('CREATE_OUTPUT')">출고</button>
+                        <button class="excel_btn_j" onclick="doExcelDownload()">엑셀</button>
                     </div>
 
                 <table class="list_table">
@@ -580,5 +581,9 @@
         console.log('hideStockPopup');
 
         $("#layer_popup").hide();
+    }
+
+    function doExcelDownload() {
+        console.log('doExcelDownload');
     }
 </script>
