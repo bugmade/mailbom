@@ -482,6 +482,9 @@
 
         let params = $('#frmReg').serializeObject();
         console.log(params);
+        if(in_out === '입고') {       //입고시 출고사유 null 처리
+            params['out_wy'] = '';
+        }
 
         $.ajax({
             dataType : "html",
