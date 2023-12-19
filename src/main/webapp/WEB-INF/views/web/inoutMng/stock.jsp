@@ -123,18 +123,18 @@
                                         <label for="searchWord">검색조건</label>
                                     </th>
                                     <td colspan="3" class="fz0">
-                                        <form:select path="inOut" style="width:170px;" id="inOutSelect" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">
+                                        <form:select path="inOut" style="width:170px;" id="inoutSelect" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">
                                             <form:option value="ALL">전체(입출고)</form:option>
-                                            <form:option value="1">입고</form:option>
-                                            <form:option value="2">출고</form:option>
+                                            <form:option value="IN">입고</form:option>
+                                            <form:option value="OUT">출고</form:option>
                                         </form:select>
                                         <form:select path="outWy" style="width:170px;" id="outwySelect" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">
                                             <form:option value="ALL">전체(출고사유)</form:option>
-                                            <form:option value="1">납품</form:option>
-                                            <form:option value="2">증정</form:option>
-                                            <form:option value="3">기타</form:option>
+                                            <form:option value="SALE">판매</form:option>
+                                            <form:option value="GIFT">증정</form:option>
+                                            <form:option value="ETC">기타</form:option>
                                         </form:select>
-                                        <form:input type="text" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="특정 납품처 검색시 납품처 입력 필요!"/>
+                                        <form:input type="text" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="특정 판매처 검색시 판매처 입력 필요!"/>
                                         <button id="searchBtn" class="search_btn">
                                             검색
                                             <span class="ir_so">검색버튼</span>
@@ -181,7 +181,7 @@
                         <th>구분</th>
                         <th>수량</th>
                         <th>출고사유</th>
-                        <th>납품처</th>
+                        <th>판매처</th>
                         <th>메모</th>
                         <th>등록자</th>
                         <th>등록일</th>
@@ -204,7 +204,7 @@
                                     <td>${row.stoNo}</td>
                                     <td>${row.proNm}</td>
                                     <c:choose>
-                                        <c:when test="${row.inOut == '1'}">
+                                        <c:when test="${row.inOut == 'IN'}">
                                             <td>입고</td>
                                         </c:when>
                                         <c:otherwise>
@@ -213,13 +213,13 @@
                                     </c:choose>
                                     <td>${row.ioCnt}</td>
                                     <c:choose>
-                                        <c:when test="${row.inOut == '2'}">
+                                        <c:when test="${row.inOut == 'OUT'}">
                                             <c:choose>
-                                                <c:when test="${row.outWy == '1'}">
-                                                    <td>납품</td>
+                                                <c:when test="${row.outWy == 'SALE'}">
+                                                    <td>판매</td>
                                                     <td>${row.csmNm}</td>
                                                 </c:when>
-                                                <c:when test="${row.outWy == '2'}">
+                                                <c:when test="${row.outWy == 'GIFT'}">
                                                     <td>증정</td>
                                                     <td></td>
                                                 </c:when>
@@ -298,7 +298,7 @@
             <div class="popup_cont">
                 <form method="post" id="frmReg">
                     <input type="hidden" name="login_id" value="${webUtils.getLogin().getAdm().getAdmId()}">
-                    <input type="hidden" name="in_out" id="in_out" value="1">
+                    <input type="hidden" name="in_out" id="in_out" value="IN">
                     <table class="popup_table">
                         <thead>
                         </thead>
@@ -353,12 +353,6 @@
 </div>
 </body>
 <script type="text/javascript">
-    const IO_INPUT = '1';       // 입고
-    const IO_OUTPUT = '2';      // 출고
-    const OUTWY_SALE = '1';     // 출고사유: 납품
-    const OUTWY_GIFT = '2';     // 출고사유: 증정
-    const OUTWY_ETC = '3';      // 출고사유: 기타
-
     $(document).ready(function(){
         console.log(${result.getTotalPages()}); //JSTL
         console.log(${result.getNumber()}); //JSTL
@@ -468,9 +462,8 @@
             return;
         }
 
-        //let in_out = $('input:radio[name="in_out"]:checked').val();
         let in_out = $('#in_out').val();
-        if(in_out === IO_INPUT) {
+        if(in_out === 'IN') {
             in_out = '입고';
         } else {
             in_out = '출고';
@@ -484,6 +477,10 @@
         console.log(params);
         if(in_out === '입고') {       //입고시 출고사유 null 처리
             params['out_wy'] = '';
+        } else {
+            if(params['out_wy'] !== 'SALE') {
+                params['csm_cd'] = '';
+            }
         }
 
         $.ajax({
@@ -506,17 +503,17 @@
 
     // 입출고 select box 동적 표시
     function changeInoutSelect() {
-        let inOut = $("#inOutSelect option:selected").val();
+        let inOut = $("#inoutSelect option:selected").val();
         let outWy = $("#outwySelect option:selected").val();
 
-        if(inOut === '1' || inOut === 'ALL') {   //입고 또는 전체
+        if(inOut === 'IN' || inOut === 'ALL') {   //입고 또는 전체
             $("#outwySelect option:eq(0)").prop("selected", true);
             $("#outwySelect").attr("disabled", true);
             $("#searchWord").val("");
             $("#searchWord").attr("disabled", true);
         } else {
             $("#outwySelect").attr("disabled", false);
-            if(outWy == '1') {      //납품
+            if(outWy == 'SALE') {      //판매
                 $("#searchWord").attr("disabled", false);
             } else {
                 $("#searchWord").attr("disabled", true);
@@ -526,7 +523,7 @@
 
     // 검색조건 초기화
     function doInit() {
-        $("#inOutSelect option:eq(0)").prop("selected", true);
+        $("#inoutSelect option:eq(0)").prop("selected", true);
         $("#outwySelect option:eq(0)").prop("selected", true);
         $("#searchWord").val("");
         location.reload();
@@ -539,29 +536,29 @@
         let html = '';
         if(mode === 'CREATE_INPUT') {
             $("#io_title").html("제품입고");
-            $("#in_out").val("1");
+            $("#in_out").val("IN");
 
             html = '';
             $("#csm_cd_td_title").html(html);
             $("#csm_cd_td_content").html(html);
             $("#out_wy_td_title").html(html);
-            html = '<input type="hidden" name="out_wy" value="1">';
+            html = '<input type="hidden" name="out_wy" value="">';
             $("#out_wy_td_content").html(html);
         } else {
             $("#io_title").html("제품출고");
-            $("#in_out").val("2");
+            $("#in_out").val("OUT");
 
             html = '출고사유';
             $("#out_wy_td_title").html(html);
-            html = '<input type="radio" id="out_wy1" name="out_wy" value="1" checked>';
-            html += '<label for="out_wy1">납품</label>';
-            html += '<input type="radio" id="out_wy2" name="out_wy" value="2">';
+            html = '<input type="radio" id="out_wy1" name="out_wy" value="SALE" checked>';
+            html += '<label for="out_wy1">판매</label>';
+            html += '<input type="radio" id="out_wy2" name="out_wy" value="GIFT">';
             html += '<label for="out_wy2">증정</label>';
-            html += '<input type="radio" id="out_wy3" name="out_wy" value="3">';
+            html += '<input type="radio" id="out_wy3" name="out_wy" value="ETC">';
             html += '<label for="out_wy3">기타</label>';
             $("#out_wy_td_content").html(html);
 
-            html = '납품처';
+            html = '판매처';
             $("#csm_cd_td_title").html(html);
             html = '<select name="csm_cd" class="csm_cd" style="width: 101%; height: 90%">';
             html += '<c:if test="${fn:length(consumer) > 0}">';

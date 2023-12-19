@@ -91,12 +91,12 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
         log.info("### searchByTextInput [inOut:" + inOut + ", outWy:" + outWy + ", searchWord:" + searchWord + "]");
 
         // 입고일때
-        if (inOut.equals("1")) {
+        if (inOut.equals("IN")) {
             searchExpression = stock.inOut.eq(inOut);
         }
-        else if (inOut.equals("2")) {    // 출고일때
+        else if (inOut.equals("OUT")) {    // 출고일때
             if (!outWy.equals("ALL")) {
-                if(outWy.equals("1") && !searchWord.equals(""))
+                if(outWy.equals("SALE") && !searchWord.equals(""))
                     searchExpression = stock.inOut.eq(inOut).and(stock.outWy.eq(outWy)).and(consumer.csmNm.eq(searchWord));
                 else
                     searchExpression = stock.inOut.eq(inOut).and(stock.outWy.eq(outWy));
@@ -203,7 +203,7 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
         if(proSt != null) {
             log.info("### before proSt:" + proSt);
 
-            if (String.valueOf(params.get("in_out")).equals("1")) {  // 입고
+            if (String.valueOf(params.get("in_out")).equals("IN")) {  // 입고
                 proSt = proSt + ioCnt;
             } else {    // 출고
                 proSt = proSt - ioCnt;
@@ -267,7 +267,7 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
 
             log.info("### before proSt:" + proSt);
 
-            if (inOut.equals("1")) {  // 입고
+            if (inOut.equals("IN")) {  // 입고
                 proSt = proSt - ioCnt;
                 if (proSt < 0) proSt = 0L;
             } else {    // 출고
