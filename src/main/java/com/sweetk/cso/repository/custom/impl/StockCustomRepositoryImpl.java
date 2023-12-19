@@ -135,6 +135,34 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .fetch();
     }
 
+    public List<StockListRes> findStockForExcel(StockListReq req) {
+        log.info("### findStockForExcel");
+
+        List<StockListRes> list = jpaQueryFactory
+                .select(Projections.fields(StockListRes.class,
+                        stock.stoNo,
+                        stock.proCd,
+                        product.proNm,
+                        stock.inOut,
+                        stock.ioCnt,
+                        stock.outWy,
+                        consumer.csmNm,
+                        stock.memo,
+                        stock.RegId,
+                        stock.RegDt,
+                        stock.ModId,
+                        stock.ModDt
+                )).from(stock)
+                .leftJoin(product)
+                .on(stock.proCd.eq(product.proCd))
+                .leftJoin(consumer)
+                .on(stock.csmCd.eq(consumer.csmCd))
+                .where(searchByTextInput(req))
+                .orderBy(stock.stoNo.desc())
+                .fetch();
+        return list;
+    }
+
     @Override
     public Stock findStockByProCd(String proCd) {
         log.info("### findStockByProCd");

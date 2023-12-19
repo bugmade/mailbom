@@ -123,7 +123,7 @@
                                         <label for="searchWord">검색조건</label>
                                     </th>
                                     <td colspan="3" class="fz0">
-                                        <form:select path="inOut" style="width:170px;" id="inoutSelect" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">
+                                        <form:select path="inOut" style="width:170px;" id="inOutSelect" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">
                                             <form:option value="ALL">전체(입출고)</form:option>
                                             <form:option value="1">입고</form:option>
                                             <form:option value="2">출고</form:option>
@@ -158,7 +158,7 @@
                         총 <span >${totalCount}</span> 건
                         <button class="input_btn_j" onclick="showStockPopup('CREATE_INPUT')">입고</button>
                         <button class="output_btn_j" onclick="showStockPopup('CREATE_OUTPUT')">출고</button>
-                        <button class="excel_btn_j" onclick="doExcelDownload()">엑셀</button>
+                        <button class="excel_btn_j" onclick="excelDownload()">엑셀</button>
                     </div>
 
                 <table class="list_table">
@@ -503,7 +503,7 @@
 
     // 입출고 select box 동적 표시
     function changeInoutSelect() {
-        let inOut = $("#inoutSelect option:selected").val();
+        let inOut = $("#inOutSelect option:selected").val();
         let outWy = $("#outwySelect option:selected").val();
 
         if(inOut === '1' || inOut === 'ALL') {   //입고 또는 전체
@@ -523,7 +523,7 @@
 
     // 검색조건 초기화
     function doInit() {
-        $("#inoutSelect option:eq(0)").prop("selected", true);
+        $("#inOutSelect option:eq(0)").prop("selected", true);
         $("#outwySelect option:eq(0)").prop("selected", true);
         $("#searchWord").val("");
         location.reload();
@@ -583,7 +583,30 @@
         $("#layer_popup").hide();
     }
 
-    function doExcelDownload() {
-        console.log('doExcelDownload');
+    function excelDownload() {
+        console.log('excelDownload');
+
+        $('#pagingForm').attr("action", "/inoutMng/api/excelDownload");
+        $('#pagingForm').submit();
+
+        // @@@ 엑셀다운로드에서 ajax를 쓰려면 특수처리가 필요하다???
+        // let params = $('#pagingForm').serializeObject();
+        // console.log(params);
+        // $.ajax({
+        //     dataType : "html",
+        //     type : "POST",
+        //     url : "/inoutMng/api/excelDownload",
+        //     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        //     data : params,
+        //     success : function(data) {
+        //         console.log('excelDownload success');
+        //         console.log(data);
+        //         alert("엑셀저장성공");
+        //         location.reload();
+        //     },
+        //     error: function(data, status, err) {
+        //         console.log('error forward : ' + data);
+        //     }
+        // });
     }
 </script>

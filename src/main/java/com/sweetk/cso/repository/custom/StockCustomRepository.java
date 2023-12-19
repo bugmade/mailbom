@@ -15,6 +15,7 @@ public interface StockCustomRepository {
 
     Page<StockListRes> getListBySearchDtoAndPageable(StockListReq req, Pageable pageable);
     List<StockListRes> findAllStock();
+    List<StockListRes> findStockForExcel(StockListReq req);
 
     Page<Stock> findPageAllByProNm(String proNm, Pageable pageable);
 

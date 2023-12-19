@@ -11,6 +11,7 @@ import com.sweetk.cso.service.InfoMngService;
 import com.sweetk.cso.service.InoutMngService;
 import com.sweetk.cso.service.PharmCompService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -54,24 +55,6 @@ public class InoutMngController {
         return "/web/inoutMng/stock";
     }
 
-//    @GetMapping("/stock")
-//    public String stock(PharmCompListReq req, Model model) {
-//
-//        log.info("### stock : get select list vvv ");
-//
-//        List<Product> product = infoMngService.readProductList();
-//        log.info(product);
-//        model.addAttribute("product", product);
-//
-//        List<Consumer> consumer = infoMngService.readConsumerList();
-//        log.info(consumer);
-//        model.addAttribute("consumer", consumer);
-//
-//        log.info("### stock : get select list ^^^ ");
-//
-//        return "/web/inoutMng/stock";
-//    }
-
     // 재품 리스트 반환
     @GetMapping("/api/readStockList")
     @ResponseBody
@@ -110,5 +93,15 @@ public class InoutMngController {
         log.info(params);
 
         return inoutMngService.deleteStock(params);
+    }
+
+    // 엑셀 다운로드
+    @RequestMapping("/api/excelDownload")
+    //@ResponseBody --> @@@ 얘는 있거나 말거나 엑셀 다운로드와 관계없음???
+    public void excelDownload(StockListReq req, HttpServletResponse response){
+        log.info("### excelDownload");
+        log.info(req);
+
+        inoutMngService.excelDownload(req, response);
     }
 }
