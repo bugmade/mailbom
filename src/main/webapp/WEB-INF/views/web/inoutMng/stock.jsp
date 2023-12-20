@@ -550,17 +550,17 @@
 
             html = '출고사유';
             $("#out_wy_td_title").html(html);
-            html = '<input type="radio" id="out_wy1" name="out_wy" value="SALE" checked>';
+            html = '<input type="radio" id="out_wy1" name="out_wy" onclick="enableCsmcdSelect()" value="SALE" checked>';
             html += '<label for="out_wy1">판매</label>';
-            html += '<input type="radio" id="out_wy2" name="out_wy" value="GIFT">';
+            html += '<input type="radio" id="out_wy2" name="out_wy" onclick="disableCsmcdSelect()" value="GIFT">';
             html += '<label for="out_wy2">증정</label>';
-            html += '<input type="radio" id="out_wy3" name="out_wy" value="ETC">';
+            html += '<input type="radio" id="out_wy3" name="out_wy" onclick="disableCsmcdSelect()" value="ETC">';
             html += '<label for="out_wy3">기타</label>';
             $("#out_wy_td_content").html(html);
 
             html = '판매처';
             $("#csm_cd_td_title").html(html);
-            html = '<select name="csm_cd" class="csm_cd" style="width: 101%; height: 90%">';
+            html = '<select id="csm_cd" name="csm_cd" class="csm_cd" style="width: 101%; height: 90%">';
             html += '<c:if test="${fn:length(consumer) > 0}">';
             html += '<c:forEach var="item" items="${consumer}">';
             html += '<option value="${item.csmCd }">${item.csmNm }</option>';
@@ -574,6 +574,16 @@
         $('#memo').val("");
 
         $('#layer_popup').show();
+    }
+
+    function enableCsmcdSelect() {
+        console.log("enableCsmcdSelect")
+        $("#csm_cd").attr("disabled", false);
+    }
+
+    function disableCsmcdSelect() {
+        console.log("disableCsmcdSelect")
+        $("#csm_cd").attr("disabled", true);
     }
 
     // 입출고 팝업을 닫기
