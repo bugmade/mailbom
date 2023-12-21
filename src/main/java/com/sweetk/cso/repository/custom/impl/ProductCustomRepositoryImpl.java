@@ -53,7 +53,7 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
         log.info("### createProduct");
         log.info(params);
         Long proSt = Long.parseLong(String.valueOf(params.get("pro_st")));
-        log.info(proSt);
+        Long outFirstSt = Long.parseLong(String.valueOf(params.get("out_first_st")));
 
         // PRO_CD가 이미 존재하는지 체크
         Product product = findProductByProCd(String.valueOf(params.get("pro_cd")));
@@ -63,12 +63,13 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
         }
 
         return String.valueOf(entityManager
-                .createNativeQuery("INSERT INTO product (PRO_CD, PRO_NM, PRO_DT, PRO_ST, REG_DT) VALUES (?,?,?,?,?)")
+                .createNativeQuery("INSERT INTO product (PRO_CD, PRO_NM, PRO_DT, PRO_ST, OUT_FIRST_ST, REG_DT) VALUES (?,?,?,?,?,?)")
                 .setParameter(1, String.valueOf(params.get("pro_cd")))
                 .setParameter(2, String.valueOf(params.get("pro_nm")))
                 .setParameter(3, String.valueOf(params.get("pro_dt")))
                 .setParameter(4, proSt)
-                .setParameter(5, now)
+                .setParameter(5, outFirstSt)
+                .setParameter(6, now)
                 .executeUpdate());
     }
 
@@ -80,15 +81,16 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
         log.info("### updateProduct");
         log.info(params);
         Long proSt = Long.parseLong(String.valueOf(params.get("pro_st")));
-        log.info(proSt);
+        Long outFirstSt = Long.parseLong(String.valueOf(params.get("out_first_st")));
 
         return String.valueOf(entityManager
-                .createNativeQuery("UPDATE product SET PRO_NM = ?, PRO_ST = ?, PRO_DT = ?, MOD_DT = ? WHERE PRO_CD = ?")
+                .createNativeQuery("UPDATE product SET PRO_NM = ?, PRO_ST = ?, OUT_FIRST_ST = ?, PRO_DT = ?, MOD_DT = ? WHERE PRO_CD = ?")
                 .setParameter(1, String.valueOf(params.get("pro_nm")))
                 .setParameter(2, proSt)
-                .setParameter(3, String.valueOf(params.get("pro_dt")))
-                .setParameter(4, now)
-                .setParameter(5, String.valueOf(params.get("pro_cd")))
+                .setParameter(3, outFirstSt)
+                .setParameter(4, String.valueOf(params.get("pro_dt")))
+                .setParameter(5, now)
+                .setParameter(6, String.valueOf(params.get("pro_cd")))
                 .executeUpdate());
     }
 

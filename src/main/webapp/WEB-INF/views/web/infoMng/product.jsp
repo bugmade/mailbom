@@ -24,7 +24,7 @@
     /* absolute / margin 을 통한 화면 정중앙 정렬 및 디자인*/
     .layer{
         width: 500px;
-        height: 300px;
+        height: 330px;
         background-color: #fff;
         border: 1px solid #e5e5e5;
         position: absolute;
@@ -113,10 +113,11 @@
                     <table class="gray_table half_table">
                         <thead>
                         <tr>
-                            <th>제품코드</th>
-                            <th>제품명</th>
-                            <th>제품설명</th>
-                            <th>재고</th>
+                            <th style="text-align: center;">제품코드</th>
+                            <th style="text-align: center;">제품명</th>
+                            <th style="text-align: center;">제품설명</th>
+                            <th style="text-align: center;">본사 재고</th>
+                            <th style="text-align: center;">위탁창고1 재고</th>
 <%--                            <th>등록일</th>--%>
                             <th></th>
                         </tr>
@@ -163,8 +164,12 @@
                             <td><input type="text" maxlength='250' name="pro_dt" id="pro_dt" style="width: 98%;"></td>
                         </tr>
                         <tr>
-                            <td>재고</td>
+                            <td>본사재고</td>
                             <td><input type="number" pattern="[0-9]+" name="pro_st" id="pro_st" style="width: 98%;"></td>
+                        </tr>
+                        <tr>
+                            <td>위탁창고1 재고</td>
+                            <td><input type="number" pattern="[0-9]+" name="out_first_st" id="out_first_st" style="width: 98%;"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -230,10 +235,11 @@
                 data.forEach(function(obj, idx) {
                     console.log(idx, obj.proNo, obj.proCd);
                     html += '<tr>';
-                    html += '<td>'+obj.proCd+'</td>';
-                    html += '<td>'+obj.proNm+'</td>';
-                    html += '<td>'+obj.proDt+'</td>';
-                    html += '<td>'+obj.proSt+'</td>';
+                    html += '<td style="text-align: center;">'+obj.proCd+'</td>';
+                    html += '<td style="text-align: center;">'+obj.proNm+'</td>';
+                    html += '<td style="text-align: center;">'+obj.proDt+'</td>';
+                    html += '<td style="text-align: center;">'+obj.proSt+'</td>';
+                    html += '<td style="text-align: center;">'+obj.outFirstSt+'</td>';
                     // html += '<td>'+obj.regDt+'</td>';
                     html += '<td>' +
                             '<button class="delete_btn_j" onclick="deleteProduct(\''+obj.proCd+'\')">삭제</button>' +
@@ -382,6 +388,7 @@
                 $('#pro_nm').val(data.proNm);
                 $('#pro_dt').val(data.proDt);
                 $('#pro_st').val(data.proSt);
+                $('#out_first_st').val(data.outFirstSt);
                 showProductPopup('UPDATE');
             },
             error: function(data, status, err) {
@@ -400,6 +407,7 @@
             $('#pro_nm').val("");
             $('#pro_dt').val("");
             $('#pro_st').val("0");
+            $('#out_first_st').val("0");
         }
         $('#layer_popup').show();
         if(mode === 'CREATE') {
