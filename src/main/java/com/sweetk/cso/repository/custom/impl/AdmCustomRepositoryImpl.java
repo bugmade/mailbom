@@ -77,13 +77,14 @@ public class AdmCustomRepositoryImpl implements AdmCustomRepository {
         }
 
         return String.valueOf(entityManager
-                .createNativeQuery("INSERT INTO adm (ADM_ID, ADM_PW, ADM_NM, EMAIL, TEL_NO, REG_DT) VALUES (?,?,?,?,?,?)")
+                .createNativeQuery("INSERT INTO adm (ADM_ID, ADM_PW, ADM_NM, EMAIL, TEL_NO, REG_ID, REG_DT) VALUES (?,?,?,?,?,?,?)")
                 .setParameter(1, String.valueOf(params.get("adm_id")))
                 .setParameter(2, pwd)
                 .setParameter(3, String.valueOf(params.get("adm_nm")))
                 .setParameter(4, String.valueOf(params.get("email")))
                 .setParameter(5, String.valueOf(params.get("tel_no")))
-                .setParameter(6, now)
+                .setParameter(6, String.valueOf(params.get("login_id")))
+                .setParameter(7, now)
                 .executeUpdate());
     }
 
@@ -96,12 +97,13 @@ public class AdmCustomRepositoryImpl implements AdmCustomRepository {
         log.info(params);
 
         return String.valueOf(entityManager
-                .createNativeQuery("UPDATE adm SET ADM_NM = ?, EMAIL = ?, TEL_NO = ?, MOD_DT = ? WHERE ADM_ID = ?")
+                .createNativeQuery("UPDATE adm SET ADM_NM = ?, EMAIL = ?, TEL_NO = ?, MOD_ID = ?, MOD_DT = ? WHERE ADM_ID = ?")
                 .setParameter(1, String.valueOf(params.get("adm_nm")))
                 .setParameter(2, String.valueOf(params.get("email")))
                 .setParameter(3, String.valueOf(params.get("tel_no")))
-                .setParameter(4, now)
-                .setParameter(5, String.valueOf(params.get("adm_id")))
+                .setParameter(4, String.valueOf(params.get("login_id")))
+                .setParameter(5, now)
+                .setParameter(6, String.valueOf(params.get("adm_id")))
                 .executeUpdate());
     }
 

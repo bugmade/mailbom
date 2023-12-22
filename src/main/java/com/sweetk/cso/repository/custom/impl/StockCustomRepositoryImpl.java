@@ -193,28 +193,28 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
         log.info(ioCnt);
 
         // vvv product 테이블의 제품수량을 조정
-        Long proSt = jpaQueryFactory
-                .select(product.proSt)
+        Long hqStorage = jpaQueryFactory
+                .select(product.hqStorage)
                 .from(product)
                 .where(product.proCd.eq(String.valueOf(params.get("pro_cd"))))
                 .fetchOne();
 
         // product 테이블에 해당 제품이 있을때만 업데이트 수행
-        if(proSt != null) {
-            log.info("### before proSt:" + proSt);
+        if(hqStorage != null) {
+            log.info("### before hqStorage:" + hqStorage);
 
             if (String.valueOf(params.get("in_out")).equals("IN")) {  // 입고
-                proSt = proSt + ioCnt;
+                hqStorage = hqStorage + ioCnt;
             } else {    // 출고
-                proSt = proSt - ioCnt;
-                if (proSt < 0) proSt = 0L;
+                hqStorage = hqStorage - ioCnt;
+                if (hqStorage < 0) hqStorage = 0L;
             }
 
-            log.info("### after proSt:" + proSt);
+            log.info("### after hqStorage:" + hqStorage);
 
             String.valueOf(entityManager
-                    .createNativeQuery("UPDATE product SET PRO_ST = ? WHERE PRO_CD = ?")
-                    .setParameter(1, proSt)
+                    .createNativeQuery("UPDATE product SET HQ_STORAGE = ? WHERE PRO_CD = ?")
+                    .setParameter(1, hqStorage)
                     .setParameter(2, String.valueOf(params.get("pro_cd")))
                     .executeUpdate());
         }
@@ -246,14 +246,14 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .where(stock.stoNo.eq(Long.parseLong(stoNo)))
                 .fetchOne();
 
-        Long proSt = jpaQueryFactory
-                .select(product.proSt)
+        Long hqStorage = jpaQueryFactory
+                .select(product.hqStorage)
                 .from(product)
                 .where(product.proCd.eq(String.valueOf(proCd)))
                 .fetchOne();
 
         // vvv product 테이블에 해당 제품이 존재할때만 업데이트 수행
-        if(proSt != null) {
+        if(hqStorage != null) {
             String inOut = jpaQueryFactory
                     .select(stock.inOut)
                     .from(stock)
@@ -265,20 +265,20 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                     .where(stock.stoNo.eq(Long.parseLong(stoNo)))
                     .fetchOne();
 
-            log.info("### before proSt:" + proSt);
+            log.info("### before hqStorage:" + hqStorage);
 
             if (inOut.equals("IN")) {  // 입고
-                proSt = proSt - ioCnt;
-                if (proSt < 0) proSt = 0L;
+                hqStorage = hqStorage - ioCnt;
+                if (hqStorage < 0) hqStorage = 0L;
             } else {    // 출고
-                proSt = proSt + ioCnt;
+                hqStorage = hqStorage + ioCnt;
             }
 
-            log.info("### after proSt:" + proSt);
+            log.info("### after hqStorage:" + hqStorage);
 
             String.valueOf(entityManager
-                    .createNativeQuery("UPDATE product SET PRO_ST = ? WHERE PRO_CD = ?")
-                    .setParameter(1, proSt)
+                    .createNativeQuery("UPDATE product SET HQ_STORAGE = ? WHERE PRO_CD = ?")
+                    .setParameter(1, hqStorage)
                     .setParameter(2, proCd)
                     .executeUpdate());
         }

@@ -165,11 +165,11 @@
                         </tr>
                         <tr>
                             <td>본사재고</td>
-                            <td><input type="number" pattern="[0-9]+" name="pro_st" id="pro_st" style="width: 98%;"></td>
+                            <td><input type="number" pattern="[0-9]+" name="hq_storage" id="hq_storage" style="width: 98%;"></td>
                         </tr>
                         <tr>
                             <td>위탁창고1 재고</td>
-                            <td><input type="number" pattern="[0-9]+" name="out_first_st" id="out_first_st" style="width: 98%;"></td>
+                            <td><input type="number" pattern="[0-9]+" name="first_storage" id="first_storage" style="width: 98%;"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -238,8 +238,8 @@
                     html += '<td style="text-align: center;">'+obj.proCd+'</td>';
                     html += '<td style="text-align: center;">'+obj.proNm+'</td>';
                     html += '<td style="text-align: center;">'+obj.proDt+'</td>';
-                    html += '<td style="text-align: center;">'+obj.proSt+'</td>';
-                    html += '<td style="text-align: center;">'+obj.outFirstSt+'</td>';
+                    html += '<td style="text-align: center;">'+obj.hqStorage+'</td>';
+                    html += '<td style="text-align: center;">'+obj.firstStorage+'</td>';
                     // html += '<td>'+obj.regDt+'</td>';
                     html += '<td>' +
                             '<button class="delete_btn_j" onclick="deleteProduct(\''+obj.proCd+'\')">삭제</button>' +
@@ -387,8 +387,8 @@
                 $("#pro_cd").attr("readonly",true);
                 $('#pro_nm').val(data.proNm);
                 $('#pro_dt').val(data.proDt);
-                $('#pro_st').val(data.proSt);
-                $('#out_first_st').val(data.outFirstSt);
+                $('#hq_storage').val(data.hqStorage);
+                $('#first_storage').val(data.firstStorage);
                 showProductPopup('UPDATE');
             },
             error: function(data, status, err) {
@@ -406,8 +406,8 @@
             $("#pro_cd").removeAttr("readonly");
             $('#pro_nm').val("");
             $('#pro_dt').val("");
-            $('#pro_st').val("0");
-            $('#out_first_st').val("0");
+            $('#hq_storage').val("0");
+            $('#first_storage').val("0");
         }
         $('#layer_popup').show();
         if(mode === 'CREATE') {

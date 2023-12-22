@@ -52,8 +52,8 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
 
         log.info("### createProduct");
         log.info(params);
-        Long proSt = Long.parseLong(String.valueOf(params.get("pro_st")));
-        Long outFirstSt = Long.parseLong(String.valueOf(params.get("out_first_st")));
+        Long hqStorage = Long.parseLong(String.valueOf(params.get("hq_storage")));
+        Long firstStorage = Long.parseLong(String.valueOf(params.get("first_storage")));
 
         // PRO_CD가 이미 존재하는지 체크
         Product product = findProductByProCd(String.valueOf(params.get("pro_cd")));
@@ -63,13 +63,14 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
         }
 
         return String.valueOf(entityManager
-                .createNativeQuery("INSERT INTO product (PRO_CD, PRO_NM, PRO_DT, PRO_ST, OUT_FIRST_ST, REG_DT) VALUES (?,?,?,?,?,?)")
+                .createNativeQuery("INSERT INTO product (PRO_CD, PRO_NM, PRO_DT, HQ_STORAGE, FIRST_STORAGE, REG_ID, REG_DT) VALUES (?,?,?,?,?,?,?)")
                 .setParameter(1, String.valueOf(params.get("pro_cd")))
                 .setParameter(2, String.valueOf(params.get("pro_nm")))
                 .setParameter(3, String.valueOf(params.get("pro_dt")))
-                .setParameter(4, proSt)
-                .setParameter(5, outFirstSt)
-                .setParameter(6, now)
+                .setParameter(4, hqStorage)
+                .setParameter(5, firstStorage)
+                .setParameter(6, String.valueOf(params.get("login_id")))
+                .setParameter(7, now)
                 .executeUpdate());
     }
 
@@ -80,17 +81,18 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
 
         log.info("### updateProduct");
         log.info(params);
-        Long proSt = Long.parseLong(String.valueOf(params.get("pro_st")));
-        Long outFirstSt = Long.parseLong(String.valueOf(params.get("out_first_st")));
+        Long hqStorage = Long.parseLong(String.valueOf(params.get("hq_storage")));
+        Long firstStorage = Long.parseLong(String.valueOf(params.get("first_storage")));
 
         return String.valueOf(entityManager
-                .createNativeQuery("UPDATE product SET PRO_NM = ?, PRO_ST = ?, OUT_FIRST_ST = ?, PRO_DT = ?, MOD_DT = ? WHERE PRO_CD = ?")
+                .createNativeQuery("UPDATE product SET PRO_NM = ?, HQ_STORAGE = ?, FIRST_STORAGE = ?, PRO_DT = ?, MOD_ID = ?, MOD_DT = ? WHERE PRO_CD = ?")
                 .setParameter(1, String.valueOf(params.get("pro_nm")))
-                .setParameter(2, proSt)
-                .setParameter(3, outFirstSt)
+                .setParameter(2, hqStorage)
+                .setParameter(3, firstStorage)
                 .setParameter(4, String.valueOf(params.get("pro_dt")))
-                .setParameter(5, now)
-                .setParameter(6, String.valueOf(params.get("pro_cd")))
+                .setParameter(5, String.valueOf(params.get("login_id")))
+                .setParameter(6, now)
+                .setParameter(7, String.valueOf(params.get("pro_cd")))
                 .executeUpdate());
     }
 
