@@ -446,12 +446,13 @@
         if(pwd == null) {
             return;
         }
-        else if(pwd.length < 4) {
-            alert("비밀번호는 4자리 이상입니다.")
+        else if(pwd.length < 1) {
+            alert("비밀번호는 1자리 이상입니다.")
             return;
         }
+        let login_id = $("#login_id").val();
 
-        let params = {sto_no: sto_no, login_id: login_id, pwd:pwd};
+        let params = {sto_no: sto_no, login_id: login_id, pwd: pwd};
 
         $.ajax({
             dataType : "html",
@@ -460,9 +461,13 @@
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
             data : params,
             success : function(data) {
-                console.log('deleteStock success');
+                console.log('deleteStock done');
                 console.log(data);
-                alert("삭제되었습니다");
+                if(data == '1') {
+                    alert("삭제되었습니다");
+                } else {
+                    alert("비밀번호가 틀립니다");
+                }
                 location.reload();
             },
             error: function(data, status, err) {
@@ -501,20 +506,50 @@
             return;
         }
 
-        let in_out = $('#in_out').val();
-        if(in_out === 'IN') {
-            in_out = '입고';
-        } else {
-            in_out = '출고';
-        }
+        // confirm
+        let pro_nm = $(".pro_cd :selected").text();
+        let params = $('#frmReg').serializeObject();
+        console.log(params);
 
-        if(!confirm("[" + $(".pro_cd :selected").text() + "] " + $('#io_cnt').val() + "개 " + in_out + " 처리할까요?")) {
+        let msg = '';
+        if(params['in_out'] === 'IN') {
+            msg = "[";
+            msg += pro_nm;
+            msg += "] ";
+            msg += params['io_cnt'];
+            msg += "개 본사창고에 입고 처리할까요?";
+        } else {
+            msg = "[";
+            msg += pro_nm;
+            msg += "] ";
+            msg += params['io_cnt'];
+            msg += "개 ";
+            if(params['from_storage'] == 'HQ') {
+                msg += "본사창고(HQ)";
+            } else {
+                msg += "위탁창고1(FIRST)";
+            }
+            msg += "로부터 출고[";
+            if(params['out_wy'] == 'BTOB') {
+                msg += "납품==>";
+                msg += $(".csm_cd :selected").text();
+            } else if (params['out_wy'] == 'RETAIL') {
+                msg += "소매(택배)";
+            } else if (params['out_wy'] == 'GIFT') {
+                msg += "증정";
+            } else if (params['out_wy'] == 'TRANSFER') {
+                msg += "창고이동==>";
+                msg += params['to_storage'];
+            } else {
+                msg += "기타";
+            }
+            msg += "] 처리할까요?";
+        }
+        if(!confirm(msg)) {
             return;
         }
 
-        let params = $('#frmReg').serializeObject();
-        console.log(params);
-        if(in_out === '입고') {       //입고시 출고사유 null 처리
+        if(params['in_out'] === 'IN') {       //입고시 출고사유 null 처리
             params['out_wy'] = '';
             params['csm_cd'] = '';
             params['from_storage'] = '';
@@ -650,8 +685,8 @@
         html = '타겟창고';
         $("#out_dtl_td_title").html(html);
         html = '<select id="to_storage" name="to_storage" class="to_storage" style="width: 101%; height: 90%">';
-        html += '<option value="HQ">본사창고(HQ)</option>';
         html += '<option value="FIRST">위탁창고1(FIRST)</option>';
+        html += '<option value="HQ">본사창고(HQ)</option>';
         $("#out_dtl_td_content").html(html);
     }
 

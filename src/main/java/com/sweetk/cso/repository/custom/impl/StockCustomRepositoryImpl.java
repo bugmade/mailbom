@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -25,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.sweetk.cso.entity.QAdm.adm;
 import static com.sweetk.cso.entity.QConsumer.consumer;
 import static com.sweetk.cso.entity.QProduct.product;
 import static com.sweetk.cso.entity.QStock.stock;
@@ -36,6 +38,7 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final EntityManager entityManager;
+    final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public Page<StockListRes> getListBySearchDtoAndPageable(StockListReq req, Pageable pageable) {
@@ -269,9 +272,15 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
 
     @Transactional
     @Override
-    public String deleteStockByStoNo(String stoNo) {
+    public String deleteStockByStoNo(Map<String, Object> params) {
         log.info("### deleteStockByStoNo");
-        log.info(stoNo);
+
+        // user pwd 체크
+        if(checkUserPwd(params).equals("0")) {
+            return "0";
+        }
+
+        String stoNo = String.valueOf(params.get("sto_no"));
 
         // vvv product 테이블의 제품수량을 조정
         adjustStorageByDelete(stoNo);
@@ -280,6 +289,24 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .delete(stock)
                 .where(stock.stoNo.eq(Long.parseLong(stoNo)))
                 .execute());
+    }
+
+    // 비밀번호 일치여부 체크
+    public String checkUserPwd(Map<String, Object> params) {
+        log.info("### checkUserPwd");
+
+        String db_pwd = jpaQueryFactory
+                .select(adm.admPw)
+                .from(adm)
+                .where(adm.admId.eq(String.valueOf(params.get("login_id"))))
+                .fetchOne();
+
+        if(bCryptPasswordEncoder.matches(String.valueOf(params.get("pwd")), db_pwd)) {
+            return "1";
+        } else {
+            log.info("### invalid pwd");
+            return "0";
+        }
     }
 
     //삭제 시 storage 갯수를 조정

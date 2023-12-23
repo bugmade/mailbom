@@ -62,7 +62,7 @@ public class InoutMngService {
     public String deleteStock(Map<String, Object> params) {
         log.info("### deleteStock");
         log.info(params);
-        return stockRepository.deleteStockByStoNo(String.valueOf(params.get("sto_no")));
+        return stockRepository.deleteStockByStoNo(params);
     }
 
     public void excelDownload(StockListReq req, HttpServletResponse response) {

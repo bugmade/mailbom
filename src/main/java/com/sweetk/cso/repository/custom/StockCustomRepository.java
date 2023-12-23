@@ -23,5 +23,5 @@ public interface StockCustomRepository {
 
     String createStock(Map<String, Object> params);
 
-    String deleteStockByStoNo(String stoNo);
+    String deleteStockByStoNo(Map<String, Object> params);
 }
