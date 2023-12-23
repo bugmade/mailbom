@@ -1,5 +1,4 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
-
 <style>
     /* popup style 설정 vvv */
 
@@ -24,7 +23,7 @@
     /* absolute / margin 을 통한 화면 정중앙 정렬 및 디자인*/
     .layer{
         width: 500px;
-        height: 450px;
+        height: 330px;
         background-color: #fff;
         border: 1px solid #e5e5e5;
         position: absolute;
@@ -95,8 +94,9 @@
     /* popup style 설정 ^^^ */
 
 </style>
+
 <head>
-    <title>재품입출고관리</title>
+    <title>제품입출고 관리</title>
     <link rel="shortcut icon" href="/resources/img/favicon.ico" type="image/png">
 </head>
 <body>
@@ -106,38 +106,188 @@
         <div class="container_inner">
             <div class="contwrap">
                 <h3 class="cont_tit">
-                    제품입출고관리
+                    제품입출고 관리
                 </h3>
-                <div class="main_wrap">
-                    <div class="btn_area">
-                        <button class="btn_register" style="float: left;" onclick="showStockPopup('CREATE_INPUT')">입고</button>
-                        <button class="btn_hide" style="float: right;" onclick="showStockPopup('CREATE_OUTPUT')">출고</button>
-                    </div>
-                    <table class="gray_table half_table">
-                        <thead>
-                        <tr>
-                            <th>번호</th>
-<%--                            <th>제품코드</th>--%>
-                            <th>제품명</th>
-                            <th>구분</th>
-                            <th>수량</th>
-                            <th>출고사유</th>
-                            <th>납품처</th>
-                            <th>메모</th>
-                            <th>등록자</th>
-                            <th>등록일</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody id="dynamicTbody">
-                    </table>
+                <div class="white_box bd_gr">
+                    <form:form id="searchForm" name="searchForm" method="get" action="/inoutMng/stock" modelAttribute="stockListReq">
+                        <table class="gray_table half_table">
+                            <colgroup>
+                                <col width="16.5%">
+                                <col width="*">
+                                <col width="16.5%">
+                                <col width="*">
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th>
+                                        <label for="searchWord">검색조건</label>
+                                    </th>
+                                    <td colspan="3" class="fz0">
+                                        <form:select path="inOut" style="width:170px;" id="inoutSelect" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">
+                                            <form:option value="ALL">전체(입출고)</form:option>
+                                            <form:option value="IN">입고</form:option>
+                                            <form:option value="OUT">출고</form:option>
+                                        </form:select>
+                                        <form:select path="outWy" style="width:170px;" id="outwySelect" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">
+                                            <form:option value="ALL">전체(출고사유)</form:option>
+                                            <form:option value="SALE">판매</form:option>
+                                            <form:option value="GIFT">증정</form:option>
+                                            <form:option value="ETC">기타</form:option>
+                                        </form:select>
+                                        <form:input type="text" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="특정 판매처 검색시 판매처 입력 필요!"/>
+                                        <button id="searchBtn" class="search_btn">
+                                            검색
+                                            <span class="ir_so">검색버튼</span>
+                                        </button>
+                                        <button class="init_btn_j" onclick="doInit()">초기화</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form:form>
                 </div>
+                <!-- //white_box -->
+
+                <c:set value="${result.getTotalElements()}" var="totalCount"/>
+<%--                <div class="clgraph_info clearfix mb20">--%>
+<%--                    <h4 class="wb_tit fl_l">--%>
+<%--                        총 <span class="col_acc">${totalCount}</span> 건--%>
+<%--                    </h4>--%>
+<%--                </div>--%>
+                    <div style="margin-bottom: 5px; margin-top: 5px;">
+                        총 <span >${totalCount}</span> 건
+                        <button class="input_btn_j" onclick="showStockPopup('CREATE_INPUT')">입고</button>
+                        <button class="output_btn_j" onclick="showStockPopup('CREATE_OUTPUT')">출고</button>
+                        <button class="excel_btn_j" onclick="excelDownload()">엑셀</button>
+                    </div>
+
+                <table class="list_table">
+                    <colgroup>
+                        <col width="8%">
+                        <col width="8%">
+                        <col width="8%">
+                        <col width="8%%">
+                        <col width="8%">
+                        <col width="8%">
+                        <col width="20%">
+                        <col width="5%">
+                        <col width="10%">
+                        <col width="*">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>입출고번호</th>
+                        <th>제품명</th>
+                        <th>구분</th>
+                        <th>수량</th>
+                        <th>출고사유</th>
+                        <th>판매처</th>
+                        <th>메모</th>
+                        <th>등록자</th>
+                        <th>등록일</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:choose>
+                        <c:when test="${totalCount == 0}">
+                            <td colspan="9" class="list_none">등록된 내역이 없습니다.</td>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="idx" value="${totalCount - ((result.getNumber()) * result.getSize())}"/>
+                            <c:forEach var="row" items="${result.getContent()}" varStatus="status">
+                                <tr>
+<%--                                    <td>${idx-status.index}</td>--%>
+<%--                                    <td class="pl20 ta_c ellipsis">--%>
+<%--                                        <a class="list_link ellipsis" href="">${row.proNm}</a>--%>
+<%--                                    </td>--%>
+                                    <td>${row.stoNo}</td>
+                                    <td>${row.proNm}</td>
+                                    <c:choose>
+                                        <c:when test="${row.inOut == 'IN'}">
+                                            <td>입고</td>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <td>출고</td>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <td>${row.ioCnt}</td>
+                                    <c:choose>
+                                        <c:when test="${row.inOut == 'OUT'}">
+                                            <c:choose>
+                                                <c:when test="${row.outWy == 'SALE'}">
+                                                    <td>판매</td>
+                                                    <td>${row.csmNm}</td>
+                                                </c:when>
+                                                <c:when test="${row.outWy == 'GIFT'}">
+                                                    <td>증정</td>
+                                                    <td></td>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <td>기타</td>
+                                                    <td></td>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <td></td>
+                                            <td></td>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <td>${row.memo}</td>
+                                    <td>${row.regId}</td>
+                                    <td>
+<%--                                        <javatime:format value="${row.regDt}" pattern="yyyy-MM-dd"/>--%>
+                                        ${row.regDt}
+                                    </td>
+                                    <td>
+                                        <button class="delete_btn_j" onclick="deleteStock(${row.stoNo})">삭제</button>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
+                    </tbody>
+                </table>
+                <!-- //white_box -->
+
+                <div class="pagination_area">
+                    <form:form modelAttribute="stockListReq">
+                        <form:select path="pageSize" cssClass="select_form">
+                            <form:option value="10">10개 씩보기</form:option>
+                            <form:option value="50">50개 씩보기</form:option>
+                            <form:option value="100">100개씩 보기</form:option>
+                        </form:select>
+                    </form:form>
+                    <!-- //selsect -->
+
+                    <c:if test="${totalCount > 0}">
+                        <ul class="pagination" id="pagination-number"></ul>
+                    </c:if>
+                    <!-- //pagination -->
+
+<%--                페이징 중앙 정렬을 위해 --%>
+                    <div>(C)MAILBOM Inc.</div>
+                </div><!--//pagination_area-->
             </div>
             <!-- //contwrap -->
+
+            <%-- paging 태그에서 페이지 번호를 클릭했을때 자바스크립트 함수로 실행하게될 form을 작성한다(읽기전용 form임)--%>
+            <form:form id="pagingForm" name="pagingForm" method="get" modelAttribute="stockListReq">
+<%--                <form:hidden id="pagingSearchType6" path="searchType"/>--%>
+                <form:hidden id="pagingSearchType6" path="inOut"/>
+                <form:hidden id="pagingSearchType8" path="outWy"/>
+                <form:hidden id="pagingSearchType7" path="searchWord"/>
+                <form:hidden id="pagingCurrentPageNo" path="pageNo"/>
+                <form:hidden id="pagingRecordCountPerPage" path="pageSize"/>
+            </form:form>
         </div>
         <%@ include file="../../layout/footer.jsp" %>
     </div>
-
+    <!-- //container -->
+    <button class="btn_top">
+        <span>맨 위로</span>
+    </button>
     <!-- vvv 팝업 -->
     <div class="layer_popup" id="layer_popup" style="display: none;">
         <div class="layer">
@@ -148,131 +298,133 @@
             <div class="popup_cont">
                 <form method="post" id="frmReg">
                     <input type="hidden" name="login_id" value="${webUtils.getLogin().getAdm().getAdmId()}">
-                    <input type="hidden" name="in_out" id="in_out" value="1">
+                    <input type="hidden" name="in_out" id="in_out" value="IN">
                     <table class="popup_table">
                         <thead>
                         </thead>
                         <tbody id="io_tbody">
-                            <tr>
-                                <td>제품명</td>
-                                <td>
-                                    <select name="pro_cd" class="pro_cd" style="width: 100%; height: 90%">
-                                        <c:if test="${fn:length(product) > 0}">
-                                            <c:forEach var="item" items="${product}">
-                                                <option value="${item.proCd }">${item.proNm }</option>
-                                            </c:forEach>
-                                        </c:if>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>수량</td>
-                                <td><input type="number" pattern="[0-9]+" name="io_cnt" id="io_cnt" style="width: 100%"></td>
-                            </tr>
-                            <tr>
-                                <td>메모</td>
-                                <td><input type="text" maxlength='100' name="memo" id="memo" style="width: 100%"></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div id="out_wy_td_title"></div>
-                                </td>
-                                <td>
-                                    <div id="out_wy_td_content"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div id="csm_cd_td_title"></div>
-                                </td>
-                                <td>
-                                    <div id="csm_cd_td_content" style="width: 100%; height: 90%"></div>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td>제품명</td>
+                            <td>
+                                <select name="pro_cd" class="pro_cd" style="width: 98%; height: 90%">
+                                    <c:if test="${fn:length(product) > 0}">
+                                        <c:forEach var="item" items="${product}">
+                                            <option value="${item.proCd }">${item.proNm }</option>
+                                        </c:forEach>
+                                    </c:if>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>수량</td>
+                            <td><input type="number" pattern="[0-9]+" name="io_cnt" id="io_cnt" style="width: 98%"></td>
+                        </tr>
+                        <tr>
+                            <td>메모</td>
+                            <td><input type="text" maxlength='100' name="memo" id="memo" style="width: 98%"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="out_wy_td_title"></div>
+                            </td>
+                            <td>
+                                <div id="out_wy_td_content"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="csm_cd_td_title"></div>
+                            </td>
+                            <td>
+                                <div id="csm_cd_td_content" style="width: 98%; height: 90%"></div>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </form>
             </div>
             <!--팝업 버튼 영역-->
-            <div class="btn_area">
-                <button class="btn_register" style="float: left;" onclick="createStock()">저장</button>
-                <button class="btn_hide" style="float: right;" onclick="hideStockPopup()">닫기</button>
-            </div>
+            <button class="save_btn_j" onclick="createStock()">저장</button>
+            <button class="close_btn_j" onclick="hideStockPopup()">닫기</button>
             <div class="dimmed"></div>
         </div>
     </div>
     <!-- ^^^ 팝업 -->
 </div>
 </body>
-
 <script type="text/javascript">
-    const IO_INPUT = '1';       // 입고
-    const IO_OUTPUT = '2';      // 출고
-    const OUTWY_SALE = '1';     // 출고사유: 납품
-    const OUTWY_GIFT = '2';     // 출고사유: 증정
-    const OUTWY_ETC = '3';      // 출고사유: 기타
-
     $(document).ready(function(){
-        readStockList();
-    })
+        console.log(${result.getTotalPages()}); //JSTL
+        console.log(${result.getNumber()}); //JSTL
 
-    // 제품 입출고 리스트 가져오기 - 전통적인 방법
-    readStockList = function() {
+        $('#pagination-number').twbsPagination({
+            totalPages: <c:out value="${result.getTotalPages()}"/>,
+            visiblePages: 10,
+            startPage: <c:out value="${result.getNumber()+1}"/>,
+            first: " ",
+            prev: " ",
+            next: " ",
+            last: " ",
+            prevClass: 'pg_ctrl pg_prev',
+            nextClass: 'pg_ctrl pg_next',
+            firstClass: 'pg_ctrl pg_first',
+            lastClass: 'pg_ctrl pg_last',
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+                go_page(page);
+            }
+        });
+
+        // $('#btnRegist').on('click', () => {
+        //     location.href = '/pharmComp/registForm';
+        // });
+
+        $("#searchBtn").on("click", (e) => {
+            e.preventDefault();
+            $("#pagingCurrentPageNo").val(1);
+            $("#searchForm").submit();
+        });
+
+        $("#searchWord").on("keydown", (e) => {
+            if(e.keyCode == 13){
+                $("#searchBtn").trigger("click");
+                return false;
+            }
+        });
+
+        $("#pageSize").change(function() {
+            $("#pagingForm input[name=pageSize]").val($(this).val());
+            $("#pagingForm input[name=pageNo]").val(1);
+            $("#pagingForm")[0].submit();
+        });
+
+        changeInoutSelect();
+    });
+
+    const go_page = (pageno) => {
+        $("#pagingCurrentPageNo").val(pageno);
+        $("#pagingForm")[0].submit();
+    }
+
+    // 입출력내역 삭제하기
+    function deleteStock(sto_no) {
+        console.log('deleteStock: %s', sto_no);
+        if(!confirm("입출고번호:"+sto_no+" 삭제할까요?")) {
+            return;
+        }
+        let params = {sto_no: sto_no};
+
         $.ajax({
             dataType : "html",
-            type : "GET",
-            url : "/inoutMng/api/readStockList",
+            type : "POST",
+            url : "/inoutMng/api/deleteStock",
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            data : {"test" : "1" },   // query string
+            data : params,
             success : function(data) {
-                console.log('readStockList success');
-                console.log(data);              // 얘는 string, 서버에서 애초부터 JSON 객체로 반환하는 방법은???
-                console.log(typeof data);       //string
-                if(typeof data !== 'object') data = JSON.parse(data);        // JSON 문자열을 JavaScript 객체로 변환
-                console.log(typeof data);       //object
-                // JSON은 JavaScript Object Notation
-                // JSON.stringify(): JavaScript 객체를 JSON 문자열로 변환
+                console.log('deleteStock success');
                 console.log(data);
-                console.log(data[0]);
-                console.log(data[1]);
-
-                let html = '';
-                data.forEach(function(obj, idx) {
-                    html += '<tr>';
-                    html += '<td>'+obj.stoNo+'</td>';
-                    // html += '<td>'+obj.proCd+'</td>';
-                    html += '<td>'+obj.proNm+'</td>';
-                    if(obj.inOut === IO_INPUT)
-                        html += '<td>입고</td>';
-                    else
-                        html += '<td>출고</td>';
-                    html += '<td>'+obj.ioCnt+'</td>';
-                    if(obj.inOut === IO_OUTPUT) {
-                        if (obj.outWy === OUTWY_SALE) {
-                            html += '<td>납품</td>';
-                            html += '<td>' + obj.csmNm + '</td>';
-                        } else if (obj.outWy === OUTWY_GIFT) {
-                            html += '<td>증정</td>';
-                            html += '<td></td>';
-                        } else {
-                            html += '<td>기타</td>';
-                            html += '<td></td>';
-                        }
-                    } else {
-                        html += '<td></td>';
-                        html += '<td></td>';
-                    }
-                    html += '<td>'+obj.memo+'</td>';
-                    html += '<td>'+obj.regId+'</td>';
-                    html += '<td>'+obj.regDt.substring(0, 16)+'</td>';
-                    html += '<td>' +
-                            '<input type="button" onclick="deleteStock('+obj.stoNo+')" value="삭제">' +
-                            '</td>';
-                    html += '</tr>';
-                });
-
-                $("#dynamicTbody").empty();
-                $("#dynamicTbody").append(html);
+                alert("삭제되었습니다");
+                location.reload();
             },
             error: function(data, status, err) {
                 console.log('error forward : ' + data);
@@ -310,9 +462,8 @@
             return;
         }
 
-        //let in_out = $('input:radio[name="in_out"]:checked').val();
         let in_out = $('#in_out').val();
-        if(in_out === IO_INPUT) {
+        if(in_out === 'IN') {
             in_out = '입고';
         } else {
             in_out = '출고';
@@ -324,6 +475,13 @@
 
         let params = $('#frmReg').serializeObject();
         console.log(params);
+        if(in_out === '입고') {       //입고시 출고사유 null 처리
+            params['out_wy'] = '';
+        } else {
+            if(params['out_wy'] !== 'SALE') {
+                params['csm_cd'] = '';
+            }
+        }
 
         $.ajax({
             dataType : "html",
@@ -343,30 +501,32 @@
         });
     }
 
-    // 입출력내역 삭제하기
-    function deleteStock(sto_no) {
-        console.log('deleteStock: %s', sto_no);
-        if(!confirm("입출고번호:"+sto_no+" 삭제할까요?")) {
-            return;
-        }
-        let params = {sto_no: sto_no};
+    // 입출고 select box 동적 표시
+    function changeInoutSelect() {
+        let inOut = $("#inoutSelect option:selected").val();
+        let outWy = $("#outwySelect option:selected").val();
 
-        $.ajax({
-            dataType : "html",
-            type : "POST",
-            url : "/inoutMng/api/deleteStock",
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            data : params,
-            success : function(data) {
-                console.log('deleteStock success');
-                console.log(data);
-                alert("삭제되었습니다");
-                location.reload();
-            },
-            error: function(data, status, err) {
-                console.log('error forward : ' + data);
+        if(inOut === 'IN' || inOut === 'ALL') {   //입고 또는 전체
+            $("#outwySelect option:eq(0)").prop("selected", true);
+            $("#outwySelect").attr("disabled", true);
+            $("#searchWord").val("");
+            $("#searchWord").attr("disabled", true);
+        } else {
+            $("#outwySelect").attr("disabled", false);
+            if(outWy == 'SALE') {      //판매
+                $("#searchWord").attr("disabled", false);
+            } else {
+                $("#searchWord").attr("disabled", true);
             }
-        });
+        }
+    }
+
+    // 검색조건 초기화
+    function doInit() {
+        $("#inoutSelect option:eq(0)").prop("selected", true);
+        $("#outwySelect option:eq(0)").prop("selected", true);
+        $("#searchWord").val("");
+        location.reload();
     }
 
     // 입출고 팝업을 보여주기
@@ -376,31 +536,31 @@
         let html = '';
         if(mode === 'CREATE_INPUT') {
             $("#io_title").html("제품입고");
-            $("#in_out").val("1");
+            $("#in_out").val("IN");
 
             html = '';
             $("#csm_cd_td_title").html(html);
             $("#csm_cd_td_content").html(html);
             $("#out_wy_td_title").html(html);
-            html = '<input type="hidden" name="out_wy" value="1">';
+            html = '<input type="hidden" name="out_wy" value="">';
             $("#out_wy_td_content").html(html);
         } else {
             $("#io_title").html("제품출고");
-            $("#in_out").val("2");
+            $("#in_out").val("OUT");
 
             html = '출고사유';
             $("#out_wy_td_title").html(html);
-            html = '<input type="radio" id="out_wy1" name="out_wy" value="1" checked>';
-            html += '<label for="out_wy1">납품</label>';
-            html += '<input type="radio" id="out_wy2" name="out_wy" value="2">';
+            html = '<input type="radio" id="out_wy1" name="out_wy" onclick="enableCsmcdSelect()" value="SALE" checked>';
+            html += '<label for="out_wy1">판매</label>';
+            html += '<input type="radio" id="out_wy2" name="out_wy" onclick="disableCsmcdSelect()" value="GIFT">';
             html += '<label for="out_wy2">증정</label>';
-            html += '<input type="radio" id="out_wy3" name="out_wy" value="3">';
+            html += '<input type="radio" id="out_wy3" name="out_wy" onclick="disableCsmcdSelect()" value="ETC">';
             html += '<label for="out_wy3">기타</label>';
             $("#out_wy_td_content").html(html);
 
-            html = '납품처';
+            html = '판매처';
             $("#csm_cd_td_title").html(html);
-            html = '<select name="csm_cd" class="csm_cd" style="width: 100%; height: 100%">';
+            html = '<select id="csm_cd" name="csm_cd" class="csm_cd" style="width: 101%; height: 90%">';
             html += '<c:if test="${fn:length(consumer) > 0}">';
             html += '<c:forEach var="item" items="${consumer}">';
             html += '<option value="${item.csmCd }">${item.csmNm }</option>';
@@ -416,10 +576,47 @@
         $('#layer_popup').show();
     }
 
+    function enableCsmcdSelect() {
+        console.log("enableCsmcdSelect")
+        $("#csm_cd").attr("disabled", false);
+    }
+
+    function disableCsmcdSelect() {
+        console.log("disableCsmcdSelect")
+        $("#csm_cd").attr("disabled", true);
+    }
+
     // 입출고 팝업을 닫기
     function hideStockPopup(){
         console.log('hideStockPopup');
 
         $("#layer_popup").hide();
+    }
+
+    function excelDownload() {
+        console.log('excelDownload');
+
+        $('#pagingForm').attr("action", "/inoutMng/api/excelDownload");
+        $('#pagingForm').submit();
+
+        // @@@ 엑셀다운로드에서 ajax를 쓰려면 특수처리가 필요하다???
+        // let params = $('#pagingForm').serializeObject();
+        // console.log(params);
+        // $.ajax({
+        //     dataType : "html",
+        //     type : "POST",
+        //     url : "/inoutMng/api/excelDownload",
+        //     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        //     data : params,
+        //     success : function(data) {
+        //         console.log('excelDownload success');
+        //         console.log(data);
+        //         alert("엑셀저장성공");
+        //         location.reload();
+        //     },
+        //     error: function(data, status, err) {
+        //         console.log('error forward : ' + data);
+        //     }
+        // });
     }
 </script>

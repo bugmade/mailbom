@@ -116,8 +116,8 @@
                             <th style="text-align: center;">제품코드</th>
                             <th style="text-align: center;">제품명</th>
                             <th style="text-align: center;">제품설명</th>
-                            <th style="text-align: center;">본사 재고</th>
-                            <th style="text-align: center;">위탁창고1 재고</th>
+                            <th style="text-align: center;">본사창고재고(HQ)</th>
+                            <th style="text-align: center;">위탁창고1재고(FIRST)</th>
 <%--                            <th>등록일</th>--%>
                             <th></th>
                         </tr>
@@ -164,7 +164,7 @@
                             <td><input type="text" maxlength='250' name="pro_dt" id="pro_dt" style="width: 98%;"></td>
                         </tr>
                         <tr>
-                            <td>본사재고</td>
+                            <td>본사창고재고</td>
                             <td><input type="number" pattern="[0-9]+" name="hq_storage" id="hq_storage" style="width: 98%;"></td>
                         </tr>
                         <tr>

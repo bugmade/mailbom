@@ -29,6 +29,12 @@ public class Stock {  // 별도로 명시하지 않으면 이것이 테이블 �
     private String outWy;
 
     @Column(nullable = false, unique = false)
+    private String fromStorage;
+
+    @Column(nullable = false, unique = false)
+    private String toStorage;
+
+    @Column(nullable = false, unique = false)
     private String csmCd;
 
     @Column(nullable = false, unique = false)
