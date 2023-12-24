@@ -16,8 +16,8 @@ public class StockListRes {
     private String outWy;
     private String csmNm;
     private String memo;
-    private String RegId;
-    private String RegDt;
-    private String ModId;
-    private String ModDt;
+    private String regId;
+    private String regDt;
+    private String modId;
+    private String modDt;
 }

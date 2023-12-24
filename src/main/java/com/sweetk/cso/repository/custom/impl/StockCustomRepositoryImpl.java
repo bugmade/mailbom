@@ -56,10 +56,10 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                         stock.outWy,
                         consumer.csmNm,
                         stock.memo,
-                        stock.RegId,
-                        stock.RegDt,
-                        stock.ModId,
-                        stock.ModDt
+                        stock.regId,
+                        stock.regDt,
+                        stock.modId,
+                        stock.modDt
                 )).from(stock)
                 .leftJoin(product)
                 .on(stock.proCd.eq(product.proCd))
@@ -129,10 +129,10 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                         stock.outWy,
                         consumer.csmNm,
                         stock.memo,
-                        stock.RegId,
-                        stock.RegDt,
-                        stock.ModId,
-                        stock.ModDt
+                        stock.regId,
+                        stock.regDt,
+                        stock.modId,
+                        stock.modDt
                         ))
                 .from(stock)
                 .leftJoin(product)
@@ -166,10 +166,10 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                         stock.outWy,
                         consumer.csmNm,
                         stock.memo,
-                        stock.RegId,
-                        stock.RegDt,
-                        stock.ModId,
-                        stock.ModDt
+                        stock.regId,
+                        stock.regDt,
+                        stock.modId,
+                        stock.modDt
                 )).from(stock)
                 .leftJoin(product)
                 .on(stock.proCd.eq(product.proCd))

@@ -1,9 +1,6 @@
 package com.sweetk.cso.service;
 
-import com.sweetk.cso.dto.StaffListReq;
-import com.sweetk.cso.dto.StaffListRes;
-import com.sweetk.cso.dto.StockListReq;
-import com.sweetk.cso.dto.StockListRes;
+import com.sweetk.cso.dto.*;
 import com.sweetk.cso.entity.Adm;
 import com.sweetk.cso.entity.Consumer;
 import com.sweetk.cso.entity.Product;
@@ -32,6 +29,11 @@ public class InfoMngService {
     final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     //############################### 제품 정보 관리 #################################
+    @Transactional(readOnly = true)
+    public Page<ProductListRes> getProductList(ProductListReq req, Pageable pageable) {
+        return productRepository.getListBySearchDtoAndPageable(req, pageable);
+    }
+
     public List<Product> readProductList(){
         log.info("### readProductList");
         return productRepository.findAll();

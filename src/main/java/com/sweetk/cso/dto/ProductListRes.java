@@ -15,8 +15,8 @@ public class ProductListRes {
     private String proDt;
     private long hqStorage;
     private long firstStorage;
-    private String RegId;
-    private String RegDt;
-    private String ModId;
-    private String ModDt;
+    private String regId;
+    private String regDt;
+    private String modId;
+    private String modDt;
 }

@@ -1,10 +1,7 @@
 package com.sweetk.cso.controller;
 
 import com.querydsl.jpa.impl.JPADeleteClause;
-import com.sweetk.cso.dto.StaffListReq;
-import com.sweetk.cso.dto.StaffListRes;
-import com.sweetk.cso.dto.StockListReq;
-import com.sweetk.cso.dto.StockListRes;
+import com.sweetk.cso.dto.*;
 import com.sweetk.cso.dto.pharmComp.PharmCompListReq;
 import com.sweetk.cso.entity.Adm;
 import com.sweetk.cso.entity.Consumer;
@@ -35,6 +32,13 @@ public class InfoMngController {
     public String list(PharmCompListReq req, Model model) {
         //Page<PharmCompListRes> result = pharmCompService.getList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
         //model.addAttribute("result", result);
+        return "/web/infoMng/product";
+    }
+
+    @GetMapping("/product1")
+    public String product1(ProductListReq req, Model model) {
+        Page<ProductListRes> result = infoMngService.getProductList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
+        model.addAttribute("result", result);
         return "/web/infoMng/product";
     }
 
@@ -97,19 +101,6 @@ public class InfoMngController {
     public String staff1(StaffListReq req, Model model) {
         Page<StaffListRes> result = infoMngService.getStaffList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
         model.addAttribute("result", result);
-
-//        log.info("### stock : get select list vvv ");
-//
-//        List<Product> product = infoMngService.readProductList();
-//        log.info(product);
-//        model.addAttribute("product", product);
-//
-//        List<Consumer> consumer = infoMngService.readConsumerList();
-//        log.info(consumer);
-//        model.addAttribute("consumer", consumer);
-//
-//        log.info("### stock : get select list ^^^ ");
-
         return "/web/infoMng/staff";
     }
 

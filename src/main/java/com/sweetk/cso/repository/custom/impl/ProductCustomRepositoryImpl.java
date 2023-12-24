@@ -1,6 +1,13 @@
 package com.sweetk.cso.repository.custom.impl;
 
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sweetk.cso.dto.ProductListReq;
+import com.sweetk.cso.dto.ProductListRes;
+import com.sweetk.cso.dto.StaffListReq;
+import com.sweetk.cso.dto.StaffListRes;
+import com.sweetk.cso.dto.common.SearchReqDto;
 import com.sweetk.cso.entity.Product;
 import com.sweetk.cso.repository.custom.ProductCustomRepository;
 import jakarta.persistence.EntityManager;
@@ -16,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.sweetk.cso.entity.QAdm.adm;
 import static com.sweetk.cso.entity.QProduct.product;
 
 @Log4j2
@@ -25,6 +33,45 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final EntityManager entityManager;
+
+    @Override
+    public Page<ProductListRes> getListBySearchDtoAndPageable(ProductListReq req, Pageable pageable) {
+        log.info("### getListBySearchDtoAndPageable");
+
+        List<ProductListRes> list = jpaQueryFactory
+                .select(Projections.fields(ProductListRes.class,
+                        product.proNo,
+                        product.proCd,
+                        product.proNm,
+                        product.proDt,
+                        product.hqStorage,
+                        product.firstStorage,
+                        product.regId,
+                        product.regDt
+                )).from(product)
+                .where(searchByTextInput(req))
+                .orderBy(product.proNo.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long totalCount = jpaQueryFactory.select(product.count())
+                .from(product)
+                .where(searchByTextInput(req))
+                .fetchOne();
+
+        return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
+    }
+
+    private BooleanExpression searchByTextInput(SearchReqDto req){
+        BooleanExpression searchExpression = null;
+        String searchWord = req.getSearchWord();
+
+        if(!searchWord.equals("")) {
+            searchExpression = product.proNm.contains(searchWord);
+        }
+        return searchExpression;
+    }
 
     @Override
     public List<Product> findAll() {

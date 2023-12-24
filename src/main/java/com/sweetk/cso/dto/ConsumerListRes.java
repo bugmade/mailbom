@@ -16,8 +16,8 @@ public class ConsumerListRes {
     private String telNo;
     private String email;
     private String csmDt;
-    private String RegId;
-    private String RegDt;
-    private String ModId;
-    private String ModDt;
+    private String regId;
+    private String regDt;
+    private String modId;
+    private String modDt;
 }

@@ -1,5 +1,9 @@
 package com.sweetk.cso.repository.custom;
 
+import com.sweetk.cso.dto.ProductListReq;
+import com.sweetk.cso.dto.ProductListRes;
+import com.sweetk.cso.dto.StaffListReq;
+import com.sweetk.cso.dto.StaffListRes;
 import com.sweetk.cso.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProductCustomRepository {
+    Page<ProductListRes> getListBySearchDtoAndPageable(ProductListReq req, Pageable pageable);
 
     List<Product> findAll();
 
