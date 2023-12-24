@@ -171,7 +171,7 @@
             <!--팝업 버튼 영역-->
             <button class="save_btn_j" onclick="createStaff()">저장</button>
             <button class="close_btn_j" onclick="hideStaffPopup()">닫기</button>
-            <%--            <button class="btn_close" onclick="hideStaffPopup()">CLOSE</button>--%>
+<%--            <button class="btn_close" onclick="hideStaffPopup()">CLOSE</button>--%>
             <div class="dimmed"></div>
         </div>
     </div>

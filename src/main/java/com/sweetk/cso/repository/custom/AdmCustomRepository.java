@@ -1,5 +1,9 @@
 package com.sweetk.cso.repository.custom;
 
+import com.sweetk.cso.dto.StaffListReq;
+import com.sweetk.cso.dto.StaffListRes;
+import com.sweetk.cso.dto.StockListReq;
+import com.sweetk.cso.dto.StockListRes;
 import com.sweetk.cso.entity.Adm;
 import com.sweetk.cso.entity.Stock;
 import org.springframework.data.domain.Page;
@@ -9,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface AdmCustomRepository {
+
+    Page<StaffListRes> getListBySearchDtoAndPageable(StaffListReq req, Pageable pageable);
 
     List<Adm> findAllStaff();
 

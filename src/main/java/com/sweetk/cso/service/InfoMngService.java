@@ -1,5 +1,9 @@
 package com.sweetk.cso.service;
 
+import com.sweetk.cso.dto.StaffListReq;
+import com.sweetk.cso.dto.StaffListRes;
+import com.sweetk.cso.dto.StockListReq;
+import com.sweetk.cso.dto.StockListRes;
 import com.sweetk.cso.entity.Adm;
 import com.sweetk.cso.entity.Consumer;
 import com.sweetk.cso.entity.Product;
@@ -8,8 +12,11 @@ import com.sweetk.cso.repository.ConsumerRepository;
 import com.sweetk.cso.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -53,6 +60,11 @@ public class InfoMngService {
     }
 
     //############################### 직원 정보 관리 #################################
+    @Transactional(readOnly = true)
+    public Page<StaffListRes> getStaffList(StaffListReq req, Pageable pageable) {
+        return admRepository.getListBySearchDtoAndPageable(req, pageable);
+    }
+
     public List<Adm> readStaffList() {
         log.info("### readStaffList");
         return admRepository.findAllStaff();

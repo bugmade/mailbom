@@ -1,6 +1,10 @@
 package com.sweetk.cso.controller;
 
 import com.querydsl.jpa.impl.JPADeleteClause;
+import com.sweetk.cso.dto.StaffListReq;
+import com.sweetk.cso.dto.StaffListRes;
+import com.sweetk.cso.dto.StockListReq;
+import com.sweetk.cso.dto.StockListRes;
 import com.sweetk.cso.dto.pharmComp.PharmCompListReq;
 import com.sweetk.cso.entity.Adm;
 import com.sweetk.cso.entity.Consumer;
@@ -9,6 +13,8 @@ import com.sweetk.cso.service.InfoMngService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -84,6 +90,26 @@ public class InfoMngController {
     @GetMapping("/staff")
     public String staff(PharmCompListReq req, Model model)
     {
+        return "/web/infoMng/staff";
+    }
+
+    @GetMapping("/staff1")
+    public String staff1(StaffListReq req, Model model) {
+        Page<StaffListRes> result = infoMngService.getStaffList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
+        model.addAttribute("result", result);
+
+//        log.info("### stock : get select list vvv ");
+//
+//        List<Product> product = infoMngService.readProductList();
+//        log.info(product);
+//        model.addAttribute("product", product);
+//
+//        List<Consumer> consumer = infoMngService.readConsumerList();
+//        log.info(consumer);
+//        model.addAttribute("consumer", consumer);
+//
+//        log.info("### stock : get select list ^^^ ");
+
         return "/web/infoMng/staff";
     }
 

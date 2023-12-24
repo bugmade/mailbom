@@ -1,6 +1,13 @@
 package com.sweetk.cso.repository.custom.impl;
 
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sweetk.cso.dto.StaffListReq;
+import com.sweetk.cso.dto.StaffListRes;
+import com.sweetk.cso.dto.StockListReq;
+import com.sweetk.cso.dto.StockListRes;
+import com.sweetk.cso.dto.common.SearchReqDto;
 import com.sweetk.cso.entity.Adm;
 import com.sweetk.cso.entity.Product;
 import com.sweetk.cso.entity.Stock;
@@ -14,11 +21,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.sweetk.cso.entity.QConsumer.consumer;
 import static com.sweetk.cso.entity.QProduct.product;
 import static com.sweetk.cso.entity.QStock.stock;
 import static com.sweetk.cso.entity.QAdm.adm;
@@ -30,6 +39,78 @@ public class AdmCustomRepositoryImpl implements AdmCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final EntityManager entityManager;
+
+    @Override
+    public Page<StaffListRes> getListBySearchDtoAndPageable(StaffListReq req, Pageable pageable) {
+        log.info("### getListBySearchDtoAndPageable");
+
+        List<StaffListRes> list = jpaQueryFactory
+                .select(Projections.fields(StaffListRes.class,
+                        adm.admNo,
+                        adm.admId,
+                        adm.admPw,
+                        adm.admNm,
+                        adm.email,
+                        adm.telNo,
+                        adm.regId,
+                        adm.regDt
+                )).from(adm)
+//                .leftJoin(product)
+//                .on(stock.proCd.eq(product.proCd))
+//                .leftJoin(consumer)
+//                .on(stock.csmCd.eq(consumer.csmCd))
+                .where(searchByTextInput(req))
+                .orderBy(adm.admNo.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long totalCount = jpaQueryFactory.select(adm.count())
+                .from(adm)
+//                .leftJoin(product)
+//                .on(stock.proCd.eq(product.proCd))
+//                .leftJoin(consumer)
+//                .on(stock.csmCd.eq(consumer.csmCd))
+                .where(searchByTextInput(req))
+                .fetchOne();
+
+        return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
+    }
+
+    private BooleanExpression searchByTextInput(SearchReqDto req){
+        BooleanExpression searchExpression = null;
+        String searchWord = req.getSearchWord();
+
+        if(!searchWord.equals("")) {
+            searchExpression = adm.admNm.contains(searchWord);
+        }
+
+//        String inOut = req.getInOut();
+//        String outWy = req.getOutWy();
+//        String searchWord = req.getSearchWord();
+//
+//        if (!StringUtils.hasText(inOut))    inOut = "ALL";
+//        if (!StringUtils.hasText(outWy))    outWy = "ALL";
+//        if (!StringUtils.hasText(searchWord))    searchWord = "";
+//
+//        log.info("### searchByTextInput [inOut:" + inOut + ", outWy:" + outWy + ", searchWord:" + searchWord + "]");
+
+        // 입고일때
+//        if (inOut.equals("IN")) {
+//            searchExpression = stock.inOut.eq(inOut);
+//        }
+//        else if (inOut.equals("OUT")) {    // 출고일때
+//            if (!outWy.equals("ALL")) {
+//                if(outWy.equals("BTOB") && !searchWord.equals(""))
+//                    searchExpression = stock.inOut.eq(inOut).and(stock.outWy.eq(outWy)).and(consumer.csmNm.contains(searchWord));
+//                else
+//                    searchExpression = stock.inOut.eq(inOut).and(stock.outWy.eq(outWy));
+//            } else {
+//                searchExpression = stock.inOut.eq(inOut);
+//            }
+//        }
+        return searchExpression;
+    }
 
     @Override
     public List<Adm> findAllStaff() {
