@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -67,7 +68,7 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
         BooleanExpression searchExpression = null;
         String searchWord = req.getSearchWord();
 
-        if(!searchWord.equals("")) {
+        if(StringUtils.hasText(searchWord)) {
             searchExpression = product.proNm.contains(searchWord);
         }
         return searchExpression;
@@ -172,5 +173,4 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
 
         return new PageImpl<>(productList, pageable, totCnt != null ? totCnt : 0L);
     }
-
 }

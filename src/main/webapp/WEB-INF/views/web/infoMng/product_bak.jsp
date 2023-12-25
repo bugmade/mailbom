@@ -108,129 +108,29 @@
                 <h3 class="cont_tit">
                     제품정보관리
                 </h3>
-                <div class="white_box bd_gr">
-                    <form:form id="searchForm" name="searchForm" method="get" action="/infoMng/product" modelAttribute="productListReq">
-                        <table class="gray_table half_table">
-                            <colgroup>
-                                <col width="16.5%">
-                                <col width="*">
-                                <col width="16.5%">
-                                <col width="*">
-                            </colgroup>
-                            <tbody>
-                            <tr>
-                                <th>
-                                    <label for="searchWord">검색조건</label>
-                                </th>
-                                <td colspan="3" class="fz0">
-                                    <form:input type="text" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="제품명 검색어"/>
-                                    <button id="searchBtn" class="search_btn">
-                                        검색
-                                        <span class="ir_so">검색버튼</span>
-                                    </button>
-                                    <button class="init_btn_j" onclick="doInit()">초기화</button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </form:form>
+                <div class="main_wrap">
+                    <button class="register_btn_j" onclick="showProductPopup('CREATE')">제품등록</button>
+                    <table class="gray_table half_table">
+                        <thead>
+                        <tr>
+                            <th style="text-align: center;">제품코드</th>
+                            <th style="text-align: center;">제품명</th>
+                            <th style="text-align: center;">제품설명</th>
+                            <th style="text-align: center;">본사창고재고(HQ)</th>
+                            <th style="text-align: center;">위탁창고1재고(FIRST)</th>
+<%--                            <th>등록일</th>--%>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="dynamicTbody">
+                    </table>
                 </div>
-                <!-- //white_box -->
-
-                <c:set value="${result.getTotalElements()}" var="totalCount"/>
-                <%--                <div class="clgraph_info clearfix mb20">--%>
-                <%--                    <h4 class="wb_tit fl_l">--%>
-                <%--                        총 <span class="col_acc">${totalCount}</span> 건--%>
-                <%--                    </h4>--%>
-                <%--                </div>--%>
-                <div style="margin-bottom: 5px; margin-top: 5px;">
-                    총 <span >${totalCount}</span> 건
-                    <button class="input_btn_j" onclick="showProductPopup('CREATE')">등록</button>
-                    <%--                    <button class="excel_btn_j" onclick="excelDownload()">엑셀</button>--%>
-                </div>
-
-                <table class="list_table">
-                    <colgroup>
-                        <col width="10%">
-                        <col width="25%">
-                        <col width="25%">
-                        <col width="10%%">
-                        <col width="10%">
-                        <col width="*">
-                    </colgroup>
-                    <thead>
-                    <tr>
-                        <th>제품코드</th>
-                        <th>제품명</th>
-                        <th>제품설명</th>
-                        <th>본사창고재고</th>
-                        <th>위탁창고1재고</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:choose>
-                        <c:when test="${totalCount == 0}">
-                            <td colspan="9" class="list_none">등록된 내역이 없습니다.</td>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="idx" value="${totalCount - ((result.getNumber()) * result.getSize())}"/>
-                            <c:forEach var="row" items="${result.getContent()}" varStatus="status">
-                                <tr>
-                                    <td>${row.proCd}</td>
-                                    <td>${row.proNm}</td>
-                                    <td>${row.proDt}</td>
-                                    <td>${row.hqStorage}</td>
-                                    <td>${row.firstStorage}</td>
-                                    <td>
-                                        <button class="delete_btn_j" onclick="deleteProduct('${row.proCd}')">삭제</button>
-                                        <button class="update_btn_j" onclick="updateModal('${row.proCd}')">수정</button>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                        </c:otherwise>
-                    </c:choose>
-                    </tbody>
-                </table>
-                <!-- //white_box -->
-
-                <div class="pagination_area">
-                    <form:form modelAttribute="productListReq">
-                        <form:select path="pageSize" cssClass="select_form">
-                            <form:option value="10">10개 씩보기</form:option>
-                            <form:option value="50">50개 씩보기</form:option>
-                            <form:option value="100">100개씩 보기</form:option>
-                        </form:select>
-                    </form:form>
-                    <!-- //selsect -->
-
-                    <c:if test="${totalCount > 0}">
-                        <ul class="pagination" id="pagination-number"></ul>
-                    </c:if>
-                    <!-- //pagination -->
-
-                    <%--                페이징 중앙 정렬을 위해 --%>
-                    <div>(C)MAILBOM Inc.</div>
-                </div><!--//pagination_area-->
             </div>
             <!-- //contwrap -->
 
-            <%-- paging 태그에서 페이지 번호를 클릭했을때 자바스크립트 함수로 실행하게될 form을 작성한다(읽기전용 form임)--%>
-            <form:form id="pagingForm" name="pagingForm" method="get" modelAttribute="productListReq">
-                <%--                <form:hidden id="pagingSearchType6" path="searchType"/>--%>
-                <%--                <form:hidden id="pagingSearchType6" path="inOut"/>--%>
-                <%--                <form:hidden id="pagingSearchType8" path="outWy"/>--%>
-                <form:hidden id="pagingSearchType7" path="searchWord"/>
-                <form:hidden id="pagingCurrentPageNo" path="pageNo"/>
-                <form:hidden id="pagingRecordCountPerPage" path="pageSize"/>
-            </form:form>
         </div>
         <%@ include file="../../layout/footer.jsp" %>
     </div>
-    <!-- //container -->
-    <button class="btn_top">
-        <span>맨 위로</span>
-    </button>
 
     <!-- 팝업 -->
     <div class="layer_popup" id="layer_popup" style="display: none;">
@@ -296,57 +196,65 @@
     const DO_UPDATE = '2';
 
     $(document).ready(function(){
-        console.log(${result.getTotalPages()}); //JSTL
-        console.log(${result.getNumber()}); //JSTL
-
-        $('#pagination-number').twbsPagination({
-            totalPages: <c:out value="${result.getTotalPages()}"/>,
-            visiblePages: 10,
-            startPage: <c:out value="${result.getNumber()+1}"/>,
-            first: " ",
-            prev: " ",
-            next: " ",
-            last: " ",
-            prevClass: 'pg_ctrl pg_prev',
-            nextClass: 'pg_ctrl pg_next',
-            firstClass: 'pg_ctrl pg_first',
-            lastClass: 'pg_ctrl pg_last',
-            initiateStartPageClick: false,
-            onPageClick: function (event, page) {
-                go_page(page);
-            }
-        });
-
-        $("#searchBtn").on("click", (e) => {
-            e.preventDefault();
-            $("#pagingCurrentPageNo").val(1);
-            $("#searchForm").submit();
-        });
-
-        $("#searchWord").on("keydown", (e) => {
-            if(e.keyCode == 13){
-                $("#searchBtn").trigger("click");
-                return false;
-            }
-        });
-
-        $("#pageSize").change(function() {
-            $("#pagingForm input[name=pageSize]").val($(this).val());
-            $("#pagingForm input[name=pageNo]").val(1);
-            $("#pagingForm")[0].submit();
-        });
-        //readProductList();
+        readProductList();
     })
 
-    const go_page = (pageno) => {
-        $("#pagingCurrentPageNo").val(pageno);
-        $("#pagingForm")[0].submit();
-    }
+    // 제품리스트 가져오기 - 전통적인 방법
+    readProductList = function() {
+        $.ajax({
+            dataType : "html",
+            type : "GET",
+            url : "/infoMng/api/readProductList",
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data : {"test" : "1" },   // query string
+            success : function(data) {
+                console.log('getProductListClassic success');
+                console.log(data);              // 얘는 string, 서버에서 애초부터 JSON 객체로 반환하는 방법은???
+                console.log(typeof data);       //string
+                if(typeof data !== 'object') data = JSON.parse(data);        // JSON 문자열을 JavaScript 객체로 변환
+                console.log(typeof data);       //object
+                // JSON은 JavaScript Object Notation
+                // JSON.stringify(): JavaScript 객체를 JSON 문자열로 변환
+                console.log(data);
+                console.log(data[0]);
+                console.log(data[1]);
 
-    // 검색조건 초기화
-    function doInit() {
-        $("#searchWord").val("");
-        location.reload();
+                let html = '';
+
+                // @@@ 전통적인 방법
+                // for (let i = 0; i < data.length; i++) {
+                //     console.log('id:', data[i].addr, 'name:', data[i].num);
+                //     html += '<tr>';
+                //     html += '<td>'+data[i].addr+'</td>';
+                //     html += '<td>'+data[i].num+'</td>';
+                //     html += '<td>'+data[i].pw+'</td>';
+                //     html += '<td>'+data[i].tel+'</td>';
+                //     html += '</tr>';
+                // }
+
+                data.forEach(function(obj, idx) {
+                    console.log(idx, obj.proNo, obj.proCd);
+                    html += '<tr>';
+                    html += '<td style="text-align: center;">'+obj.proCd+'</td>';
+                    html += '<td style="text-align: center;">'+obj.proNm+'</td>';
+                    html += '<td style="text-align: center;">'+obj.proDt+'</td>';
+                    html += '<td style="text-align: center;">'+obj.hqStorage+'</td>';
+                    html += '<td style="text-align: center;">'+obj.firstStorage+'</td>';
+                    // html += '<td>'+obj.regDt+'</td>';
+                    html += '<td>' +
+                            '<button class="delete_btn_j" onclick="deleteProduct(\''+obj.proCd+'\')">삭제</button>' +
+                            '<button class="update_btn_j" onclick="updateModal(\''+obj.proCd+'\')">수정</button>' +
+                            '</td>';
+                    html += '</tr>';
+                });
+
+                $("#dynamicTbody").empty();
+                $("#dynamicTbody").append(html);
+            },
+            error: function(data, status, err) {
+                console.log('error forward : ' + data);
+            }
+        });
     }
 
     /**

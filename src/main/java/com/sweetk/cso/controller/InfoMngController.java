@@ -28,15 +28,13 @@ public class InfoMngController {
     private final InfoMngService infoMngService;
 
     //############################### 제품 정보 관리 #################################
-    @GetMapping("/product")
-    public String list(PharmCompListReq req, Model model) {
-        //Page<PharmCompListRes> result = pharmCompService.getList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
-        //model.addAttribute("result", result);
-        return "/web/infoMng/product";
-    }
+//    @GetMapping("/product")
+//    public String list(PharmCompListReq req, Model model) {
+//        return "/web/infoMng/product";
+//    }
 
-    @GetMapping("/product1")
-    public String product1(ProductListReq req, Model model) {
+    @GetMapping("/product")
+    public String product(ProductListReq req, Model model) {
         Page<ProductListRes> result = infoMngService.getProductList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
         model.addAttribute("result", result);
         return "/web/infoMng/product";
