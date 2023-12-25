@@ -1,8 +1,10 @@
 package com.sweetk.cso.repository.custom.impl;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sweetk.cso.dto.StockListRes;
+import com.sweetk.cso.dto.*;
+import com.sweetk.cso.dto.common.SearchReqDto;
 import com.sweetk.cso.entity.Consumer;
 import com.sweetk.cso.entity.Product;
 import com.sweetk.cso.entity.Stock;
@@ -16,12 +18,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import static com.sweetk.cso.entity.QConsumer.consumer;
+import static com.sweetk.cso.entity.QProduct.product;
 import static com.sweetk.cso.entity.QStock.stock;
 
 @Log4j2
@@ -31,6 +35,48 @@ public class ConsumerCustomRepositoryImpl implements ConsumerCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final EntityManager entityManager;
+
+    @Override
+    public Page<ConsumerListRes> getListBySearchDtoAndPageable(ConsumerListReq req, Pageable pageable) {
+        log.info("### getListBySearchDtoAndPageable");
+
+        List<ConsumerListRes> list = jpaQueryFactory
+                .select(Projections.fields(ConsumerListRes.class,
+                        consumer.csmNo,
+                        consumer.csmCd,
+                        consumer.csmNm,
+                        consumer.bizNo,
+                        consumer.addr,
+                        consumer.picNm,
+                        consumer.telNo,
+                        consumer.email,
+                        consumer.csmDt,
+                        consumer.regId,
+                        consumer.regDt
+                )).from(consumer)
+                .where(searchByTextInput(req))
+                .orderBy(consumer.csmNo.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long totalCount = jpaQueryFactory.select(consumer.count())
+                .from(consumer)
+                .where(searchByTextInput(req))
+                .fetchOne();
+
+        return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
+    }
+
+    private BooleanExpression searchByTextInput(SearchReqDto req){
+        BooleanExpression searchExpression = null;
+        String searchWord = req.getSearchWord();
+
+        if(StringUtils.hasText(searchWord)) {
+            searchExpression = consumer.csmNm.contains(searchWord);
+        }
+        return searchExpression;
+    }
 
     @Override
     public List<Consumer> findAllConsumer() {

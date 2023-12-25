@@ -97,6 +97,10 @@ public class InfoMngService {
     }
 
     //############################### 고객 정보 관리 #################################
+    @Transactional(readOnly = true)
+    public Page<ConsumerListRes> getConsumerList(ConsumerListReq req, Pageable pageable) {
+        return consumerRepository.getListBySearchDtoAndPageable(req, pageable);
+    }
     public List<Consumer> readConsumerList() {
         log.info("### readConsumerList");
         return consumerRepository.findAllConsumer();

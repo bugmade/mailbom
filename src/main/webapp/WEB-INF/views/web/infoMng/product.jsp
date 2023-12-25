@@ -154,7 +154,7 @@
                         <col width="10%">
                         <col width="25%">
                         <col width="25%">
-                        <col width="10%%">
+                        <col width="10%">
                         <col width="10%">
                         <col width="*">
                     </colgroup>
@@ -335,7 +335,6 @@
             $("#pagingForm input[name=pageNo]").val(1);
             $("#pagingForm")[0].submit();
         });
-        //readProductList();
     })
 
     const go_page = (pageno) => {

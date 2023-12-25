@@ -151,9 +151,16 @@ public class InfoMngController {
     }
 
     //############################### 고객 정보 관리 #################################
+//    @GetMapping("/consumer")
+//    public String consumer(PharmCompListReq req, Model model)
+//    {
+//        return "/web/infoMng/consumer";
+//    }
+
     @GetMapping("/consumer")
-    public String consumer(PharmCompListReq req, Model model)
-    {
+    public String consumer(ConsumerListReq req, Model model) {
+        Page<ConsumerListRes> result = infoMngService.getConsumerList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
+        model.addAttribute("result", result);
         return "/web/infoMng/consumer";
     }
 
