@@ -55,10 +55,6 @@ public class AdmCustomRepositoryImpl implements AdmCustomRepository {
                         adm.regId,
                         adm.regDt
                 )).from(adm)
-//                .leftJoin(product)
-//                .on(stock.proCd.eq(product.proCd))
-//                .leftJoin(consumer)
-//                .on(stock.csmCd.eq(consumer.csmCd))
                 .where(searchByTextInput(req))
                 .orderBy(adm.admNo.desc())
                 .offset(pageable.getOffset())
@@ -67,10 +63,6 @@ public class AdmCustomRepositoryImpl implements AdmCustomRepository {
 
         Long totalCount = jpaQueryFactory.select(adm.count())
                 .from(adm)
-//                .leftJoin(product)
-//                .on(stock.proCd.eq(product.proCd))
-//                .leftJoin(consumer)
-//                .on(stock.csmCd.eq(consumer.csmCd))
                 .where(searchByTextInput(req))
                 .fetchOne();
 
@@ -81,34 +73,10 @@ public class AdmCustomRepositoryImpl implements AdmCustomRepository {
         BooleanExpression searchExpression = null;
         String searchWord = req.getSearchWord();
 
-        if(!searchWord.equals("")) {
+        if(StringUtils.hasText(searchWord)) {
             searchExpression = adm.admNm.contains(searchWord);
         }
 
-//        String inOut = req.getInOut();
-//        String outWy = req.getOutWy();
-//        String searchWord = req.getSearchWord();
-//
-//        if (!StringUtils.hasText(inOut))    inOut = "ALL";
-//        if (!StringUtils.hasText(outWy))    outWy = "ALL";
-//        if (!StringUtils.hasText(searchWord))    searchWord = "";
-//
-//        log.info("### searchByTextInput [inOut:" + inOut + ", outWy:" + outWy + ", searchWord:" + searchWord + "]");
-
-        // 입고일때
-//        if (inOut.equals("IN")) {
-//            searchExpression = stock.inOut.eq(inOut);
-//        }
-//        else if (inOut.equals("OUT")) {    // 출고일때
-//            if (!outWy.equals("ALL")) {
-//                if(outWy.equals("BTOB") && !searchWord.equals(""))
-//                    searchExpression = stock.inOut.eq(inOut).and(stock.outWy.eq(outWy)).and(consumer.csmNm.contains(searchWord));
-//                else
-//                    searchExpression = stock.inOut.eq(inOut).and(stock.outWy.eq(outWy));
-//            } else {
-//                searchExpression = stock.inOut.eq(inOut);
-//            }
-//        }
         return searchExpression;
     }
 

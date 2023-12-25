@@ -91,14 +91,14 @@ public class InfoMngController {
     }
 
     //############################### 직원 정보 관리 #################################
-    @GetMapping("/staff")
-    public String staff(PharmCompListReq req, Model model)
-    {
-        return "/web/infoMng/staff";
-    }
+//    @GetMapping("/staff")
+//    public String staff(PharmCompListReq req, Model model)
+//    {
+//        return "/web/infoMng/staff";
+//    }
 
-    @GetMapping("/staff1")
-    public String staff1(StaffListReq req, Model model) {
+    @GetMapping("/staff")
+    public String staff(StaffListReq req, Model model) {
         Page<StaffListRes> result = infoMngService.getStaffList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
         model.addAttribute("result", result);
         return "/web/infoMng/staff";

@@ -100,7 +100,6 @@
     <link rel="shortcut icon" href="/resources/img/favicon.ico" type="image/png">
 </head>
 <body>
-<div class="wrap">
     <div class="container">
         <%@ include file="../../layout/header.jsp" %>
         <div class="container_inner">
@@ -108,28 +107,129 @@
                 <h3 class="cont_tit">
                     직원정보관리
                 </h3>
-                <div class="main_wrap">
-                    <button class="register_btn_j" onclick="showStaffPopup('CREATE')">직원등록</button>
-                    <table class="gray_table half_table">
-                        <thead>
-                        <tr>
-                            <th>아이디</th>
-                            <th>직원성명</th>
-                            <th>이메일</th>
-                            <th>전화번호</th>
-                            <th>등록일</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody id="dynamicTbody">
-                    </table>
+                <div class="white_box bd_gr">
+                    <form:form id="searchForm" name="searchForm" method="get" action="/infoMng/staff" modelAttribute="staffListReq">
+                        <table class="gray_table half_table">
+                            <colgroup>
+                                <col width="16.5%">
+                                <col width="*">
+                                <col width="16.5%">
+                                <col width="*">
+                            </colgroup>
+                            <tbody>
+                            <tr>
+                                <th>
+                                    <label for="searchWord">검색조건</label>
+                                </th>
+                                <td colspan="3" class="fz0">
+                                    <form:input type="text" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="직원성명 검색어"/>
+                                    <button id="searchBtn" class="search_btn">
+                                        검색
+                                        <span class="ir_so">검색버튼</span>
+                                    </button>
+                                    <button class="init_btn_j" onclick="doInit()">초기화</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </form:form>
                 </div>
+                <!-- //white_box -->
+
+                <c:set value="${result.getTotalElements()}" var="totalCount"/>
+                <%--                <div class="clgraph_info clearfix mb20">--%>
+                <%--                    <h4 class="wb_tit fl_l">--%>
+                <%--                        총 <span class="col_acc">${totalCount}</span> 건--%>
+                <%--                    </h4>--%>
+                <%--                </div>--%>
+                <div style="margin-bottom: 5px; margin-top: 5px;">
+                    총 <span >${totalCount}</span> 건
+                    <button class="input_btn_j" onclick="showStaffPopup('CREATE')">등록</button>
+<%--                    <button class="excel_btn_j" onclick="excelDownload()">엑셀</button>--%>
+                </div>
+
+                <table class="list_table">
+                    <colgroup>
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="15%%">
+                        <col width="15%">
+                        <col width="*">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>아이디</th>
+                        <th>직원성명</th>
+                        <th>이메일</th>
+                        <th>전화번호</th>
+                        <th>등록일</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:choose>
+                        <c:when test="${totalCount == 0}">
+                            <td colspan="9" class="list_none">등록된 내역이 없습니다.</td>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="idx" value="${totalCount - ((result.getNumber()) * result.getSize())}"/>
+                            <c:forEach var="row" items="${result.getContent()}" varStatus="status">
+                                <tr>
+                                    <td>${row.admId}</td>
+                                    <td>${row.admNm}</td>
+                                    <td>${row.email}</td>
+                                    <td>${row.telNo}</td>
+                                    <td>${row.regDt}</td>
+                                    <td>
+                                        <button class="delete_btn_j" onclick="deleteStaff('${row.admId}')">삭제</button>
+                                        <button class="update_btn_j" onclick="updateModal('${row.admId}')">수정</button>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
+                    </tbody>
+                </table>
+                <!-- //white_box -->
+
+                <div class="pagination_area">
+                    <form:form modelAttribute="staffListReq">
+                        <form:select path="pageSize" cssClass="select_form">
+                            <form:option value="10">10개 씩보기</form:option>
+                            <form:option value="50">50개 씩보기</form:option>
+                            <form:option value="100">100개씩 보기</form:option>
+                        </form:select>
+                    </form:form>
+                    <!-- //selsect -->
+
+                    <c:if test="${totalCount > 0}">
+                        <ul class="pagination" id="pagination-number"></ul>
+                    </c:if>
+                    <!-- //pagination -->
+
+                    <%--                페이징 중앙 정렬을 위해 --%>
+                    <div>(C)MAILBOM Inc.</div>
+                </div><!--//pagination_area-->
             </div>
             <!-- //contwrap -->
 
+            <%-- paging 태그에서 페이지 번호를 클릭했을때 자바스크립트 함수로 실행하게될 form을 작성한다(읽기전용 form임)--%>
+            <form:form id="pagingForm" name="pagingForm" method="get" modelAttribute="staffListReq">
+                <%--                <form:hidden id="pagingSearchType6" path="searchType"/>--%>
+<%--                <form:hidden id="pagingSearchType6" path="inOut"/>--%>
+<%--                <form:hidden id="pagingSearchType8" path="outWy"/>--%>
+                <form:hidden id="pagingSearchType7" path="searchWord"/>
+                <form:hidden id="pagingCurrentPageNo" path="pageNo"/>
+                <form:hidden id="pagingRecordCountPerPage" path="pageSize"/>
+            </form:form>
         </div>
         <%@ include file="../../layout/footer.jsp" %>
     </div>
+    <!-- //container -->
+    <button class="btn_top">
+        <span>맨 위로</span>
+    </button>
 
     <!-- 팝업 -->
     <div class="layer_popup" id="layer_popup" style="display: none;">
@@ -188,60 +288,56 @@
     const DO_UPDATE = '2';
 
     $(document).ready(function(){
-        readStaffList();
-    })
+        console.log(${result.getTotalPages()}); //JSTL
+        console.log(${result.getNumber()}); //JSTL
 
-    // 제품리스트 가져오기 - 전통적인 방법
-    readStaffList = function() {
-        $.ajax({
-            dataType : "html",
-            type : "GET",
-            url : "/infoMng/api/readStaffList",
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            data : {"test" : "1" },   // query string
-            success : function(data) {
-                console.log('getStaffListClassic success');
-                console.log(data);              // 얘는 string, 서버에서 애초부터 JSON 객체로 반환하는 방법은???
-                console.log(typeof data);       //string
-                if(typeof data !== 'object') data = JSON.parse(data);        // JSON 문자열을 JavaScript 객체로 변환
-                console.log(typeof data);       //object
-                // JSON은 JavaScript Object Notation
-                // JSON.stringify(): JavaScript 객체를 JSON 문자열로 변환
-                console.log(data);
-                console.log(data[0]);
-                console.log(data[1]);
-
-                let html = '';
-                data.forEach(function(obj, idx) {
-                    html += '<tr>';
-                    html += '<td>'+obj.admId+'</td>';
-                    html += '<td>'+obj.admNm+'</td>';
-                    html += '<td>'+obj.email+'</td>';
-                    html += '<td>'+obj.telNo+'</td>';
-                    html += '<td>'+obj.regDt.substring(0, 10)+'</td>';
-                    if(obj.admId === 'admin') {
-                        html += '<td>' +
-                            //'<input type="button" onclick="updateModal(\'' + obj.admId + '\')" value="수정">' +
-                            '<button class="update_btn_j" onclick="updateModal(\''+obj.admId+'\')">수정</button>' +
-                            '</td>';
-                    } else {
-                        html += '<td>' +
-                            //'<input type="button" onclick="deleteStaff(\'' + obj.admId + '\')" value="삭제">' +
-                            '<button class="delete_btn_j" onclick="deleteStaff(\''+obj.admId+'\')">삭제</button>' +
-                            //'<input type="button" onclick="updateModal(\'' + obj.admId + '\')" value="수정" style="margin-left: 5px">' +
-                            '<button class="update_btn_j" onclick="updateModal(\''+obj.admId+'\')">수정</button>' +
-                            '</td>';
-                    }
-                    html += '</tr>';
-                });
-
-                $("#dynamicTbody").empty();
-                $("#dynamicTbody").append(html);
-            },
-            error: function(data, status, err) {
-                console.log('error forward : ' + data);
+        $('#pagination-number').twbsPagination({
+            totalPages: <c:out value="${result.getTotalPages()}"/>,
+            visiblePages: 10,
+            startPage: <c:out value="${result.getNumber()+1}"/>,
+            first: " ",
+            prev: " ",
+            next: " ",
+            last: " ",
+            prevClass: 'pg_ctrl pg_prev',
+            nextClass: 'pg_ctrl pg_next',
+            firstClass: 'pg_ctrl pg_first',
+            lastClass: 'pg_ctrl pg_last',
+            initiateStartPageClick: false,
+            onPageClick: function (event, page) {
+                go_page(page);
             }
         });
+
+        $("#searchBtn").on("click", (e) => {
+            e.preventDefault();
+            $("#pagingCurrentPageNo").val(1);
+            $("#searchForm").submit();
+        });
+
+        $("#searchWord").on("keydown", (e) => {
+            if(e.keyCode == 13){
+                $("#searchBtn").trigger("click");
+                return false;
+            }
+        });
+
+        $("#pageSize").change(function() {
+            $("#pagingForm input[name=pageSize]").val($(this).val());
+            $("#pagingForm input[name=pageNo]").val(1);
+            $("#pagingForm")[0].submit();
+        });
+    })
+
+    const go_page = (pageno) => {
+        $("#pagingCurrentPageNo").val(pageno);
+        $("#pagingForm")[0].submit();
+    }
+
+    // 검색조건 초기화
+    function doInit() {
+        $("#searchWord").val("");
+        location.reload();
     }
 
     /**
