@@ -529,11 +529,12 @@
         return obj;
     }
 
-    // 서버에 재고 등록하기
+    // 재고 입출고
     function createStock(){
         console.log('createStock');
-        if($('#io_cnt').val() < 1) {
-            alert("수량은 1개 이상 입력하세요");
+        let ioCnt = $('#io_cnt').val();
+        if(CREATE_MODE !== CREATE_TRANSFER && ioCnt < 1) {
+            alert("수량(" + ioCnt + ")은 1개 이상 입력하세요");
             $('#io_cnt').focus();
             return;
         }
@@ -558,6 +559,12 @@
             msg += params['io_cnt'];
             msg += "개 본사창고에 입고 처리할까요?";
         } else if(CREATE_MODE === CREATE_OUTPUT) {
+            let restCnt = params['rest_cnt'];
+            if(parseInt(ioCnt) > parseInt(restCnt)) {
+                alert("수량("+ ioCnt +")이 잔여수량("+ restCnt +")보다 큽니다");
+                $('#io_cnt').focus();
+                return;
+            }
             msg = "[";
             msg += pro_nm;
             msg += "] ";
@@ -695,12 +702,13 @@
             $("#in_out").val("OUT");
 
             html = proNm;
-            html += '<input type="hidden" name="pro_cd" id="pro_cd" value="'+proNm+'">';
+            html += '<input type="hidden" name="pro_cd" id="pro_cd" value="'+proCd+'">';
             html += '<input type="hidden" name="sto_no" id="sto_no" value="'+stoNo+'">';
             $("#pro_cd_td_content").html(html);
             html = lotNo;
             $("#lot_no_td_content").html(html);
             html = expDt + ' [잔여수량: ' + restCnt +']';
+            html += '<input type="hidden" name="rest_cnt" id="rest_cnt" value="'+restCnt+'">';
             $("#exp_dt_td_content").html(html);
             html ='<input type="number" pattern="[0-9]+" name="io_cnt" id="io_cnt" style="width: 98%">';
             $("#io_cnt_td_content").html(html);
@@ -736,7 +744,7 @@
             $("#in_out").val("TRANSFER");
 
             html = proNm;
-            html += '<input type="hidden" name="pro_cd" id="pro_cd" value="'+proNm+'">';
+            html += '<input type="hidden" name="pro_cd" id="pro_cd" value="'+proCd+'">';
             html += '<input type="hidden" name="sto_no" id="sto_no" value="'+stoNo+'">';
             $("#pro_cd_td_content").html(html);
             html = lotNo;
@@ -744,6 +752,8 @@
             html = expDt;
             $("#exp_dt_td_content").html(html);
             html = restCnt;
+            html += '<input type="hidden" name="rest_cnt" id="rest_cnt" value="'+restCnt+'">';
+            // @@@ 안먹음 html += '<input type="hidden" name="io_cnt" id="io_cnt" value="'+'20'+'">';
             $("#io_cnt_td_content").html(html);
             //@@@ 기존 메뉴를 표시하는 방법??? html ='<input type="text" maxlength="100" name="memo" id="memo" style="width: 98%">';
             html = memo;
