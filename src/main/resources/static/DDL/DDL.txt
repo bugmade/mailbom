@@ -65,8 +65,11 @@ create table stock
     STO_NO bigint auto_increment comment '순번'
         primary key,
     PRO_CD varchar(50)  null comment '제품 코드',
-    IN_OUT varchar(5)  null comment 'IN: 입고, OUT:출고',
+    LOT_NO varchar(20)  null comment '로트번호,
+    EXP_DT varchar(6)  null comment '유통기한,
+    IN_OUT varchar(10)  null comment 'IN: 입고, OUT:출고, TRANSFER:창고이동',
     IO_CNT bigint comment '수량',
+    REST_CNT bigint comment '잔여수량',
     FROM_STORAGE varchar(10)  null comment '출고창고',
     TO_STORAGE varchar(10)  null comment '타겟창고',
     OUT_WY varchar(10)  null comment 'BTOB:납품, RETAIL:소매, GIFT:증정, TRANSFER:창고이전, ETC:기타',
@@ -79,6 +82,27 @@ create table stock
 )
     comment '제품 입출고 정보';
 
+======================================================= 판매이력 테이블
+
+create table sales
+(
+    SALES_NO bigint auto_increment comment '순번'
+        primary key,
+    STO_NO bigint comment 'stock 테이블 순번',
+    PRO_CD varchar(50)  null comment '제품 코드',
+    LOT_NO varchar(20)  null comment '로트번호',
+    EXP_DT varchar(6)  null comment '유통기한',
+    OUT_CNT bigint comment '수량',
+    FROM_STORAGE varchar(10)  null comment '출고창고',
+    OUT_WY varchar(10)  null comment 'BTOB:납품, RETAIL:소매, GIFT:증정, ETC:기타',
+    CSM_CD varchar(50)  null comment '고객코드',
+    MEMO varchar(200)  null comment '메모',
+    REG_ID varchar(32)  null comment '등록 아이디',
+    REG_DT datetime     null comment '등록 일시',
+    MOD_ID varchar(32)  null comment '수정 아이디',
+    MOD_DT datetime     null comment '수정 일시'
+)
+    comment '판매이력';
 
 
 ======================================================= CSO 테이블

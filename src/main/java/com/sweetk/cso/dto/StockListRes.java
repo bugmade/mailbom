@@ -8,9 +8,12 @@ import lombok.Setter;
 public class StockListRes {
     private long stoNo;
     private String proCd;
+    private String lotNo;
+    private String expDt;
     private String proNm;
     private String inOut;
     private long ioCnt;
+    private long restCnt;
     private String fromStorage;
     private String toStorage;
     private String outWy;

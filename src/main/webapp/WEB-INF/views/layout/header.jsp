@@ -10,6 +10,27 @@
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <script src="/resources/js/common.js"></script>
     <script src="/resources/js/jquery.twbsPagination.js"></script>
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
+<%--    @@@ 아래것을 막으니 paging 과 datepicker 모두 정상 동작???--%>
+<%--    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>--%>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script>
+        $( function() {
+            $( "#datepicker" ).datepicker({
+                //minDate: '+1D',
+                // gotoCurrent: false,
+                beforeShow: function (input, dpobj) {
+                    var widget = $( "#" + input.id ).datepicker( "widget" );
+                    setTimeout(function () {
+                        widget.find('a.ui-state-highlight').removeClass('ui-state-highlight');
+                        widget.find('a.ui-state-hover').removeClass('ui-state-hover');
+                    }, 0);
+                }
+            });
+        } );
+    </script>
 </head>
 <header class="top">
     <div class="top_inner row">

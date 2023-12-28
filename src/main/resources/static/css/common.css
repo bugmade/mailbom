@@ -1347,6 +1347,23 @@ input[type=radio]:checked+label:before{background: url('../img/ico_rdbtn.png') c
     margin-bottom: 2px;
 }
 
+.transfer_btn_j {
+    width: 45px;
+    height: 30px;
+    border-radius: 5px;
+    background: #2F9D27 center left 20px no-repeat;
+    background-size: 24px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    padding-left: 5px;
+    text-align: center;
+    vertical-align: bottom;
+    margin-left: 4px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
 .input_btn_j {
     width: 80px;
     height: 30px;

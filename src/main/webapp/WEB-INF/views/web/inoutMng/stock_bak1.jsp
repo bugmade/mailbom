@@ -24,7 +24,7 @@
     /* absolute / margin 을 통한 화면 정중앙 정렬 및 디자인*/
     .layer{
         width: 600px;
-        height: 420px;
+        height: 360px;
         background-color: #fff;
         border: 1px solid #e5e5e5;
         position: absolute;
@@ -137,7 +137,7 @@
                                             <form:option value="TRANSFER">창고이동</form:option>
                                             <form:option value="ETC">기타</form:option>
                                         </form:select>
-<%--                                        <form:input type="text" path="datepicker" id="datepicker" />--%>
+                                        <form:input type="text" path="datepicker" id="datepicker" />
                                         <form:input type="text" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="특정 납품처 검색시 납품처 입력 필요!"/>
                                         <button id="searchBtn" class="search_btn">
                                             검색
@@ -162,27 +162,26 @@
                     <div style="margin-bottom: 5px; margin-top: 5px;">
                         총 <span >${totalCount}</span> 건
                         <button class="input_btn_j" onclick="showStockPopup('CREATE_INPUT')">입고</button>
+                        <button class="output_btn_j" onclick="showStockPopup('CREATE_OUTPUT')">출고</button>
                         <button class="excel_btn_j" onclick="excelDownload()">엑셀</button>
                     </div>
 
                 <table class="list_table">
                     <colgroup>
                         <col width="5%">
-                        <col width="15%">
+                        <col width="7%">
                         <col width="5%">
                         <col width="5%">
                         <col width="5%">
-                        <col width="5%">
-                        <col width="5%">
-                        <col width="5%">
-<%--                        <col width="7%">--%>
-<%--                        <col width="7%">--%>
-<%--                        <col width="7%">--%>
+                        <col width="7%">
+                        <col width="7%">
+                        <col width="7%">
+                        <col width="7%">
+                        <col width="7%">
+                        <col width="7%">
                         <col width="10%">
                         <col width="5%">
-                        <col width="8%">
-                        <col width="5%">
-                        <col width="8%">
+                        <col width="10%">
                         <col width="*">
                     </colgroup>
                     <thead>
@@ -192,17 +191,15 @@
                         <th>구분</th>
                         <th>수량</th>
                         <th>잔여수량</th>
-                        <th>보관창고</th>
-<%--                        <th>출고사유</th>--%>
-<%--                        <th>납품처</th>--%>
-<%--                        <th>타겟창고</th>--%>
+                        <th>출고창고</th>
+                        <th>출고사유</th>
+                        <th>납품처</th>
+                        <th>타겟창고</th>
                         <th>로트번호</th>
                         <th>유통기한</th>
                         <th>메모</th>
                         <th>등록자</th>
                         <th>등록일</th>
-                        <th>수정자</th>
-                        <th>수정일</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -226,50 +223,49 @@
                                             <td>입고</td>
                                         </c:when>
                                         <c:otherwise>
-                                            <td>이동</td>
+                                            <td>출고</td>
                                         </c:otherwise>
                                     </c:choose>
                                     <td>${row.ioCnt}</td>
                                     <td>${row.restCnt}</td>
-                                    <td>${row.fromStorage}</td>
-<%--                                    <c:choose>--%>
-<%--                                        <c:when test="${row.inOut == 'OUT'}">--%>
-<%--                                            <td>${row.fromStorage}</td>--%>
-<%--                                            <c:choose>--%>
-<%--                                                <c:when test="${row.outWy == 'BTOB'}">--%>
-<%--                                                    <td>납품</td>--%>
-<%--                                                    <td>${row.csmNm}</td>--%>
-<%--                                                    <td></td>--%>
-<%--                                                </c:when>--%>
-<%--                                                <c:when test="${row.outWy == 'RETAIL'}">--%>
-<%--                                                    <td>소매(택배)</td>--%>
-<%--                                                    <td></td>--%>
-<%--                                                    <td></td>--%>
-<%--                                                </c:when>--%>
-<%--                                                <c:when test="${row.outWy == 'GIFT'}">--%>
-<%--                                                    <td>증정</td>--%>
-<%--                                                    <td></td>--%>
-<%--                                                    <td></td>--%>
-<%--                                                </c:when>--%>
-<%--                                                <c:when test="${row.outWy == 'TRANSFER'}">--%>
-<%--                                                    <td>창고이동</td>--%>
-<%--                                                    <td></td>--%>
-<%--                                                    <td>${row.toStorage}</td>--%>
-<%--                                                </c:when>--%>
-<%--                                                <c:otherwise>--%>
-<%--                                                    <td>기타</td>--%>
-<%--                                                    <td></td>--%>
-<%--                                                    <td></td>--%>
-<%--                                                </c:otherwise>--%>
-<%--                                            </c:choose>--%>
-<%--                                        </c:when>--%>
-<%--                                        <c:otherwise>--%>
-<%--                                            <td></td>--%>
-<%--                                            <td></td>--%>
-<%--                                            <td></td>--%>
-<%--                                            <td></td>--%>
-<%--                                        </c:otherwise>--%>
-<%--                                    </c:choose>--%>
+                                    <c:choose>
+                                        <c:when test="${row.inOut == 'OUT'}">
+                                            <td>${row.fromStorage}</td>
+                                            <c:choose>
+                                                <c:when test="${row.outWy == 'BTOB'}">
+                                                    <td>납품</td>
+                                                    <td>${row.csmNm}</td>
+                                                    <td></td>
+                                                </c:when>
+                                                <c:when test="${row.outWy == 'RETAIL'}">
+                                                    <td>소매(택배)</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </c:when>
+                                                <c:when test="${row.outWy == 'GIFT'}">
+                                                    <td>증정</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </c:when>
+                                                <c:when test="${row.outWy == 'TRANSFER'}">
+                                                    <td>창고이동</td>
+                                                    <td></td>
+                                                    <td>${row.toStorage}</td>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <td>기타</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </c:otherwise>
+                                    </c:choose>
                                     <td>${row.lotNo}</td>
                                     <td>${row.expDt}</td>
                                     <td>${row.memo}</td>
@@ -278,11 +274,7 @@
 <%--                                        <javatime:format value="${row.regDt}" pattern="yyyy-MM-dd"/>--%>
                                         ${row.regDt}
                                     </td>
-                                    <td>${row.modId}</td>
-                                    <td>${row.modDt}</td>
                                     <td>
-                                        <button class="update_btn_j" onclick="showStockPopup('CREATE_OUTPUT', '${row.proCd}', '${row.proNm}', '${row.lotNo}', '${row.expDt}', '${row.fromStorage}', '${row.restCnt}', '${row.memo}', '${row.stoNo}')">출고</button>
-                                        <button class="transfer_btn_j" onclick="showStockPopup('CREATE_TRANSFER', '${row.proCd}', '${row.proNm}', '${row.lotNo}', '${row.expDt}', '${row.fromStorage}', '${row.restCnt}', '${row.memo}', '${row.stoNo}')">창고<br>이동</button>
                                         <button class="delete_btn_j" onclick="deleteStock(${row.stoNo})">삭제</button>
                                     </td>
                                 </tr>
@@ -349,51 +341,45 @@
                         <tr>
                             <td>제품명</td>
                             <td>
-                                <div id="pro_cd_td_content"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>로트번호</td>
-                            <td>
-                                <div id="lot_no_td_content"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>유통기한</td>
-                            <td>
-                                <div id="exp_dt_td_content"></div>
+                                <select  name="pro_cd" class="pro_cd" style="width: 98%; height: 90%">
+                                    <c:if test="${fn:length(product) > 0}">
+                                        <c:forEach var="item" items="${product}">
+                                            <option value="${item.proCd }">${item.proNm }</option>
+                                        </c:forEach>
+                                    </c:if>
+                                </select>
                             </td>
                         </tr>
                         <tr>
                             <td>수량</td>
-                            <td><div id="io_cnt_td_content"></div></td>
+                            <td><input type="number" pattern="[0-9]+" name="io_cnt" id="io_cnt" style="width: 98%"></td>
                         </tr>
                         <tr>
                             <td>메모</td>
-                            <td><div id="memo_td_content"></div></td>
+                            <td><input type="text" maxlength='100' name="memo" id="memo" style="width: 98%"></td>
                         </tr>
                         <tr>
                             <td>
-                                <div id="content1_td_title"></div>
+                                <div id="from_storage_td_title"></div>
                             </td>
                             <td>
-                                <div id="content1_td_content"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div id="content2_td_title"></div>
-                            </td>
-                            <td>
-                                <div id="content2_td_content"></div>
+                                <div id="from_storage_td_content"></div>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <div id="content3_td_title"></div>
+                                <div id="out_wy_td_title"></div>
                             </td>
                             <td>
-                                <div id="content3_td_content" style="width: 98%; height: 90%"></div>
+                                <div id="out_wy_td_content"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="out_dtl_td_title"></div>
+                            </td>
+                            <td>
+                                <div id="out_dtl_td_content" style="width: 98%; height: 90%"></div>
                             </td>
                         </tr>
                         </tbody>
@@ -410,11 +396,6 @@
 </div>
 </body>
 <script type="text/javascript">
-    let CREATE_MODE = 0;
-    const CREATE_INPUT = 1;     // 입고
-    const CREATE_OUTPUT = 2;    // 출고
-    const CREATE_TRANSFER = 3;    // 창고이동
-
     $(document).ready(function(){
         console.log(${result.getTotalPages()}); //JSTL
         console.log(${result.getNumber()}); //JSTL
@@ -539,25 +520,18 @@
         }
 
         // confirm
-        let pro_nm;
-        if (CREATE_MODE === CREATE_INPUT) {   //입고
-            pro_nm = $(".pro_cd :selected").text();
-        } else {
-            pro_nm = $("#pro_cd").val();
-        }
-
+        let pro_nm = $(".pro_cd :selected").text();
         let params = $('#frmReg').serializeObject();
         console.log(params);
 
         let msg = '';
-        //if(params['in_out'] === 'IN') {
-        if(CREATE_MODE === CREATE_INPUT) {
+        if(params['in_out'] === 'IN') {
             msg = "[";
             msg += pro_nm;
             msg += "] ";
             msg += params['io_cnt'];
             msg += "개 본사창고에 입고 처리할까요?";
-        } else if(CREATE_MODE === CREATE_OUTPUT) {
+        } else {
             msg = "[";
             msg += pro_nm;
             msg += "] ";
@@ -576,18 +550,14 @@
                 msg += "소매(택배)";
             } else if (params['out_wy'] == 'GIFT') {
                 msg += "증정";
+            } else if (params['out_wy'] == 'TRANSFER') {
+                msg += "창고이동==>";
+                msg += params['to_storage'];
             } else {
                 msg += "기타";
             }
             msg += "] 처리할까요?";
-        } else {
-            msg = "[";
-            msg += pro_nm;
-            msg += "] ";
-            msg += params['to_storage'];
-            msg += "]창고로 이동 처리할까요?";
         }
-
         if(!confirm(msg)) {
             return;
         }
@@ -595,7 +565,7 @@
         if(params['in_out'] === 'IN') {       //입고시 출고사유 null 처리
             params['out_wy'] = '';
             params['csm_cd'] = '';
-            params['from_storage'] = 'HQ';
+            params['from_storage'] = '';
             params['to_storage'] = '';
         } else {
             if(params['out_wy'] !== 'BTOB') {
@@ -656,119 +626,46 @@
     }
 
     // 입출고 팝업을 보여주기
-    function showStockPopup(mode, proCd, proNm, lotNo, expDt, fromStorage, restCnt, memo, stoNo) {
-        console.log('showStockPopup: '+ mode + ', ' + proCd + ', ' + proNm + ', ' + lotNo, + ', ' + expDt, + ', ' + fromStorage, + ', ' + restCnt, + ', ' + memo, + ', ' + stoNo);
+    function showStockPopup(mode){
+        console.log('showStockPopup: '+mode);
 
         let html = '';
         if(mode === 'CREATE_INPUT') {
-            CREATE_MODE = CREATE_INPUT;
-
             $("#io_title").html("제품입고");
             $("#in_out").val("IN");
 
-            enableProcdSelect();
-            html ='<input type="text" maxlength="20" name="lot_no" id="lot_no" style="width: 98%">';
-            $("#lot_no_td_content").html(html);
-            html ='<input type="text" maxlength="6" name="exp_dt" id="exp_dt" style="width: 98%">';
-            $("#exp_dt_td_content").html(html);
-            html ='<input type="number" pattern="[0-9]+" name="io_cnt" id="io_cnt" style="width: 98%">';
-            $("#io_cnt_td_content").html(html);
-            html ='<input type="text" maxlength="100" name="memo" id="memo" style="width: 98%">';
-            $("#memo_td_content").html(html);
             html = '';
-            $("#content1_td_title").html(html);
+            $("#from_storage_td_title").html(html);
+            $("#from_storage_td_content").html(html);
+            $("#out_dtl_td_title").html(html);
+            $("#out_dtl_td_content").html(html);
+            $("#out_wy_td_title").html(html);
             html = '<input type="hidden" name="out_wy" value="">';
-            $("#content1_td_content").html(html);
-            html = '';
-            $("#content2_td_title").html(html);
-            html = '';
-            $("#content2_td_content").html(html);
-            html = '';
-            $("#content3_td_title").html(html);
-            html = '';
-            $("#content3_td_content").html(html);
-
-        } else if (mode === 'CREATE_OUTPUT') {
-            CREATE_MODE = CREATE_OUTPUT;
-
+            $("#out_wy_td_content").html(html);
+        } else {
             $("#io_title").html("제품출고");
             $("#in_out").val("OUT");
-
-            html = proNm;
-            html += '<input type="hidden" name="pro_cd" id="pro_cd" value="'+proNm+'">';
-            html += '<input type="hidden" name="sto_no" id="sto_no" value="'+stoNo+'">';
-            $("#pro_cd_td_content").html(html);
-            html = lotNo;
-            $("#lot_no_td_content").html(html);
-            html = expDt + ' [잔여수량: ' + restCnt +']';
-            $("#exp_dt_td_content").html(html);
-            html ='<input type="number" pattern="[0-9]+" name="io_cnt" id="io_cnt" style="width: 98%">';
-            $("#io_cnt_td_content").html(html);
-            html ='<input type="text" maxlength="100" name="memo" id="memo" style="width: 98%">';
-            $("#memo_td_content").html(html);
             html = '출고창고';
-            $("#content1_td_title").html(html);
-            html = fromStorage;
-            html += '<input type="hidden" name="from_storage" id="from_storage" value="'+fromStorage+'">';
-            // html = '<input type="radio" id="from_storage1" name="from_storage" value="HQ" checked>';
-            // html += '<label for="from_storage1">본사창고(HQ)</label>';
-            // html += '<input type="radio" id="from_storage2" name="from_storage" value="FIRST">';
-            // html += '<label for="from_storage2">위탁창고1(FIRST)</label>';
-            $("#content1_td_content").html(html);
+            $("#from_storage_td_title").html(html);
+            html = '<input type="radio" id="from_storage1" name="from_storage" value="HQ" checked>';
+            html += '<label for="from_storage1">본사창고(HQ)</label>';
+            html += '<input type="radio" id="from_storage2" name="from_storage" value="FIRST">';
+            html += '<label for="from_storage2">위탁창고1(FIRST)</label>';
+            $("#from_storage_td_content").html(html);
             html = '출고사유';
-            $("#content2_td_title").html(html);
+            $("#out_wy_td_title").html(html);
             html = '<input type="radio" id="out_wy1" name="out_wy" onclick="enableCsmcdSelect()" value="BTOB" checked>';
             html += '<label for="out_wy1">납품</label>';
             html += '<input type="radio" id="out_wy2" name="out_wy" onclick="disableOutDtl()" value="RETAIL">';
             html += '<label for="out_wy2">소매(택배)</label>';
             html += '<input type="radio" id="out_wy3" name="out_wy" onclick="disableOutDtl()" value="GIFT">';
             html += '<label for="out_wy3">증정</label>';
-            // html += '<input type="radio" id="out_wy4" name="out_wy" onclick="enableToStorageSelect()" value="TRANSFER">';
-            // html += '<label for="out_wy4">창고이동</label>';
+            html += '<input type="radio" id="out_wy4" name="out_wy" onclick="enableToStorageSelect()" value="TRANSFER">';
+            html += '<label for="out_wy4">창고이동</label>';
             html += '<input type="radio" id="out_wy5" name="out_wy" onclick="disableOutDtl()" value="ETC">';
             html += '<label for="out_wy5">기타</label>';
-            $("#content2_td_content").html(html);
+            $("#out_wy_td_content").html(html);
             enableCsmcdSelect();
-        } else {
-            CREATE_MODE = CREATE_TRANSFER;
-
-            $("#io_title").html("창고이동");
-            $("#in_out").val("TRANSFER");
-
-            html = proNm;
-            html += '<input type="hidden" name="pro_cd" id="pro_cd" value="'+proNm+'">';
-            html += '<input type="hidden" name="sto_no" id="sto_no" value="'+stoNo+'">';
-            $("#pro_cd_td_content").html(html);
-            html = lotNo;
-            $("#lot_no_td_content").html(html);
-            html = expDt;
-            $("#exp_dt_td_content").html(html);
-            html = restCnt;
-            $("#io_cnt_td_content").html(html);
-            //@@@ 기존 메뉴를 표시하는 방법??? html ='<input type="text" maxlength="100" name="memo" id="memo" style="width: 98%">';
-            html = memo;
-            $("#memo_td_content").html(html);
-            html = '출고창고';
-            $("#content1_td_title").html(html);
-            html = fromStorage;
-            html += '<input type="hidden" name="from_storage" id="from_storage" value="'+fromStorage+'">';
-            // html = '<input type="radio" id="from_storage1" name="from_storage" value="HQ" checked>';
-            // html += '<label for="from_storage1">본사창고(HQ)</label>';
-            // html += '<input type="radio" id="from_storage2" name="from_storage" value="FIRST">';
-            // html += '<label for="from_storage2">위탁창고1(FIRST)</label>';
-            $("#content1_td_content").html(html);
-
-            html = '타겟창고';
-            $("#content2_td_title").html(html);
-            html = '<select id="to_storage" name="to_storage" class="to_storage" style="width: 98%; height: 90%">';
-            html += '<option value="FIRST">위탁창고1(FIRST)</option>';
-            // html += '<option value="HQ">본사창고(HQ)</option>';
-            $("#content2_td_content").html(html);
-
-            html = '';
-            $("#content3_td_title").html(html);
-            html = '<input type="hidden" name="out_wy" value="TRANSFER">';
-            $("#content3_td_content").html(html);
         }
 
         $('#io_cnt').val("0");
@@ -777,26 +674,13 @@
         $('#layer_popup').show();
     }
 
-    function enableProcdSelect() {
-        console.log("enableProcdSelect");
-        let html='';
-        html += '<select name="pro_cd" class="pro_cd" style="width: 98%; height: 90%">';
-        html += '<c:if test="${fn:length(product) > 0}">';
-        html += '<c:forEach var="item" items="${product}">';
-        html += '<option value="${item.proCd }">${item.proNm }</option>';
-        html += '</c:forEach>';
-        html += '</c:if>';
-        html += '</select>';
-        $("#pro_cd_td_content").html(html);
-    }
-
     function enableCsmcdSelect() {
-        console.log("enableCsmcdSelect");
+        console.log("enableCsmcdSelect")
         //$("#csm_cd").attr("disabled", false);
 
         let html='';
         html = '납품처';
-        $("#content3_td_title").html(html);
+        $("#out_dtl_td_title").html(html);
         html = '<select id="csm_cd" name="csm_cd" class="csm_cd" style="width: 101%; height: 90%">';
         html += '<c:if test="${fn:length(consumer) > 0}">';
         html += '<c:forEach var="item" items="${consumer}">';
@@ -804,27 +688,27 @@
         html += '</c:forEach>';
         html += '</c:if>';
         html += '</select>';
-        $("#content3_td_content").html(html);
+        $("#out_dtl_td_content").html(html);
     }
 
-    // function enableToStorageSelect() {
-    //     console.log("enableToStorageSelect");
-    //
-    //     let html='';
-    //     html = '타겟창고';
-    //     $("#content3_td_title").html(html);
-    //     html = '<select id="to_storage" name="to_storage" class="to_storage" style="width: 101%; height: 90%">';
-    //     html += '<option value="FIRST">위탁창고1(FIRST)</option>';
-    //     html += '<option value="HQ">본사창고(HQ)</option>';
-    //     $("#content3_td_content").html(html);
-    // }
+    function enableToStorageSelect() {
+        console.log("enableToStorageSelect")
+
+        let html='';
+        html = '타겟창고';
+        $("#out_dtl_td_title").html(html);
+        html = '<select id="to_storage" name="to_storage" class="to_storage" style="width: 101%; height: 90%">';
+        html += '<option value="FIRST">위탁창고1(FIRST)</option>';
+        html += '<option value="HQ">본사창고(HQ)</option>';
+        $("#out_dtl_td_content").html(html);
+    }
 
     function disableOutDtl() {
-        console.log("disableOutDtl");
+        console.log("disableOutDtl")
         //$("#csm_cd").attr("disabled", true);
         let html='';
-        $("#content3_td_title").html(html);
-        $("#content3_td_content").html(html);
+        $("#out_dtl_td_title").html(html);
+        $("#out_dtl_td_content").html(html);
     }
 
     // 입출고 팝업을 닫기
