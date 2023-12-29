@@ -53,9 +53,6 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                         stock.ioCnt,
                         stock.restCnt,
                         stock.fromStorage,
-                        stock.toStorage,
-                        stock.outWy,
-                        consumer.csmNm,
                         stock.lotNo,
                         stock.expDt,
                         stock.memo,
@@ -66,10 +63,11 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 )).from(stock)
                 .leftJoin(product)
                 .on(stock.proCd.eq(product.proCd))
-                .leftJoin(consumer)
-                .on(stock.csmCd.eq(consumer.csmCd))
+//                .leftJoin(consumer)
+//                .on(stock.csmCd.eq(consumer.csmCd))
                 .where(searchByTextInput(req))
                 .orderBy(stock.stoNo.desc())
+                .orderBy(stock.expDt.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -78,40 +76,46 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .from(stock)
                 .leftJoin(product)
                 .on(stock.proCd.eq(product.proCd))
-                .leftJoin(consumer)
-                .on(stock.csmCd.eq(consumer.csmCd))
+//                .leftJoin(consumer)
+//                .on(stock.csmCd.eq(consumer.csmCd))
                 .where(searchByTextInput(req))
                 .fetchOne();
 
         return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
     }
 
-    private BooleanExpression searchByTextInput(SearchReqDto req){
+    private BooleanExpression searchByTextInput(StockListReq req){
+        //private BooleanExpression searchByTextInput(SearchReqDto req){
         BooleanExpression searchExpression = null;
+        String proCd = req.getProCd();
         String inOut = req.getInOut();
         String outWy = req.getOutWy();
         String searchWord = req.getSearchWord();
 
+        if (!StringUtils.hasText(proCd))    proCd = "ALL";
         if (!StringUtils.hasText(inOut))    inOut = "ALL";
         if (!StringUtils.hasText(outWy))    outWy = "ALL";
         if (!StringUtils.hasText(searchWord))    searchWord = "";
 
-        log.info("### searchByTextInput [inOut:" + inOut + ", outWy:" + outWy + ", searchWord:" + searchWord + "]");
+        log.info("### searchByTextInput [proCd:" + proCd + ", searchWord:" + searchWord + "]");
 
+        if (!proCd.equals("ALL")) {
+            searchExpression = stock.proCd.eq(proCd);
+        }
         // 입고일때
-        if (inOut.equals("IN")) {
-            searchExpression = stock.inOut.eq(inOut);
-        }
-        else if (inOut.equals("OUT")) {    // 출고일때
-            if (!outWy.equals("ALL")) {
-                if(outWy.equals("BTOB") && !searchWord.equals(""))
-                    searchExpression = stock.inOut.eq(inOut).and(stock.outWy.eq(outWy)).and(consumer.csmNm.contains(searchWord));
-                else
-                    searchExpression = stock.inOut.eq(inOut).and(stock.outWy.eq(outWy));
-            } else {
-                searchExpression = stock.inOut.eq(inOut);
-            }
-        }
+//        if (inOut.equals("IN")) {
+//            searchExpression = stock.inOut.eq(inOut);
+//        }
+//        else if (inOut.equals("OUT")) {    // 출고일때
+//            if (!outWy.equals("ALL")) {
+//                if(outWy.equals("BTOB") && !searchWord.equals(""))
+//                    searchExpression = stock.inOut.eq(inOut).and(stock.outWy.eq(outWy)).and(consumer.csmNm.contains(searchWord));
+//                else
+//                    searchExpression = stock.inOut.eq(inOut).and(stock.outWy.eq(outWy));
+//            } else {
+//                searchExpression = stock.inOut.eq(inOut);
+//            }
+//        }
         return searchExpression;
     }
 
@@ -129,9 +133,6 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                         stock.ioCnt,
                         stock.restCnt,
                         stock.fromStorage,
-                        stock.toStorage,
-                        stock.outWy,
-                        consumer.csmNm,
                         stock.lotNo,
                         stock.expDt,
                         stock.memo,
@@ -143,8 +144,8 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .from(stock)
                 .leftJoin(product)
                 .on(stock.proCd.eq(product.proCd))
-                .leftJoin(consumer)
-                .on(stock.csmCd.eq(consumer.csmCd))
+//                .leftJoin(consumer)
+//                .on(stock.csmCd.eq(consumer.csmCd))
                 //.where(product.csoNm.contains(csoNm))
                 .orderBy(stock.stoNo.desc())
                 .fetch();
@@ -169,9 +170,6 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                         stock.ioCnt,
                         stock.restCnt,
                         stock.fromStorage,
-                        stock.toStorage,
-                        stock.outWy,
-                        consumer.csmNm,
                         stock.lotNo,
                         stock.expDt,
                         stock.memo,
@@ -182,8 +180,8 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 )).from(stock)
                 .leftJoin(product)
                 .on(stock.proCd.eq(product.proCd))
-                .leftJoin(consumer)
-                .on(stock.csmCd.eq(consumer.csmCd))
+//                .leftJoin(consumer)
+//                .on(stock.csmCd.eq(consumer.csmCd))
                 .where(searchByTextInput(req))
                 .orderBy(stock.stoNo.desc())
                 .fetch();
@@ -213,20 +211,17 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
             log.info("### IN");
             adjustStorageByIn(params);
             return String.valueOf(entityManager
-                    .createNativeQuery("INSERT INTO stock (PRO_CD, IN_OUT, IO_CNT, REST_CNT, FROM_STORAGE, TO_STORAGE, OUT_WY, CSM_CD, LOT_NO, EXP_DT, MEMO, REG_ID, REG_DT) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)")
+                    .createNativeQuery("INSERT INTO stock (PRO_CD, IN_OUT, IO_CNT, REST_CNT, FROM_STORAGE, LOT_NO, EXP_DT, MEMO, REG_ID, REG_DT) VALUES (?,?,?,?,?,?,?,?,?,?)")
                     .setParameter(1, String.valueOf(params.get("pro_cd")))
                     .setParameter(2, inOut)
                     .setParameter(3, Long.parseLong(String.valueOf(params.get("io_cnt"))))
                     .setParameter(4, Long.parseLong(String.valueOf(params.get("io_cnt"))))
                     .setParameter(5, String.valueOf(params.get("from_storage")))
-                    .setParameter(6, String.valueOf(params.get("to_storage")))
-                    .setParameter(7, String.valueOf(params.get("out_wy")))
-                    .setParameter(8, String.valueOf(params.get("csm_cd")))
-                    .setParameter(9, String.valueOf(params.get("lot_no")))
-                    .setParameter(10, String.valueOf(params.get("exp_dt")))
-                    .setParameter(11, String.valueOf(params.get("memo")))
-                    .setParameter(12, String.valueOf(params.get("login_id")))
-                    .setParameter(13, now)
+                    .setParameter(6, String.valueOf(params.get("lot_no")))
+                    .setParameter(7, String.valueOf(params.get("exp_dt")))
+                    .setParameter(8, String.valueOf(params.get("memo")))
+                    .setParameter(9, String.valueOf(params.get("login_id")))
+                    .setParameter(10, now)
                     .executeUpdate());
         } else if(inOut.equals("TRANSFER")) {
             log.info("### TRANSFER");
@@ -410,18 +405,8 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .from(stock)
                 .where(stock.stoNo.eq(Long.parseLong(stoNo)))
                 .fetchOne();
-        String outWy = jpaQueryFactory
-                .select(stock.outWy)
-                .from(stock)
-                .where(stock.stoNo.eq(Long.parseLong(stoNo)))
-                .fetchOne();
         String fromStorage = jpaQueryFactory
                 .select(stock.fromStorage)
-                .from(stock)
-                .where(stock.stoNo.eq(Long.parseLong(stoNo)))
-                .fetchOne();
-        String toStorage = jpaQueryFactory
-                .select(stock.toStorage)
                 .from(stock)
                 .where(stock.stoNo.eq(Long.parseLong(stoNo)))
                 .fetchOne();
@@ -445,13 +430,13 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 firstStorage += ioCnt;
             }
 
-            if(outWy.equals("TRANSFER")) { //창고 이동일때 타켓창고에서 빼기
-                if (toStorage.equals("HQ")) {
-                    hqStorage -= ioCnt;
-                } else if (toStorage.equals("FIRST")) {
-                    firstStorage -= ioCnt;
-                }
-            }
+//            if(outWy.equals("TRANSFER")) { //창고 이동일때 타켓창고에서 빼기
+//                if (toStorage.equals("HQ")) {
+//                    hqStorage -= ioCnt;
+//                } else if (toStorage.equals("FIRST")) {
+//                    firstStorage -= ioCnt;
+//                }
+//            }
 
             if (hqStorage < 0) hqStorage = 0L;
             if (firstStorage < 0) firstStorage = 0L;

@@ -124,15 +124,21 @@
                                         <label for="searchWord">검색조건</label>
                                     </th>
                                     <td colspan="3" class="fz0">
-                                        <form:select path="proCd" style="width:170px;" id="procdSelect" cssClass="basic_formtype select_form select_sch">
-                                            <form:option value="ALL">전체(제품)</form:option>
-                                            <c:if test="${fn:length(product) > 0}">
-                                                <c:forEach var="item" items="${product}">
-                                                    <form:option value="${item.proCd}">${item.proNm}</form:option>
-                                                </c:forEach>
-                                            </c:if>
+                                        <form:select path="inOut" style="width:170px;" id="inoutSelect" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">
+                                            <form:option value="ALL">전체(입출고)</form:option>
+                                            <form:option value="IN">입고</form:option>
+                                            <form:option value="OUT">출고</form:option>
                                         </form:select>
-                                        <form:input type="hidden" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="특정 납품처 검색시 납품처 입력 필요!"/>
+                                        <form:select path="outWy" style="width:170px;" id="outwySelect" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">
+                                            <form:option value="ALL">전체(출고사유)</form:option>
+                                            <form:option value="BTOB">납품</form:option>
+                                            <form:option value="RETAIL">소매(택배)</form:option>
+                                            <form:option value="GIFT">증정</form:option>
+                                            <form:option value="TRANSFER">창고이동</form:option>
+                                            <form:option value="ETC">기타</form:option>
+                                        </form:select>
+<%--                                        <form:input type="text" path="datepicker" id="datepicker" />--%>
+                                        <form:input type="text" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="특정 납품처 검색시 납품처 입력 필요!"/>
                                         <button id="searchBtn" class="search_btn">
                                             검색
                                             <span class="ir_so">검색버튼</span>
@@ -169,6 +175,9 @@
                         <col width="5%">
                         <col width="5%">
                         <col width="5%">
+<%--                        <col width="7%">--%>
+<%--                        <col width="7%">--%>
+<%--                        <col width="7%">--%>
                         <col width="10%">
                         <col width="5%">
                         <col width="8%">
@@ -184,6 +193,9 @@
                         <th>수량</th>
                         <th>잔여수량</th>
                         <th>보관창고</th>
+<%--                        <th>출고사유</th>--%>
+<%--                        <th>납품처</th>--%>
+<%--                        <th>타겟창고</th>--%>
                         <th>로트번호</th>
                         <th>유통기한</th>
                         <th>메모</th>
@@ -220,6 +232,44 @@
                                     <td>${row.ioCnt}</td>
                                     <td>${row.restCnt}</td>
                                     <td>${row.fromStorage}</td>
+<%--                                    <c:choose>--%>
+<%--                                        <c:when test="${row.inOut == 'OUT'}">--%>
+<%--                                            <td>${row.fromStorage}</td>--%>
+<%--                                            <c:choose>--%>
+<%--                                                <c:when test="${row.outWy == 'BTOB'}">--%>
+<%--                                                    <td>납품</td>--%>
+<%--                                                    <td>${row.csmNm}</td>--%>
+<%--                                                    <td></td>--%>
+<%--                                                </c:when>--%>
+<%--                                                <c:when test="${row.outWy == 'RETAIL'}">--%>
+<%--                                                    <td>소매(택배)</td>--%>
+<%--                                                    <td></td>--%>
+<%--                                                    <td></td>--%>
+<%--                                                </c:when>--%>
+<%--                                                <c:when test="${row.outWy == 'GIFT'}">--%>
+<%--                                                    <td>증정</td>--%>
+<%--                                                    <td></td>--%>
+<%--                                                    <td></td>--%>
+<%--                                                </c:when>--%>
+<%--                                                <c:when test="${row.outWy == 'TRANSFER'}">--%>
+<%--                                                    <td>창고이동</td>--%>
+<%--                                                    <td></td>--%>
+<%--                                                    <td>${row.toStorage}</td>--%>
+<%--                                                </c:when>--%>
+<%--                                                <c:otherwise>--%>
+<%--                                                    <td>기타</td>--%>
+<%--                                                    <td></td>--%>
+<%--                                                    <td></td>--%>
+<%--                                                </c:otherwise>--%>
+<%--                                            </c:choose>--%>
+<%--                                        </c:when>--%>
+<%--                                        <c:otherwise>--%>
+<%--                                            <td></td>--%>
+<%--                                            <td></td>--%>
+<%--                                            <td></td>--%>
+<%--                                            <td></td>--%>
+<%--                                        </c:otherwise>--%>
+<%--                                    </c:choose>--%>
                                     <td>${row.lotNo}</td>
                                     <td>${row.expDt}</td>
                                     <td>${row.memo}</td>
@@ -267,10 +317,9 @@
             <%-- paging 태그에서 페이지 번호를 클릭했을때 자바스크립트 함수로 실행하게될 form을 작성한다(읽기전용 form임)--%>
             <form:form id="pagingForm" name="pagingForm" method="get" modelAttribute="stockListReq">
 <%--                <form:hidden id="pagingSearchType6" path="searchType"/>--%>
-                <form:hidden id="pagingSearchType5" path="proCd"/>
-<%--                <form:hidden id="pagingSearchType6" path="inOut"/>--%>
-<%--                <form:hidden id="pagingSearchType8" path="outWy"/>--%>
-<%--                <form:hidden id="pagingSearchType9" path="datepicker"/>--%>
+                <form:hidden id="pagingSearchType6" path="inOut"/>
+                <form:hidden id="pagingSearchType8" path="outWy"/>
+                <form:hidden id="pagingSearchType9" path="datepicker"/>
                 <form:hidden id="pagingSearchType7" path="searchWord"/>
                 <form:hidden id="pagingCurrentPageNo" path="pageNo"/>
                 <form:hidden id="pagingRecordCountPerPage" path="pageSize"/>
@@ -410,6 +459,8 @@
             $("#pagingForm input[name=pageNo]").val(1);
             $("#pagingForm")[0].submit();
         });
+
+        changeInoutSelect();
     });
 
     const go_page = (pageno) => {
@@ -583,9 +634,30 @@
         });
     }
 
+    // 입출고 select box 동적 표시
+    function changeInoutSelect() {
+        let inOut = $("#inoutSelect option:selected").val();
+        let outWy = $("#outwySelect option:selected").val();
+
+        if(inOut === 'IN' || inOut === 'ALL') {   //입고 또는 전체
+            $("#outwySelect option:eq(0)").prop("selected", true);
+            $("#outwySelect").attr("disabled", true);
+            $("#searchWord").val("");
+            $("#searchWord").attr("disabled", true);
+        } else {
+            $("#outwySelect").attr("disabled", false);
+            if(outWy == 'BTOB') {      //납품
+                $("#searchWord").attr("disabled", false);
+            } else {
+                $("#searchWord").attr("disabled", true);
+            }
+        }
+    }
+
     // 검색조건 초기화
     function doInit() {
-        $("#procdSelect option:eq(0)").prop("selected", true);
+        $("#inoutSelect option:eq(0)").prop("selected", true);
+        $("#outwySelect option:eq(0)").prop("selected", true);
         $("#searchWord").val("");
         location.reload();
     }
@@ -777,7 +849,6 @@
 
         $('#pagingForm').attr("action", "/inoutMng/api/excelDownload");
         $('#pagingForm').submit();
-        //location.reload();
 
         // @@@ 엑셀다운로드에서 ajax를 쓰려면 특수처리가 필요하다???
         // let params = $('#pagingForm').serializeObject();

@@ -3,6 +3,7 @@ package com.sweetk.cso.repository.custom.impl;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sweetk.cso.dto.StockListReq;
 import com.sweetk.cso.dto.common.SearchReqDto;
 import com.sweetk.cso.dto.pharmComp.PharmCompListReq;
 import com.sweetk.cso.dto.pharmComp.PharmCompListRes;
@@ -40,20 +41,21 @@ public class PharmCompCustomRepositoryImpl implements PharmCompCustomRepository 
                         pharmComp.addr,
                         pharmComp.addrDtl
                 )).from(pharmComp)
-                .where(searchByTextInput(req))
+                //.where(searchByTextInput(req))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         Long totalCount = jpaQueryFactory.select(pharmComp.count())
                 .from(pharmComp)
-                .where(searchByTextInput(req))
+                //.where(searchByTextInput(req))
                 .fetchOne();
 
         return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
     }
 
-    private BooleanExpression searchByTextInput(SearchReqDto req){
+    private BooleanExpression searchByTextInput(StockListReq req){
+        //private BooleanExpression searchByTextInput(SearchReqDto req){
         BooleanExpression searchExpression;
 //        String searchType = req.getSearchType();
         String searchType = req.getInOut();

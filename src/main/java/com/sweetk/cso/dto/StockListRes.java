@@ -15,9 +15,6 @@ public class StockListRes {
     private long ioCnt;
     private long restCnt;
     private String fromStorage;
-    private String toStorage;
-    private String outWy;
-    private String csmNm;
     private String memo;
     private String regId;
     private String regDt;
