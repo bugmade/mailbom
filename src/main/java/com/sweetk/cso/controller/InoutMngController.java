@@ -1,5 +1,7 @@
 package com.sweetk.cso.controller;
 
+import com.sweetk.cso.dto.SalesListReq;
+import com.sweetk.cso.dto.SalesListRes;
 import com.sweetk.cso.dto.StockListReq;
 import com.sweetk.cso.dto.StockListRes;
 import com.sweetk.cso.dto.pharmComp.PharmCompListReq;
@@ -37,7 +39,7 @@ public class InoutMngController {
 
     @GetMapping("/stock")
     public String stock(StockListReq req, Model model) {
-        Page<StockListRes> result = inoutMngService.getList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
+        Page<StockListRes> result = inoutMngService.getStockList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
         model.addAttribute("result", result);
 
         log.info("### stock : get select list vvv ");
@@ -103,5 +105,26 @@ public class InoutMngController {
         log.info(req);
 
         inoutMngService.excelDownload(req, response);
+    }
+
+    // 제품출고이력
+    @GetMapping("/sales")
+    public String sales(SalesListReq req, Model model) {
+        Page<SalesListRes> result = inoutMngService.getSalesList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
+        model.addAttribute("result", result);
+
+        log.info("### sales : get select list vvv ");
+
+        List<Product> product = infoMngService.readProductList();
+        log.info(product);
+        model.addAttribute("product", product);
+
+        List<Consumer> consumer = infoMngService.readConsumerList();
+        log.info(consumer);
+        model.addAttribute("consumer", consumer);
+
+        log.info("### sales : get select list ^^^ ");
+
+        return "/web/inoutMng/sales";
     }
 }

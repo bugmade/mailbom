@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class StockListReq extends SearchReqDto {
-    private String proCd;
-    private String inOut;
+public class SalesListReq extends SearchReqDto {
+    private String outWy;
+    private String datepicker;
 }

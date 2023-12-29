@@ -1,11 +1,15 @@
 package com.sweetk.cso.service;
 
+import com.sweetk.cso.dto.SalesListReq;
+import com.sweetk.cso.dto.SalesListRes;
 import com.sweetk.cso.dto.StockListReq;
 import com.sweetk.cso.dto.StockListRes;
 import com.sweetk.cso.entity.Stock;
 import com.sweetk.cso.repository.AdmRepository;
 import com.sweetk.cso.repository.ProductRepository;
+import com.sweetk.cso.repository.SalesRepository;
 import com.sweetk.cso.repository.StockRepository;
+import com.sweetk.cso.repository.custom.SalesCustomRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,10 +39,12 @@ public class InoutMngService {
 
     final ProductRepository productRepository;
     final StockRepository stockRepository;
+    final SalesRepository salesRepository;
     final AdmRepository admRepository;
 
+    //######################## 제품입출고관리
     @Transactional(readOnly = true)
-    public Page<StockListRes> getList(StockListReq req, Pageable pageable) {
+    public Page<StockListRes> getStockList(StockListReq req, Pageable pageable) {
         // TODO COM_CM 이름
         return stockRepository.getListBySearchDtoAndPageable(req, pageable);
     }
@@ -107,5 +113,12 @@ public class InoutMngService {
 
     public static String getDatePatterns (String pttn) {
         return new SimpleDateFormat(pttn,new Locale("ko","KR")).format(Calendar.getInstance().getTime());
+    }
+
+    //######################## 제품출고이력
+    @Transactional(readOnly = true)
+    public Page<SalesListRes> getSalesList(SalesListReq req, Pageable pageable) {
+        // TODO COM_CM 이름
+        return salesRepository.getListBySearchDtoAndPageable(req, pageable);
     }
 }

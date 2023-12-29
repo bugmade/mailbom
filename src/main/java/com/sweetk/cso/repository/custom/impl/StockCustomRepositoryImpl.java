@@ -89,12 +89,12 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
         BooleanExpression searchExpression = null;
         String proCd = req.getProCd();
         String inOut = req.getInOut();
-        String outWy = req.getOutWy();
+        //String outWy = req.getOutWy();
         String searchWord = req.getSearchWord();
 
         if (!StringUtils.hasText(proCd))    proCd = "ALL";
         if (!StringUtils.hasText(inOut))    inOut = "ALL";
-        if (!StringUtils.hasText(outWy))    outWy = "ALL";
+        //if (!StringUtils.hasText(outWy))    outWy = "ALL";
         if (!StringUtils.hasText(searchWord))    searchWord = "";
 
         log.info("### searchByTextInput [proCd:" + proCd + ", searchWord:" + searchWord + "]");
@@ -235,7 +235,9 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                     .setParameter(5, Long.parseLong(String.valueOf(params.get("sto_no"))))
                     .executeUpdate());
         } else {
+            log.info("### OUT");
             adjustStorageByOut(params);
+
             //잔여수량 조정
             Long io_cnt = Long.parseLong(String.valueOf(params.get("io_cnt")));
             Long restCnt = jpaQueryFactory
@@ -251,7 +253,17 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                     .setParameter(2, Long.parseLong(String.valueOf(params.get("sto_no"))))
                     .executeUpdate());
 
-            return "1";
+            //출고이력 생성
+            return String.valueOf(entityManager
+                    .createNativeQuery("INSERT INTO sales (STO_NO, OUT_CNT, OUT_WY, CSM_CD, MEMO, REG_ID, REG_DT) VALUES (?,?,?,?,?,?,?)")
+                    .setParameter(1, String.valueOf(params.get("sto_no")))
+                    .setParameter(2, io_cnt)
+                    .setParameter(3, String.valueOf(params.get("out_wy")))
+                    .setParameter(4, String.valueOf(params.get("csm_cd")))
+                    .setParameter(5, String.valueOf(params.get("memo")))
+                    .setParameter(6, String.valueOf(params.get("login_id")))
+                    .setParameter(7, now)
+                    .executeUpdate());
         }
     }
 

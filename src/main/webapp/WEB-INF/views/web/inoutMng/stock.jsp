@@ -97,7 +97,7 @@
 </style>
 
 <head>
-    <title>제품입출고 관리</title>
+    <title>제품입출고관리</title>
     <link rel="shortcut icon" href="/resources/img/favicon.ico" type="image/png">
 </head>
 <body>
@@ -107,7 +107,7 @@
         <div class="container_inner">
             <div class="contwrap">
                 <h3 class="cont_tit">
-                    제품입출고 관리
+                    제품입출고관리
                 </h3>
                 <div class="white_box bd_gr">
                     <form:form id="searchForm" name="searchForm" method="get" action="/inoutMng/stock" modelAttribute="stockListReq">
@@ -586,7 +586,7 @@
     // 검색조건 초기화
     function doInit() {
         $("#procdSelect option:eq(0)").prop("selected", true);
-        $("#searchWord").val("");
+        //$("#searchWord").val("");
         location.reload();
     }
 

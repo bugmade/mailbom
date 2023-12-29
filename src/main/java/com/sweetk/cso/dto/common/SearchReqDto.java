@@ -9,10 +9,6 @@ public class SearchReqDto {
 
     private String startDt;
     private String endDt;
-//    private String searchType;
-//    private String inOut;
-//    private String outWy;
-//    private String datepicker;
     private String searchWord;
     private int pageNo = 1;
     private int pageSize = 10;

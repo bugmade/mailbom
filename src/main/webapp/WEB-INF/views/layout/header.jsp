@@ -66,9 +66,9 @@
                         <li class="depth02_li">
                             <a href="/inoutMng/stock" class="sub_d_link">제품입출고관리</a>
                         </li>
-<%--                        <li class="depth02_li">--%>
-<%--                            <a href="/inoutMng/list" class="sub_d_link">제품입출고관리(신규)</a>--%>
-<%--                        </li>--%>
+                        <li class="depth02_li">
+                            <a href="/inoutMng/sales" class="sub_d_link">제품출고이력</a>
+                        </li>
                     </ul>
                 </li>
 <%--                <li class="depth01_li">--%>
