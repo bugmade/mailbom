@@ -154,7 +154,7 @@
                 <c:set value="${result.getTotalElements()}" var="totalCount"/>
                     <div style="margin-bottom: 5px; margin-top: 5px;">
                         총 <span >${totalCount}</span> 건
-<%--                        <button class="excel_btn_j" onclick="excelDownload()">엑셀</button>--%>
+                        <button class="excel_btn_j" onclick="excelSalesDownload()">엑셀</button>
                     </div>
 
                 <table class="list_table">
@@ -170,10 +170,11 @@
                         <col width="10%">
                         <col width="5%">
                         <col width="*">
+                        <col width="5%">
                     </colgroup>
                     <thead>
                     <tr>
-                        <th>번호</th>
+                        <th>출고번호</th>
                         <th>제품명</th>
                         <th>보관창고</th>
                         <th>로트번호</th>
@@ -184,6 +185,7 @@
                         <th>메모</th>
                         <th>등록자</th>
                         <th>등록일</th>
+                        <th>입고번호</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -225,6 +227,7 @@
 <%--                                        <javatime:format value="${row.regDt}" pattern="yyyy-MM-dd"/>--%>
                                         ${row.regDt}
                                     </td>
+                                    <td>${row.stoNo}</td>
                                 </tr>
                             </c:forEach>
                         </c:otherwise>
@@ -420,10 +423,10 @@
         $("#layer_popup").hide();
     }
 
-    function excelDownload() {
-        console.log('excelDownload');
+    function excelSalesDownload() {
+        console.log('excelSalesDownload');
 
-        $('#pagingForm').attr("action", "/inoutMng/api/excelDownload");
+        $('#pagingForm').attr("action", "/inoutMng/api/excelSalesDownload");
         $('#pagingForm').submit();
 
         // @@@ 엑셀다운로드에서 ajax를 쓰려면 특수처리가 필요하다???
@@ -432,11 +435,11 @@
         // $.ajax({
         //     dataType : "html",
         //     type : "POST",
-        //     url : "/inoutMng/api/excelDownload",
+        //     url : "/inoutMng/api/excelSalesDownload",
         //     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         //     data : params,
         //     success : function(data) {
-        //         console.log('excelDownload success');
+        //         console.log('excelSalesDownload success');
         //         console.log(data);
         //         alert("엑셀저장성공");
         //         location.reload();

@@ -156,7 +156,7 @@
                     <div style="margin-bottom: 5px; margin-top: 5px;">
                         총 <span >${totalCount}</span> 건
                         <button class="input_btn_j" onclick="showStockPopup('CREATE_INPUT')">입고</button>
-                        <button class="excel_btn_j" onclick="excelDownload()">엑셀</button>
+                        <button class="excel_btn_j" onclick="excelStockDownload()">엑셀</button>
                     </div>
 
                 <table class="list_table">
@@ -178,7 +178,7 @@
                     </colgroup>
                     <thead>
                     <tr>
-                        <th>번호</th>
+                        <th>입고번호</th>
                         <th>제품명</th>
                         <th>구분</th>
                         <th>수량</th>
@@ -778,10 +778,10 @@
         $("#layer_popup").hide();
     }
 
-    function excelDownload() {
-        console.log('excelDownload');
+    function excelStockDownload() {
+        console.log('excelStockDownload');
 
-        $('#pagingForm').attr("action", "/inoutMng/api/excelDownload");
+        $('#pagingForm').attr("action", "/inoutMng/api/excelStockDownload");
         $('#pagingForm').submit();
         //location.reload();
 
@@ -791,11 +791,11 @@
         // $.ajax({
         //     dataType : "html",
         //     type : "POST",
-        //     url : "/inoutMng/api/excelDownload",
+        //     url : "/inoutMng/api/excelStockDownload",
         //     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         //     data : params,
         //     success : function(data) {
-        //         console.log('excelDownload success');
+        //         console.log('excelStockDownload success');
         //         console.log(data);
         //         alert("엑셀저장성공");
         //         location.reload();

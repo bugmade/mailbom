@@ -71,7 +71,7 @@ public class InoutMngService {
         return stockRepository.deleteStockByStoNo(params);
     }
 
-    public void excelDownload(StockListReq req, HttpServletResponse response) {
+    public void excelStockDownload(StockListReq req, HttpServletResponse response) {
         List<StockListRes> list = stockRepository.findStockForExcel(req);
         // UnvrsVO에 UnvrsCollector 세팅
 //        for (UnvrsVO unvrsVO : list) {
@@ -87,10 +87,10 @@ public class InoutMngService {
 //            }
 //        }
 
-        writeExcel(list, "stock", response);
+        writeStockExcel(list, "stock", response);
     }
 
-    public void writeExcel(List<StockListRes> downloadList, String classNm, HttpServletResponse response) {
+    public void writeStockExcel(List<StockListRes> downloadList, String classNm, HttpServletResponse response) {
         String excelPath = "static/excel/" +  classNm + ".xlsx";
         String fileNm = classNm + "_" + getDatePatterns("yyyyMMddHHmmss");
 
@@ -120,5 +120,31 @@ public class InoutMngService {
     public Page<SalesListRes> getSalesList(SalesListReq req, Pageable pageable) {
         // TODO COM_CM 이름
         return salesRepository.getListBySearchDtoAndPageable(req, pageable);
+    }
+
+    public void excelSalesDownload(SalesListReq req, HttpServletResponse response) {
+        List<SalesListRes> list = salesRepository.findSalesForExcel(req);
+        writeSalesExcel(list, "sales", response);
+    }
+
+    public void writeSalesExcel(List<SalesListRes> downloadList, String classNm, HttpServletResponse response) {
+        String excelPath = "static/excel/" +  classNm + ".xlsx";
+        String fileNm = classNm + "_" + getDatePatterns("yyyyMMddHHmmss");
+
+        log.info(downloadList);
+
+        ClassPathResource resource = new ClassPathResource(excelPath);
+        try (InputStream fis = resource.getInputStream()){
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment;filename=\"" + fileNm + ".xlsx\"");
+            OutputStream os = response.getOutputStream();
+            Context context = new Context();
+            context.putVar("list", downloadList);   //엑셀의 내용을 채우는 아이
+            JxlsHelper.getInstance().processTemplate(fis, os, context);
+            log.info("### writeExcel success");
+        } catch (IOException e) {
+            //logger.error(e.getMessage(), e);
+            log.info("### writeExcel fail");
+        }
     }
 }

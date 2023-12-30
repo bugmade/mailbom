@@ -98,13 +98,13 @@ public class InoutMngController {
     }
 
     // 엑셀 다운로드
-    @RequestMapping("/api/excelDownload")
+    @RequestMapping("/api/excelStockDownload")
     //@ResponseBody --> @@@ 얘는 있거나 말거나 엑셀 다운로드와 관계없음???
-    public void excelDownload(StockListReq req, HttpServletResponse response){
-        log.info("### excelDownload");
+    public void excelStockDownload(StockListReq req, HttpServletResponse response){
+        log.info("### excelStockDownload");
         log.info(req);
 
-        inoutMngService.excelDownload(req, response);
+        inoutMngService.excelStockDownload(req, response);
     }
 
     // 제품출고이력
@@ -126,5 +126,14 @@ public class InoutMngController {
         log.info("### sales : get select list ^^^ ");
 
         return "/web/inoutMng/sales";
+    }
+
+    @RequestMapping("/api/excelSalesDownload")
+    //@ResponseBody --> @@@ 얘는 있거나 말거나 엑셀 다운로드와 관계없음???
+    public void excelSalesDownload(SalesListReq req, HttpServletResponse response){
+        log.info("### excelSalesDownload");
+        log.info(req);
+
+        inoutMngService.excelSalesDownload(req, response);
     }
 }

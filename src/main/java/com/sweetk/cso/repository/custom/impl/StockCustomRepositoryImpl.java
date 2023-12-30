@@ -197,12 +197,26 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 )).from(stock)
                 .leftJoin(product)
                 .on(stock.proCd.eq(product.proCd))
-//                .leftJoin(consumer)
-//                .on(stock.csmCd.eq(consumer.csmCd))
-                .where(searchByTextInput(req))
+                .where(searchByTextInputExcel(req))
                 .orderBy(stock.stoNo.desc())
                 .fetch();
         return list;
+    }
+
+    private BooleanExpression searchByTextInputExcel(StockListReq req){
+        BooleanExpression searchExpression = null;
+        String proCd = req.getProCd();
+        String searchWord = req.getSearchWord();
+
+        if (!StringUtils.hasText(proCd))    proCd = "ALL";
+        if (!StringUtils.hasText(searchWord))    searchWord = "";
+
+        log.info("### searchByTextInput [proCd:" + proCd + ", searchWord:" + searchWord + "]");
+
+        if (!proCd.equals("ALL")) {
+            searchExpression = stock.proCd.eq(proCd);
+        }
+        return searchExpression;
     }
 
     @Override

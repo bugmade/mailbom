@@ -16,7 +16,7 @@ public interface SalesCustomRepository {
 
     Page<SalesListRes> getListBySearchDtoAndPageable(SalesListReq req, Pageable pageable);
 //    List<SalesListRes> findAllStock();
-//    List<SalesListRes> findStockForExcel(SalesListReq req);
+    List<SalesListRes> findSalesForExcel(SalesListReq req);
 //
 //    Page<Sales> findPageAllByProNm(String proNm, Pageable pageable);
 //

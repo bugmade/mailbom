@@ -142,42 +142,44 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
 //                .fetch();
 //    }
 //
-//    public List<StockListRes> findStockForExcel(StockListReq req) {
-//        log.info("### findStockForExcel");
-//
-////        List<StockListRes> resultList = entityManager
-////                .createNativeQuery("SELECT PRO_CD, IN_OUT, IO_CNT, OUT_WY, CSM_CD, MEMO, REG_ID, REG_DT FROM stock")
-////                //.setParameter("name", "le")
-////                .getResultList();
-////        log.info(resultList);
-//
-//
-//        List<StockListRes> list = jpaQueryFactory
-//                .select(Projections.fields(StockListRes.class,
-//                        stock.stoNo,
-//                        stock.proCd,
-//                        product.proNm,
-//                        stock.inOut,
-//                        stock.ioCnt,
-//                        stock.restCnt,
-//                        stock.fromStorage,
-//                        stock.lotNo,
-//                        stock.expDt,
-//                        stock.memo,
-//                        stock.regId,
-//                        stock.regDt,
-//                        stock.modId,
-//                        stock.modDt
-//                )).from(stock)
-//                .leftJoin(product)
-//                .on(stock.proCd.eq(product.proCd))
-////                .leftJoin(consumer)
-////                .on(stock.csmCd.eq(consumer.csmCd))
-//                .where(searchByTextInput(req))
-//                .orderBy(stock.stoNo.desc())
-//                .fetch();
-//        return list;
-//    }
+    public List<SalesListRes> findSalesForExcel(SalesListReq req) {
+        log.info("### findSalesForExcel");
+
+//        List<StockListRes> resultList = entityManager
+//                .createNativeQuery("SELECT PRO_CD, IN_OUT, IO_CNT, OUT_WY, CSM_CD, MEMO, REG_ID, REG_DT FROM stock")
+//                //.setParameter("name", "le")
+//                .getResultList();
+//        log.info(resultList);
+
+
+        List<SalesListRes> list = jpaQueryFactory
+                .select(Projections.fields(SalesListRes.class,
+                        sales.salesNo,
+                        stock.stoNo,
+                        stock.lotNo,
+                        stock.expDt,
+                        product.proNm,
+                        stock.fromStorage,
+                        sales.outCnt,
+                        sales.outWy,
+                        consumer.csmNm,
+                        sales.memo,
+                        sales.regId,
+                        sales.regDt,
+                        sales.modId,
+                        sales.modDt
+                )).from(sales)
+                .leftJoin(stock)
+                .on(stock.stoNo.eq(sales.stoNo))
+                .leftJoin(product)
+                .on(stock.proCd.eq(product.proCd))
+                .leftJoin(consumer)
+                .on(sales.csmCd.eq(consumer.csmCd))
+                .where(searchByTextInput(req))
+                .orderBy(sales.salesNo.desc())
+                .fetch();
+        return list;
+    }
 //
 //    @Override
 //    public Stock findStockByProCd(String proCd) {
