@@ -232,8 +232,14 @@
                                     <td>${row.modDt}</td>
                                     <td>
                                         <button class="update_btn_j" onclick="showStockPopup('CREATE_OUTPUT', '${row.proCd}', '${row.proNm}', '${row.lotNo}', '${row.expDt}', '${row.fromStorage}', '${row.restCnt}', '${row.memo}', '${row.stoNo}')">출고</button>
-                                        <button class="transfer_btn_j" onclick="showStockPopup('CREATE_TRANSFER', '${row.proCd}', '${row.proNm}', '${row.lotNo}', '${row.expDt}', '${row.fromStorage}', '${row.restCnt}', '${row.memo}', '${row.stoNo}')">창고<br>이동</button>
-                                        <button class="delete_btn_j" onclick="deleteStock(${row.stoNo})">삭제</button>
+                                        <c:choose>
+                                        <c:when test="${row.inOut == 'IN'}">
+                                            <button class="transfer_btn_j" onclick="showStockPopup('CREATE_TRANSFER', '${row.proCd}', '${row.proNm}', '${row.lotNo}', '${row.expDt}', '${row.fromStorage}', '${row.restCnt}', '${row.memo}', '${row.stoNo}')">창고<br>이동</button>
+                                        </c:when>
+                                        <c:otherwise>
+                                        </c:otherwise>
+                                        </c:choose>
+<%--                                        <button class="delete_btn_j" onclick="deleteStock(${row.stoNo})">삭제</button>--%>
                                     </td>
                                 </tr>
                             </c:forEach>

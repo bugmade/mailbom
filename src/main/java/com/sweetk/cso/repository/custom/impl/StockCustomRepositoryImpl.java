@@ -44,78 +44,95 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
     public Page<StockListRes> getListBySearchDtoAndPageable(StockListReq req, Pageable pageable) {
         log.info("### getListBySearchDtoAndPageable");
 
-        List<StockListRes> list = jpaQueryFactory
-                .select(Projections.fields(StockListRes.class,
-                        stock.stoNo,
-                        stock.proCd,
-                        product.proNm,
-                        stock.inOut,
-                        stock.ioCnt,
-                        stock.restCnt,
-                        stock.fromStorage,
-                        stock.lotNo,
-                        stock.expDt,
-                        stock.memo,
-                        stock.regId,
-                        stock.regDt,
-                        stock.modId,
-                        stock.modDt
-                )).from(stock)
-                .leftJoin(product)
-                .on(stock.proCd.eq(product.proCd))
-//                .leftJoin(consumer)
-//                .on(stock.csmCd.eq(consumer.csmCd))
-                .where(searchByTextInput(req))
-                .orderBy(stock.stoNo.desc())
-                .orderBy(stock.expDt.asc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+        String proCd = req.getProCd();
+        if (!StringUtils.hasText(proCd)) proCd = "ALL";
 
-        Long totalCount = jpaQueryFactory.select(stock.count())
-                .from(stock)
-                .leftJoin(product)
-                .on(stock.proCd.eq(product.proCd))
-//                .leftJoin(consumer)
-//                .on(stock.csmCd.eq(consumer.csmCd))
-                .where(searchByTextInput(req))
-                .fetchOne();
+        //@@@ 맘에들지않음
+        if (proCd.equals("ALL")) {
+            List<StockListRes> list = jpaQueryFactory
+                    .select(Projections.fields(StockListRes.class,
+                            stock.stoNo,
+                            stock.proCd,
+                            product.proNm,
+                            stock.inOut,
+                            stock.ioCnt,
+                            stock.restCnt,
+                            stock.fromStorage,
+                            stock.lotNo,
+                            stock.expDt,
+                            stock.memo,
+                            stock.regId,
+                            stock.regDt,
+                            stock.modId,
+                            stock.modDt
+                    )).from(stock)
+                    .leftJoin(product)
+                    .on(stock.proCd.eq(product.proCd))
+                    .where(searchByTextInput(req))
+                    .orderBy(stock.stoNo.desc())
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+            Long totalCount = jpaQueryFactory.select(stock.count())
+                    .from(stock)
+                    .leftJoin(product)
+                    .on(stock.proCd.eq(product.proCd))
+                    .where(searchByTextInput(req))
+                    .fetchOne();
 
-        return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
+            return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
+
+        } else {
+            List<StockListRes> list = jpaQueryFactory
+                    .select(Projections.fields(StockListRes.class,
+                            stock.stoNo,
+                            stock.proCd,
+                            product.proNm,
+                            stock.inOut,
+                            stock.ioCnt,
+                            stock.restCnt,
+                            stock.fromStorage,
+                            stock.lotNo,
+                            stock.expDt,
+                            stock.memo,
+                            stock.regId,
+                            stock.regDt,
+                            stock.modId,
+                            stock.modDt
+                    )).from(stock)
+                    .leftJoin(product)
+                    .on(stock.proCd.eq(product.proCd))
+                    .where(searchByTextInput(req))
+                    .orderBy(stock.expDt.asc())
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+            Long totalCount = jpaQueryFactory.select(stock.count())
+                    .from(stock)
+                    .leftJoin(product)
+                    .on(stock.proCd.eq(product.proCd))
+                    .where(searchByTextInput(req))
+                    .fetchOne();
+
+            return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
+        }
     }
 
     private BooleanExpression searchByTextInput(StockListReq req){
-        //private BooleanExpression searchByTextInput(SearchReqDto req){
         BooleanExpression searchExpression = null;
         String proCd = req.getProCd();
-        String inOut = req.getInOut();
-        //String outWy = req.getOutWy();
         String searchWord = req.getSearchWord();
 
         if (!StringUtils.hasText(proCd))    proCd = "ALL";
-        if (!StringUtils.hasText(inOut))    inOut = "ALL";
-        //if (!StringUtils.hasText(outWy))    outWy = "ALL";
         if (!StringUtils.hasText(searchWord))    searchWord = "";
 
         log.info("### searchByTextInput [proCd:" + proCd + ", searchWord:" + searchWord + "]");
 
         if (!proCd.equals("ALL")) {
-            searchExpression = stock.proCd.eq(proCd);
+            searchExpression = stock.proCd.eq(proCd).and(stock.restCnt.gt(0L));
+        } else {
+            searchExpression = stock.restCnt.gt(0L);
         }
-        // 입고일때
-//        if (inOut.equals("IN")) {
-//            searchExpression = stock.inOut.eq(inOut);
-//        }
-//        else if (inOut.equals("OUT")) {    // 출고일때
-//            if (!outWy.equals("ALL")) {
-//                if(outWy.equals("BTOB") && !searchWord.equals(""))
-//                    searchExpression = stock.inOut.eq(inOut).and(stock.outWy.eq(outWy)).and(consumer.csmNm.contains(searchWord));
-//                else
-//                    searchExpression = stock.inOut.eq(inOut).and(stock.outWy.eq(outWy));
-//            } else {
-//                searchExpression = stock.inOut.eq(inOut);
-//            }
-//        }
         return searchExpression;
     }
 
@@ -248,9 +265,11 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
             restCnt -= io_cnt;
             if(restCnt < 0) restCnt = 0L;
             String.valueOf(entityManager
-                    .createNativeQuery("UPDATE stock SET REST_CNT = ? WHERE STO_NO = ?")
+                    .createNativeQuery("UPDATE stock SET REST_CNT = ?, MOD_ID = ?, MOD_DT = ? WHERE STO_NO = ?")
                     .setParameter(1, restCnt)
-                    .setParameter(2, Long.parseLong(String.valueOf(params.get("sto_no"))))
+                    .setParameter(2, String.valueOf(params.get("login_id")))
+                    .setParameter(3, now)
+                    .setParameter(4, Long.parseLong(String.valueOf(params.get("sto_no"))))
                     .executeUpdate());
 
             //출고이력 생성
