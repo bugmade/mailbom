@@ -224,8 +224,10 @@
                                     <td>${row.memo}</td>
                                     <td>${row.regId}</td>
                                     <td>
-<%--                                        <javatime:format value="${row.regDt}" pattern="yyyy-MM-dd"/>--%>
-                                        ${row.regDt}
+                                            ${row.regDt}
+<%--                                        <fmt:parseDate value='${row.regDt}' pattern="yyyy-MM-dd-hh:mm" var='carguip'/>--%>
+<%--                                        <fmt:formatDate value="${carguip}" pattern="yyyy-MM-dd"/>--%>
+<%--                                        <fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" value="${row.regDt}"/>--%>
                                     </td>
                                     <td>${row.stoNo}</td>
                                 </tr>

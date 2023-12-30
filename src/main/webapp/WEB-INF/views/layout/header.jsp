@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/resources/css/jquery/jquery-ui.css">
     <link rel="stylesheet" href="/resources/css/common.css">
+    <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
     <!--script -->
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <script src="/resources/js/common.js"></script>
