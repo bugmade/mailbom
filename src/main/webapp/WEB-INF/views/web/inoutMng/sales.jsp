@@ -131,7 +131,7 @@
                                             <form:option value="GIFT">증정</form:option>
                                             <form:option value="ETC">기타</form:option>
                                         </form:select>
-                                        <form:input type="text" path="searchWord" value="" style="width:260px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="특정 납품처 검색시 납품처 입력 필요!"/>
+                                        <form:input type="text" path="searchWord" value="" style="width:250px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="납품처 검색어"/>
                                         <form:input type="text" path="startDt" id="startDt" cssClass="basic_formtype" style="width:120px; margin-right:10px;" placeholder="검색 시작일" />
                                         <form:input type="text" path="endDt" id="endDt" cssClass="basic_formtype" style="width:120px; margin-right:10px;" placeholder="검색 종료일" />
                                         <button id="searchBtn" class="search_btn">
