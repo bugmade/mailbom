@@ -19,9 +19,23 @@
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <script>
         $( function() {
-            $( "#datepicker" ).datepicker({
+            $( "#startDt" ).datepicker({
                 //minDate: '+1D',
                 // gotoCurrent: false,
+                dateFormat: "yy-mm-dd",
+                beforeShow: function (input, dpobj) {
+                    var widget = $( "#" + input.id ).datepicker( "widget" );
+                    setTimeout(function () {
+                        widget.find('a.ui-state-highlight').removeClass('ui-state-highlight');
+                        widget.find('a.ui-state-hover').removeClass('ui-state-hover');
+                    }, 0);
+                }
+            });
+
+            $( "#endDt" ).datepicker({
+                //minDate: '+1D',
+                // gotoCurrent: false,
+                dateFormat: "yy-mm-dd",
                 beforeShow: function (input, dpobj) {
                     var widget = $( "#" + input.id ).datepicker( "widget" );
                     setTimeout(function () {

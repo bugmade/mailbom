@@ -93,18 +93,66 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
         BooleanExpression searchExpression = null;
         String outWy = req.getOutWy();
         String searchWord = req.getSearchWord();
+        String startDt = req.getStartDt();
+        String endDt = req.getEndDt();
 
         if (!StringUtils.hasText(outWy))    outWy = "ALL";
         if (!StringUtils.hasText(searchWord))    searchWord = "";
+        if(StringUtils.hasText(startDt)) {
+            startDt += " 00:00:00";
+        } else {
+            startDt = "";
+        }
+        if(StringUtils.hasText(endDt)) {
+            endDt += " 23:59:59";
+        } else {
+            endDt = "";
+        }
+        log.info("### startDt: " + startDt);
+        log.info("### endDt: " + endDt);
 
         if (!outWy.equals("ALL")) {
             if(!searchWord.equals("")) {
-                searchExpression = sales.outWy.eq(outWy).and(consumer.csmNm.contains(searchWord));
+                if(startDt.equals("") && endDt.equals("")) {
+                    searchExpression = sales.outWy.eq(outWy).and(consumer.csmNm.contains(searchWord));
+                } else if(!startDt.equals("") && endDt.equals("")) {
+                    searchExpression = sales.regDt.gt(startDt).and(sales.outWy.eq(outWy)).and(consumer.csmNm.contains(searchWord));
+                } else if(startDt.equals("") && !endDt.equals("")) {
+                    searchExpression = sales.regDt.lt(endDt).and(sales.outWy.eq(outWy)).and(consumer.csmNm.contains(searchWord));
+                } else {
+                    searchExpression = sales.regDt.gt(startDt).and(sales.regDt.lt(endDt)).and(sales.outWy.eq(outWy)).and(consumer.csmNm.contains(searchWord));
+                }
             } else {
-                searchExpression = sales.outWy.eq(outWy);
+                if(startDt.equals("") && endDt.equals("")) {
+                    searchExpression = sales.outWy.eq(outWy);
+                } else if(!startDt.equals("") && endDt.equals("")) {
+                    searchExpression = sales.regDt.gt(startDt).and(sales.outWy.eq(outWy));
+                } else if(startDt.equals("") && !endDt.equals("")) {
+                    searchExpression = sales.regDt.lt(endDt).and(sales.outWy.eq(outWy));
+                } else {
+                    searchExpression = sales.regDt.gt(startDt).and(sales.regDt.lt(endDt)).and(sales.outWy.eq(outWy));
+                }
             }
         } else if(!searchWord.equals("")) {
-            searchExpression = consumer.csmNm.contains(searchWord);
+            if(startDt.equals("") && endDt.equals("")) {
+                searchExpression = consumer.csmNm.contains(searchWord);
+            } else if(!startDt.equals("") && endDt.equals("")) {
+                searchExpression = sales.regDt.gt(startDt).and(consumer.csmNm.contains(searchWord));
+            } else if(startDt.equals("") && !endDt.equals("")) {
+                searchExpression = sales.regDt.lt(endDt).and(consumer.csmNm.contains(searchWord));
+            } else {
+                searchExpression = sales.regDt.gt(startDt).and(sales.regDt.lt(endDt)).and(consumer.csmNm.contains(searchWord));
+            }
+        } else {
+            if(startDt.equals("") && endDt.equals("")) {
+                log.info("### no date specified");
+            } else if(!startDt.equals("") && endDt.equals("")) {
+                searchExpression = sales.regDt.gt(startDt);
+            } else if(startDt.equals("") && !endDt.equals("")) {
+                searchExpression = sales.regDt.lt(endDt);
+            } else {
+                searchExpression = sales.regDt.gt(startDt).and(sales.regDt.lt(endDt));
+            }
         }
 
         return searchExpression;

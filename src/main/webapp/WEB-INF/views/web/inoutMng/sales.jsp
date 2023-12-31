@@ -113,7 +113,7 @@
                     <form:form id="searchForm" name="searchForm" method="get" action="/inoutMng/sales" modelAttribute="salesListReq">
                         <table class="gray_table half_table">
                             <colgroup>
-                                <col width="16.5%">
+                                <col width="10%">
                                 <col width="*">
                                 <col width="16.5%">
                                 <col width="*">
@@ -124,11 +124,6 @@
                                         <label for="searchWord">검색조건</label>
                                     </th>
                                     <td colspan="3" class="fz0">
-<%--                                        <form:select path="inOut" style="width:170px;" id="inoutSelect" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">--%>
-<%--                                            <form:option value="ALL">전체(입출고)</form:option>--%>
-<%--                                            <form:option value="IN">입고</form:option>--%>
-<%--                                            <form:option value="OUT">출고</form:option>--%>
-<%--                                        </form:select>--%>
                                         <form:select path="outWy" style="width:170px;" id="outwySelect" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">
                                             <form:option value="ALL">전체(출고사유)</form:option>
                                             <form:option value="BTOB">납품</form:option>
@@ -136,8 +131,9 @@
                                             <form:option value="GIFT">증정</form:option>
                                             <form:option value="ETC">기타</form:option>
                                         </form:select>
-<%--                                        <form:input type="text" path="datepicker" id="datepicker" />--%>
                                         <form:input type="text" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="특정 납품처 검색시 납품처 입력 필요!"/>
+                                        <form:input type="text" path="startDt" id="startDt" style="width:80px; margin-right:10px;" placeholder="시작일" />
+                                        <form:input type="text" path="endDt" id="endDt" style="width:80px; margin-right:10px;" placeholder="종료일" />
                                         <button id="searchBtn" class="search_btn">
                                             검색
                                             <span class="ir_so">검색버튼</span>
@@ -261,10 +257,9 @@
 
             <%-- paging 태그에서 페이지 번호를 클릭했을때 자바스크립트 함수로 실행하게될 form을 작성한다(읽기전용 form임)--%>
             <form:form id="pagingForm" name="pagingForm" method="get" modelAttribute="salesListReq">
-<%--                <form:hidden id="pagingSearchType6" path="searchType"/>--%>
-<%--                <form:hidden id="pagingSearchType6" path="inOut"/>--%>
+                <form:hidden id="pagingSearchType6" path="startDt"/>
+                <form:hidden id="pagingSearchType9" path="endDt"/>
                 <form:hidden id="pagingSearchType8" path="outWy"/>
-<%--                <form:hidden id="pagingSearchType9" path="datepicker"/>--%>
                 <form:hidden id="pagingSearchType7" path="searchWord"/>
                 <form:hidden id="pagingCurrentPageNo" path="pageNo"/>
                 <form:hidden id="pagingRecordCountPerPage" path="pageSize"/>
@@ -415,6 +410,8 @@
     function doInit() {
         $("#outwySelect option:eq(0)").prop("selected", true);
         $("#searchWord").val("");
+        $("#startDt").val("");
+        $("#endDt").val("");
         location.reload();
     }
 
