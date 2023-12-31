@@ -499,7 +499,7 @@
         if (CREATE_MODE === CREATE_INPUT) {   //입고
             pro_nm = $(".pro_cd :selected").text();
         } else {
-            pro_nm = $("#pro_cd").val();
+            pro_nm = $("#pro_nm").val();
         }
 
         let params = $('#frmReg').serializeObject();
@@ -636,6 +636,7 @@
             $("#in_out").val("OUT");
 
             html = proNm;
+            html += '<input type="hidden" id="pro_nm" value="'+proNm+'">';
             html += '<input type="hidden" name="pro_cd" id="pro_cd" value="'+proCd+'">';
             html += '<input type="hidden" name="sto_no" id="sto_no" value="'+stoNo+'">';
             $("#pro_cd_td_content").html(html);
@@ -678,6 +679,7 @@
             $("#in_out").val("TRANSFER");
 
             html = proNm;
+            html += '<input type="hidden" id="pro_nm" value="'+proNm+'">';
             html += '<input type="hidden" name="pro_cd" id="pro_cd" value="'+proCd+'">';
             html += '<input type="hidden" name="sto_no" id="sto_no" value="'+stoNo+'">';
             $("#pro_cd_td_content").html(html);
