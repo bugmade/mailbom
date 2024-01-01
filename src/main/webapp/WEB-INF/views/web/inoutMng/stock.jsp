@@ -310,19 +310,19 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>로트번호</td>
+                            <td>로트번호 *</td>
                             <td>
                                 <div id="lot_no_td_content"></div>
                             </td>
                         </tr>
                         <tr>
-                            <td>유통기한</td>
+                            <td>유통기한 *</td>
                             <td>
                                 <div id="exp_dt_td_content"></div>
                             </td>
                         </tr>
                         <tr>
-                            <td>수량</td>
+                            <td>수량 *</td>
                             <td><div id="io_cnt_td_content"></div></td>
                         </tr>
                         <tr>
