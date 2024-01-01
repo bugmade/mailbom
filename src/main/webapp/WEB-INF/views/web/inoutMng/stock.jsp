@@ -487,12 +487,25 @@
     // 재고 입출고
     function createStock(){
         console.log('createStock');
+        if(CREATE_MODE === CREATE_INPUT && !$('#lot_no').val()) {
+            alert("로트번호를 입력하세요");
+            $('#lot_no').focus();
+            return;
+        }
+
+        if(CREATE_MODE === CREATE_INPUT && !$('#exp_dt').val()) {
+            alert("유통기한을 입력하세요");
+            $('#exp_dt').focus();
+            return;
+        }
+
         let ioCnt = $('#io_cnt').val();
         if(CREATE_MODE !== CREATE_TRANSFER && ioCnt < 1) {
             alert("수량(" + ioCnt + ")은 1개 이상 입력하세요");
             $('#io_cnt').focus();
             return;
         }
+
 
         // confirm
         let pro_nm;
@@ -610,7 +623,7 @@
             enableProcdSelect();
             html ='<input type="text" maxlength="20" name="lot_no" id="lot_no" style="width: 98%">';
             $("#lot_no_td_content").html(html);
-            html ='<input type="text" maxlength="6" name="exp_dt" id="exp_dt" style="width: 98%">';
+            html ='<input type="text" maxlength="6" name="exp_dt" id="exp_dt" placeholder="숫자6자리 ==> 예를들어(241231)" style="width: 98%">';
             $("#exp_dt_td_content").html(html);
             html ='<input type="number" pattern="[0-9]+" name="io_cnt" id="io_cnt" style="width: 98%">';
             $("#io_cnt_td_content").html(html);
