@@ -187,7 +187,7 @@
                     <tbody>
                     <c:choose>
                         <c:when test="${totalCount == 0}">
-                            <td colspan="9" class="list_none">등록된 내역이 없습니다.</td>
+                            <td colspan="12" class="list_none">등록된 내역이 없습니다.</td>
                         </c:when>
                         <c:otherwise>
                             <c:set var="idx" value="${totalCount - ((result.getNumber()) * result.getSize())}"/>
