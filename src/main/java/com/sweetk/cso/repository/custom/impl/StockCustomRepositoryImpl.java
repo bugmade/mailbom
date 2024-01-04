@@ -445,11 +445,6 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .from(stock)
                 .where(stock.stoNo.eq(Long.parseLong(stoNo)))
                 .fetchOne();
-        String inOut = jpaQueryFactory
-                .select(stock.inOut)
-                .from(stock)
-                .where(stock.stoNo.eq(Long.parseLong(stoNo)))
-                .fetchOne();
         String fromStorage = jpaQueryFactory
                 .select(stock.fromStorage)
                 .from(stock)
@@ -466,24 +461,11 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .where(product.proCd.eq(proCd))
                 .fetchOne();
 
-        if (inOut.equals("IN")) {           // 입고
-            hqStorage -= ioCnt;             // 입고는 본사창고에만
-        } else {                            // 출고
-            if (fromStorage.equals("HQ")) {
-                hqStorage += ioCnt;
-            } else if (fromStorage.equals("FIRST")) {
-                firstStorage += ioCnt;
-            }
-
-//            if(outWy.equals("TRANSFER")) { //창고 이동일때 타켓창고에서 빼기
-//                if (toStorage.equals("HQ")) {
-//                    hqStorage -= ioCnt;
-//                } else if (toStorage.equals("FIRST")) {
-//                    firstStorage -= ioCnt;
-//                }
-//            }
-
+        if (fromStorage.equals("HQ")) {
+            hqStorage -= ioCnt;
             if (hqStorage < 0) hqStorage = 0L;
+        } else if (fromStorage.equals("FIRST")) {
+            firstStorage -= ioCnt;
             if (firstStorage < 0) firstStorage = 0L;
         }
 

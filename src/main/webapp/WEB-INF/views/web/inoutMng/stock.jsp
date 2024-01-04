@@ -233,13 +233,16 @@
                                     <td>
                                         <button class="update_btn_j" onclick="showStockPopup('CREATE_OUTPUT', '${row.proCd}', '${row.proNm}', '${row.lotNo}', '${row.expDt}', '${row.fromStorage}', '${row.restCnt}', '${row.memo}', '${row.stoNo}')">출고</button>
                                         <c:choose>
-                                        <c:when test="${row.inOut == 'IN'}">
-                                            <button class="transfer_btn_j" onclick="showStockPopup('CREATE_TRANSFER', '${row.proCd}', '${row.proNm}', '${row.lotNo}', '${row.expDt}', '${row.fromStorage}', '${row.restCnt}', '${row.memo}', '${row.stoNo}')">창고<br>이동</button>
-                                        </c:when>
-                                        <c:otherwise>
-                                        </c:otherwise>
+                                            <c:when test="${row.inOut == 'IN' && row.ioCnt == row.restCnt}">
+                                                <button class="transfer_btn_j" onclick="showStockPopup('CREATE_TRANSFER', '${row.proCd}', '${row.proNm}', '${row.lotNo}', '${row.expDt}', '${row.fromStorage}', '${row.restCnt}', '${row.memo}', '${row.stoNo}')">창고<br>이동</button>
+                                            </c:when>
                                         </c:choose>
-<%--                                        <button class="delete_btn_j" onclick="deleteStock(${row.stoNo})">삭제</button>--%>
+                                        <c:choose>
+                                            <c:when test="${row.ioCnt == row.restCnt}">
+                                                <button class="delete_btn_j" onclick="deleteStock(${row.stoNo})">삭제</button>
+                                            </c:when>
+                                        </c:choose>
+
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -426,7 +429,7 @@
     // 입출력내역 삭제하기
     function deleteStock(sto_no) {
         console.log('deleteStock: %s', sto_no);
-        if(!confirm("입출고번호:"+sto_no+" 삭제할까요?")) {
+        if(!confirm("입고번호:"+sto_no+" 삭제할까요?")) {
             return;
         }
         let pwd = prompt("비밀번호를 입력하세요");
