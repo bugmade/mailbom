@@ -163,8 +163,8 @@
                         <th>제품코드</th>
                         <th>제품명</th>
                         <th>제품설명</th>
-                        <th>본사창고재고</th>
-                        <th>위탁창고1재고</th>
+                        <th>본사창고재고<br>(HQ)</th>
+                        <th>위탁창고1재고<br>(FIRST)</th>
                         <th></th>
                     </tr>
                     </thead>
