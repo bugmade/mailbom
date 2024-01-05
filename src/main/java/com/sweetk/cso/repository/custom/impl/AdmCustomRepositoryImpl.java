@@ -20,6 +20,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -39,6 +40,7 @@ public class AdmCustomRepositoryImpl implements AdmCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final EntityManager entityManager;
+    final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public Page<StaffListRes> getListBySearchDtoAndPageable(StaffListReq req, Pageable pageable) {
@@ -158,9 +160,15 @@ public class AdmCustomRepositoryImpl implements AdmCustomRepository {
 
     @Transactional
     @Override
-    public String deleteStaffByAdmId(String admId) {
+    public String deleteStaffByAdmId(Map<String, Object> params) {
         log.info("### deleteStaffByAdmId");
-        log.info(admId);
+
+        // user pwd 체크
+        if(checkUserPwd(params).equals("0")) {
+            return "0";
+        }
+
+        String admId = String.valueOf(params.get("adm_id"));
 
         return String.valueOf(jpaQueryFactory
                 .delete(adm)
@@ -168,24 +176,21 @@ public class AdmCustomRepositoryImpl implements AdmCustomRepository {
                 .execute());
     }
 
-//    @Override
-//    public Page<Stock> findPageAllByProNm(String proNm, Pageable pageable) {
-//        Long totCnt = jpaQueryFactory
-//                .select(stock.count())
-//                .from(stock)
-//                .where(stock.proCd.contains(proNm))
-//                .fetchOne();
-//
-//        List<Stock> stockList = jpaQueryFactory
-//                .select(stock)
-//                .from(stock)
-//                .where(stock.proCd.contains(proNm))
-//                .orderBy(stock.proCd.asc())
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .fetch();
-//
-//        return new PageImpl<>(stockList, pageable, totCnt != null ? totCnt : 0L);
-//    }
+    // 비밀번호 일치여부 체크
+    public String checkUserPwd(Map<String, Object> params) {
+        log.info("### checkUserPwd");
 
+        String db_pwd = jpaQueryFactory
+                .select(adm.admPw)
+                .from(adm)
+                .where(adm.admId.eq(String.valueOf(params.get("login_id"))))
+                .fetchOne();
+
+        if(bCryptPasswordEncoder.matches(String.valueOf(params.get("pwd")), db_pwd)) {
+            return "1";
+        } else {
+            log.info("### invalid pwd");
+            return "0";
+        }
+    }
 }

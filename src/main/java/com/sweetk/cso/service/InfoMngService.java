@@ -93,7 +93,7 @@ public class InfoMngService {
     public String deleteStaff(Map<String, Object> params) {
         log.info("### deleteStaff");
         log.info(params);
-        return admRepository.deleteStaffByAdmId(String.valueOf(params.get("adm_id")));
+        return admRepository.deleteStaffByAdmId(params);
     }
 
     //############################### 고객 정보 관리 #################################
