@@ -122,6 +122,12 @@ public class InoutMngService {
         return salesRepository.getListBySearchDtoAndPageable(req, pageable);
     }
 
+    public String deleteSales(Map<String, Object> params) {
+        log.info("### deleteSales");
+        log.info(params);
+        return salesRepository.deleteSalesBySalesNo(params);
+    }
+
     public void excelSalesDownload(SalesListReq req, HttpServletResponse response) {
         List<SalesListRes> list = salesRepository.findSalesForExcel(req);
         writeSalesExcel(list, "sales", response);

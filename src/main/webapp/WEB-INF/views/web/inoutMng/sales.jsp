@@ -156,7 +156,7 @@
                 <table class="list_table">
                     <colgroup>
                         <col width="5%">
-                        <col width="20%">
+                        <col width="15%">
                         <col width="5%">
                         <col width="5%">
                         <col width="5%">
@@ -166,6 +166,7 @@
                         <col width="10%">
                         <col width="5%">
                         <col width="*">
+                        <col width="5%">
                         <col width="5%">
                     </colgroup>
                     <thead>
@@ -182,12 +183,13 @@
                         <th>등록자</th>
                         <th>등록일</th>
                         <th>입고번호</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     <c:choose>
                         <c:when test="${totalCount == 0}">
-                            <td colspan="12" class="list_none">등록된 내역이 없습니다.</td>
+                            <td colspan="13" class="list_none">등록된 내역이 없습니다.</td>
                         </c:when>
                         <c:otherwise>
                             <c:set var="idx" value="${totalCount - ((result.getNumber()) * result.getSize())}"/>
@@ -221,11 +223,11 @@
                                     <td>${row.regId}</td>
                                     <td>
                                             ${row.regDt}
-<%--                                        <fmt:parseDate value='${row.regDt}' pattern="yyyy-MM-dd-hh:mm" var='carguip'/>--%>
-<%--                                        <fmt:formatDate value="${carguip}" pattern="yyyy-MM-dd"/>--%>
-<%--                                        <fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" value="${row.regDt}"/>--%>
                                     </td>
                                     <td>${row.stoNo}</td>
+                                    <td>
+                                        <button class="delete_btn_j" onclick="deleteSales(${row.salesNo})">삭제</button>
+                                    </td>
                                 </tr>
                             </c:forEach>
                         </c:otherwise>
@@ -422,30 +424,50 @@
         $("#layer_popup").hide();
     }
 
+    // 출고내역 삭제하기
+    function deleteSales(sales_no) {
+        console.log('deleteSales: %s', sales_no);
+        if(!confirm("출고번호:"+sales_no+" 삭제할까요?")) {
+            return;
+        }
+        let pwd = prompt("비밀번호를 입력하세요");
+        if(pwd == null) {
+            return;
+        }
+        else if(pwd.length < 1) {
+            alert("비밀번호는 1자리 이상입니다.")
+            return;
+        }
+        let login_id = $("#login_id").val();
+
+        let params = {sales_no: sales_no, login_id: login_id, pwd: pwd};
+
+        $.ajax({
+            dataType : "html",
+            type : "POST",
+            url : "/inoutMng/api/deleteSales",
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data : params,
+            success : function(data) {
+                console.log('deleteSales done');
+                console.log(data);
+                if(data == '1') {
+                    alert("삭제되었습니다");
+                } else {
+                    alert("비밀번호가 틀립니다");
+                }
+                location.reload();
+            },
+            error: function(data, status, err) {
+                console.log('error forward : ' + data);
+            }
+        });
+    }
+
     function excelSalesDownload() {
         console.log('excelSalesDownload');
 
         $('#pagingForm').attr("action", "/inoutMng/api/excelSalesDownload");
         $('#pagingForm').submit();
-
-        // @@@ 엑셀다운로드에서 ajax를 쓰려면 특수처리가 필요하다???
-        // let params = $('#pagingForm').serializeObject();
-        // console.log(params);
-        // $.ajax({
-        //     dataType : "html",
-        //     type : "POST",
-        //     url : "/inoutMng/api/excelSalesDownload",
-        //     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-        //     data : params,
-        //     success : function(data) {
-        //         console.log('excelSalesDownload success');
-        //         console.log(data);
-        //         alert("엑셀저장성공");
-        //         location.reload();
-        //     },
-        //     error: function(data, status, err) {
-        //         console.log('error forward : ' + data);
-        //     }
-        // });
     }
 </script>

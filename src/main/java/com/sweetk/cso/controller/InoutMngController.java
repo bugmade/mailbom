@@ -87,7 +87,7 @@ public class InoutMngController {
         return inoutMngService.createStock(params);
     }
 
-    // 재품 삭제
+    // 입고 삭제
     @RequestMapping("/api/deleteStock")
     @ResponseBody
     public String  deleteStock(@RequestParam Map<String, Object> params, HttpServletRequest request){
@@ -107,7 +107,7 @@ public class InoutMngController {
         inoutMngService.excelStockDownload(req, response);
     }
 
-    // 제품출고이력
+    // ###############################  제품출고이력
     @GetMapping("/sales")
     public String sales(SalesListReq req, Model model) {
         Page<SalesListRes> result = inoutMngService.getSalesList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
@@ -126,6 +126,16 @@ public class InoutMngController {
         log.info("### sales : get select list ^^^ ");
 
         return "/web/inoutMng/sales";
+    }
+
+    // 출고 삭제
+    @RequestMapping("/api/deleteSales")
+    @ResponseBody
+    public String  deleteSales(@RequestParam Map<String, Object> params, HttpServletRequest request){
+        log.info("### deleteSales");
+        log.info(params);
+
+        return inoutMngService.deleteSales(params);
     }
 
     @RequestMapping("/api/excelSalesDownload")
