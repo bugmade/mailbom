@@ -25,5 +25,5 @@ public interface ConsumerCustomRepository {
 
     String updateConsumer(Map<String, Object> params);
 
-    String deleteConsumerByCsmCd(String csmCd);
+    String deleteConsumerByCsmCd(Map<String, Object> params);
 }

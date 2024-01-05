@@ -125,6 +125,6 @@ public class InfoMngService {
     public String deleteConsumer(Map<String, Object> params) {
         log.info("### deleteConsumer");
         log.info(params);
-        return consumerRepository.deleteConsumerByCsmCd(String.valueOf(params.get("csm_cd")));
+        return consumerRepository.deleteConsumerByCsmCd(params);
     }
 }

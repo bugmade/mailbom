@@ -17,6 +17,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -24,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.sweetk.cso.entity.QAdm.adm;
 import static com.sweetk.cso.entity.QConsumer.consumer;
 import static com.sweetk.cso.entity.QProduct.product;
 import static com.sweetk.cso.entity.QStock.stock;
@@ -35,6 +37,7 @@ public class ConsumerCustomRepositoryImpl implements ConsumerCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final EntityManager entityManager;
+    final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public Page<ConsumerListRes> getListBySearchDtoAndPageable(ConsumerListReq req, Pageable pageable) {
@@ -152,9 +155,15 @@ public class ConsumerCustomRepositoryImpl implements ConsumerCustomRepository {
 
     @Transactional
     @Override
-    public String deleteConsumerByCsmCd(String csmCd) {
+    public String deleteConsumerByCsmCd(Map<String, Object> params) {
         log.info("### deleteConsumerByCsmCd");
-        log.info(csmCd);
+
+        // user pwd 체크
+        if(checkUserPwd(params).equals("0")) {
+            return "0";
+        }
+
+        String csmCd = String.valueOf(params.get("csm_cd"));
 
         return String.valueOf(jpaQueryFactory
                 .delete(consumer)
@@ -162,24 +171,21 @@ public class ConsumerCustomRepositoryImpl implements ConsumerCustomRepository {
                 .execute());
     }
 
-//    @Override
-//    public Page<Stock> findPageAllByProNm(String proNm, Pageable pageable) {
-//        Long totCnt = jpaQueryFactory
-//                .select(stock.count())
-//                .from(stock)
-//                .where(stock.proCd.contains(proNm))
-//                .fetchOne();
-//
-//        List<Stock> stockList = jpaQueryFactory
-//                .select(stock)
-//                .from(stock)
-//                .where(stock.proCd.contains(proNm))
-//                .orderBy(stock.proCd.asc())
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .fetch();
-//
-//        return new PageImpl<>(stockList, pageable, totCnt != null ? totCnt : 0L);
-//    }
+    // 비밀번호 일치여부 체크, @@@ 중복
+    public String checkUserPwd(Map<String, Object> params) {
+        log.info("### checkUserPwd");
 
+        String db_pwd = jpaQueryFactory
+                .select(adm.admPw)
+                .from(adm)
+                .where(adm.admId.eq(String.valueOf(params.get("login_id"))))
+                .fetchOne();
+
+        if(bCryptPasswordEncoder.matches(String.valueOf(params.get("pwd")), db_pwd)) {
+            return "1";
+        } else {
+            log.info("### invalid pwd");
+            return "0";
+        }
+    }
 }
