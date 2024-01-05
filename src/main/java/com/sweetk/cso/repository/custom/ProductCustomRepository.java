@@ -24,5 +24,5 @@ public interface ProductCustomRepository {
 
     String updateProduct(Map<String, Object> params);
 
-    String deleteProductByProCd(String procd);
+    String deleteProductByProCd(Map<String, Object> params);
 }

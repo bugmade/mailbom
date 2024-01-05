@@ -58,7 +58,7 @@ public class InfoMngService {
     public String deleteProduct(Map<String, Object> params) {
         log.info("### deleteProduct");
         log.info(params);
-        return productRepository.deleteProductByProCd(String.valueOf(params.get("pro_cd")));
+        return productRepository.deleteProductByProCd(params);
     }
 
     //############################### 직원 정보 관리 #################################

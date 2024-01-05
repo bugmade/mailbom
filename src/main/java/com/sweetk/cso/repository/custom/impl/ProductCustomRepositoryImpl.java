@@ -17,6 +17,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -34,6 +35,7 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final EntityManager entityManager;
+    final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public Page<ProductListRes> getListBySearchDtoAndPageable(ProductListReq req, Pageable pageable) {
@@ -146,14 +148,39 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
 
     @Transactional
     @Override
-    public String deleteProductByProCd(String proCd) {
+    public String deleteProductByProCd(Map<String, Object> params) {
         log.info("### deleteProductByProCd");
-        log.info(proCd);
+
+        // user pwd 체크
+        if(checkUserPwd(params).equals("0")) {
+            return "0";
+        }
+
+        String proCd = String.valueOf(params.get("pro_cd"));
         return String.valueOf(jpaQueryFactory
                 .delete(product)
                 .where(product.proCd.eq(proCd))
                 .execute());
     }
+
+    // 비밀번호 일치여부 체크, @@@ 중복
+    public String checkUserPwd(Map<String, Object> params) {
+        log.info("### checkUserPwd");
+
+        String db_pwd = jpaQueryFactory
+                .select(adm.admPw)
+                .from(adm)
+                .where(adm.admId.eq(String.valueOf(params.get("login_id"))))
+                .fetchOne();
+
+        if(bCryptPasswordEncoder.matches(String.valueOf(params.get("pwd")), db_pwd)) {
+            return "1";
+        } else {
+            log.info("### invalid pwd");
+            return "0";
+        }
+    }
+
     @Override
     public Page<Product> findPageAllByProNm(String proNm, Pageable pageable) {
         Long totCnt = jpaQueryFactory

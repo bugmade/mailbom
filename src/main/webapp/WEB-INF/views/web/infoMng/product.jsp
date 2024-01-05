@@ -242,7 +242,7 @@
             <!--팝업 컨텐츠 영역-->
             <div class="popup_cont">
                 <form method="post" id="frmReg">
-                    <input type="hidden" name="login_id" value="${webUtils.getLogin().getAdm().getAdmId()}">
+                    <input type="hidden" name="login_id" id="login_id" value="${webUtils.getLogin().getAdm().getAdmId()}">
                     <table class="popup_table">
 <%--                        <thead>--%>
 <%--&lt;%&ndash;                        <tr>&ndash;%&gt;--%>
@@ -437,7 +437,17 @@
         if(!confirm(pro_cd+" 삭제할까요?")) {
             return;
         }
-        let params = {pro_cd: pro_cd};
+        let pwd = prompt("비밀번호를 입력하세요");
+        if(pwd == null) {
+            return;
+        }
+        else if(pwd.length < 1) {
+            alert("비밀번호는 1자리 이상입니다.")
+            return;
+        }
+        let login_id = $("#login_id").val();
+
+        let params = {pro_cd: pro_cd, login_id: login_id, pwd: pwd};
 
         $.ajax({
             dataType : "html",
@@ -448,7 +458,11 @@
             success : function(data) {
                 console.log('deleteProduct success');
                 console.log(data);
-                alert("삭제되었습니다");
+                if(data == '1') {
+                    alert("삭제되었습니다");
+                } else {
+                    alert("비밀번호가 틀립니다");
+                }
                 location.reload();
             },
             error: function(data, status, err) {
