@@ -151,34 +151,11 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
     public String deleteProductByProCd(Map<String, Object> params) {
         log.info("### deleteProductByProCd");
 
-        // user pwd 체크
-        if(checkUserPwd(params).equals("0")) {
-            return "0";
-        }
-
         String proCd = String.valueOf(params.get("pro_cd"));
         return String.valueOf(jpaQueryFactory
                 .delete(product)
                 .where(product.proCd.eq(proCd))
                 .execute());
-    }
-
-    // 비밀번호 일치여부 체크, @@@ 중복
-    public String checkUserPwd(Map<String, Object> params) {
-        log.info("### checkUserPwd");
-
-        String db_pwd = jpaQueryFactory
-                .select(adm.admPw)
-                .from(adm)
-                .where(adm.admId.eq(String.valueOf(params.get("login_id"))))
-                .fetchOne();
-
-        if(bCryptPasswordEncoder.matches(String.valueOf(params.get("pwd")), db_pwd)) {
-            return "1";
-        } else {
-            log.info("### invalid pwd");
-            return "0";
-        }
     }
 
     @Override

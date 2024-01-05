@@ -58,6 +58,11 @@ public class InfoMngService {
     public String deleteProduct(Map<String, Object> params) {
         log.info("### deleteProduct");
         log.info(params);
+
+        if(admRepository.checkUserPwd(params).equals("0")) {
+            return "0";
+        }
+
         return productRepository.deleteProductByProCd(params);
     }
 
@@ -93,6 +98,11 @@ public class InfoMngService {
     public String deleteStaff(Map<String, Object> params) {
         log.info("### deleteStaff");
         log.info(params);
+
+        if(admRepository.checkUserPwd(params).equals("0")) {
+            return "0";
+        }
+
         return admRepository.deleteStaffByAdmId(params);
     }
 
@@ -125,6 +135,11 @@ public class InfoMngService {
     public String deleteConsumer(Map<String, Object> params) {
         log.info("### deleteConsumer");
         log.info(params);
+
+        if(admRepository.checkUserPwd(params).equals("0")) {
+            return "0";
+        }
+
         return consumerRepository.deleteConsumerByCsmCd(params);
     }
 }

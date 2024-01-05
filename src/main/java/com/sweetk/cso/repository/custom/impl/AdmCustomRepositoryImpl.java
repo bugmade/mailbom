@@ -163,11 +163,6 @@ public class AdmCustomRepositoryImpl implements AdmCustomRepository {
     public String deleteStaffByAdmId(Map<String, Object> params) {
         log.info("### deleteStaffByAdmId");
 
-        // user pwd 체크
-        if(checkUserPwd(params).equals("0")) {
-            return "0";
-        }
-
         String admId = String.valueOf(params.get("adm_id"));
 
         return String.valueOf(jpaQueryFactory
@@ -177,6 +172,8 @@ public class AdmCustomRepositoryImpl implements AdmCustomRepository {
     }
 
     // 비밀번호 일치여부 체크
+    @Transactional
+    @Override
     public String checkUserPwd(Map<String, Object> params) {
         log.info("### checkUserPwd");
 

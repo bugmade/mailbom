@@ -68,6 +68,11 @@ public class InoutMngService {
     public String deleteStock(Map<String, Object> params) {
         log.info("### deleteStock");
         log.info(params);
+
+        if(admRepository.checkUserPwd(params).equals("0")) {
+            return "0";
+        }
+
         return stockRepository.deleteStockByStoNo(params);
     }
 
@@ -125,6 +130,11 @@ public class InoutMngService {
     public String deleteSales(Map<String, Object> params) {
         log.info("### deleteSales");
         log.info(params);
+
+        if(admRepository.checkUserPwd(params).equals("0")) {
+            return "0";
+        }
+
         return salesRepository.deleteSalesBySalesNo(params);
     }
 

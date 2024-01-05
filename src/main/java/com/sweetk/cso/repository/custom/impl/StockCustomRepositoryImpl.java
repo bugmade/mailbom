@@ -396,11 +396,6 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
     public String deleteStockByStoNo(Map<String, Object> params) {
         log.info("### deleteStockByStoNo");
 
-        // user pwd 체크
-        if(checkUserPwd(params).equals("0")) {
-            return "0";
-        }
-
         String stoNo = String.valueOf(params.get("sto_no"));
 
         // vvv product 테이블의 제품수량을 조정
@@ -410,24 +405,6 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .delete(stock)
                 .where(stock.stoNo.eq(Long.parseLong(stoNo)))
                 .execute());
-    }
-
-    // 비밀번호 일치여부 체크
-    public String checkUserPwd(Map<String, Object> params) {
-        log.info("### checkUserPwd");
-
-        String db_pwd = jpaQueryFactory
-                .select(adm.admPw)
-                .from(adm)
-                .where(adm.admId.eq(String.valueOf(params.get("login_id"))))
-                .fetchOne();
-
-        if(bCryptPasswordEncoder.matches(String.valueOf(params.get("pwd")), db_pwd)) {
-            return "1";
-        } else {
-            log.info("### invalid pwd");
-            return "0";
-        }
     }
 
     //삭제 시 storage 갯수를 조정

@@ -27,4 +27,6 @@ public interface AdmCustomRepository {
     String updateStaff(Map<String, Object> params);
 
     String deleteStaffByAdmId(Map<String, Object> params);
+
+    String checkUserPwd(Map<String, Object> params);
 }
