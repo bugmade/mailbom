@@ -124,7 +124,7 @@
                                         <label for="searchWord">검색조건</label>
                                     </th>
                                     <td colspan="3" class="fz0">
-                                        <form:select path="proCd" style="width:170px;" id="procdSelect" cssClass="basic_formtype select_form select_sch">
+                                        <form:select path="proCd" style="width:350px;" id="procdSelect" cssClass="basic_formtype select_form select_sch">
                                             <form:option value="ALL">전체(제품)</form:option>
                                             <c:if test="${fn:length(product) > 0}">
                                                 <c:forEach var="item" items="${product}">
