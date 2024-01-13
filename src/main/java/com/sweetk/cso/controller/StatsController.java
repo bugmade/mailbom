@@ -35,7 +35,7 @@ public class StatsController {
     private final InfoMngService infoMngService;
 
     @GetMapping("/statsale")
-    public String sales(SalesListReq req, Model model) {
+    public String statsale(SalesListReq req, Model model) {
         Page<SalesListRes> result = inoutMngService.getSalesList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
         model.addAttribute("result", result);
 
