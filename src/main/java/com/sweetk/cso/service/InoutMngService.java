@@ -1,9 +1,6 @@
 package com.sweetk.cso.service;
 
-import com.sweetk.cso.dto.SalesListReq;
-import com.sweetk.cso.dto.SalesListRes;
-import com.sweetk.cso.dto.StockListReq;
-import com.sweetk.cso.dto.StockListRes;
+import com.sweetk.cso.dto.*;
 import com.sweetk.cso.entity.Stock;
 import com.sweetk.cso.repository.AdmRepository;
 import com.sweetk.cso.repository.ProductRepository;
@@ -162,5 +159,12 @@ public class InoutMngService {
             //logger.error(e.getMessage(), e);
             log.info("### writeExcel fail");
         }
+    }
+
+    //######################## 통계
+    @Transactional(readOnly = true)
+    public Page<SalesListRes> getStatsaleList(StatsaleListReq req, Pageable pageable) {
+        // TODO COM_CM 이름
+        return salesRepository.getStatsaleListBySearchDtoAndPageable(req, pageable);
     }
 }

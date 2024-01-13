@@ -1,9 +1,6 @@
 package com.sweetk.cso.repository.custom;
 
-import com.sweetk.cso.dto.SalesListReq;
-import com.sweetk.cso.dto.SalesListRes;
-import com.sweetk.cso.dto.StockListReq;
-import com.sweetk.cso.dto.StockListRes;
+import com.sweetk.cso.dto.*;
 import com.sweetk.cso.entity.Sales;
 import com.sweetk.cso.entity.Stock;
 import org.springframework.data.domain.Page;
@@ -25,4 +22,6 @@ public interface SalesCustomRepository {
 //    String createStock(Map<String, Object> params);
 //
     String deleteSalesBySalesNo(Map<String, Object> params);
+
+    Page<SalesListRes> getStatsaleListBySearchDtoAndPageable(StatsaleListReq req, Pageable pageable);
 }

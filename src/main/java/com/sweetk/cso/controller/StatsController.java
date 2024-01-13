@@ -1,9 +1,6 @@
 package com.sweetk.cso.controller;
 
-import com.sweetk.cso.dto.SalesListReq;
-import com.sweetk.cso.dto.SalesListRes;
-import com.sweetk.cso.dto.StockListReq;
-import com.sweetk.cso.dto.StockListRes;
+import com.sweetk.cso.dto.*;
 import com.sweetk.cso.entity.Consumer;
 import com.sweetk.cso.entity.Product;
 import com.sweetk.cso.entity.Stock;
@@ -35,8 +32,8 @@ public class StatsController {
     private final InfoMngService infoMngService;
 
     @GetMapping("/statsale")
-    public String statsale(SalesListReq req, Model model) {
-        Page<SalesListRes> result = inoutMngService.getSalesList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
+    public String statsale(StatsaleListReq req, Model model) {
+        Page<SalesListRes> result = inoutMngService.getStatsaleList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
         model.addAttribute("result", result);
 
         log.info("### sales : get select list vvv ");

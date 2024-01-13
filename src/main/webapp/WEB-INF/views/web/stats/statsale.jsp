@@ -14,7 +14,7 @@
                     판매실적
                 </h3>
                 <div class="white_box bd_gr">
-                    <form:form id="searchForm" name="searchForm" method="get" action="/stats/statsale" modelAttribute="salesListReq">
+                    <form:form id="searchForm" name="searchForm" method="get" action="/stats/statsale" modelAttribute="statsaleListReq">
                         <table class="gray_table half_table">
                             <colgroup>
                                 <col width="10%">
@@ -28,13 +28,13 @@
                                         <label for="searchWord">검색조건</label>
                                     </th>
                                     <td colspan="3" class="fz0">
-                                        <form:select path="outWy" style="width:170px;" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">
-                                            <form:option value="ALL">전체(출고사유)</form:option>
-                                            <form:option value="BTOB">납품</form:option>
-                                            <form:option value="RETAIL">소매(택배)</form:option>
-                                            <form:option value="GIFT">증정</form:option>
-                                            <form:option value="ETC">기타</form:option>
-                                        </form:select>
+<%--                                        <form:select path="outWy" style="width:170px;" onchange="changeInoutSelect()" cssClass="basic_formtype select_form select_sch">--%>
+<%--                                            <form:option value="ALL">전체(출고사유)</form:option>--%>
+<%--                                            <form:option value="BTOB">납품</form:option>--%>
+<%--                                            <form:option value="RETAIL">소매(택배)</form:option>--%>
+<%--                                            <form:option value="GIFT">증정</form:option>--%>
+<%--                                            <form:option value="ETC">기타</form:option>--%>
+<%--                                        </form:select>--%>
                                         <form:input type="text" path="searchWord" value="" style="width:250px;" cssClass="basic_formtype search_form" placeholder="납품처 검색어"/>
                                         <form:input type="text" path="startDt" cssClass="basic_formtype" style="width:120px; margin-right:10px;" placeholder="검색 시작일" />
                                         <form:input type="text" path="endDt" cssClass="basic_formtype" style="width:120px; margin-right:10px;" placeholder="검색 종료일" />
@@ -141,7 +141,7 @@
                 <!-- //white_box -->
 
                 <div class="pagination_area">
-                    <form:form modelAttribute="salesListReq">
+                    <form:form modelAttribute="statsaleListReq">
                         <form:select path="pageSize" cssClass="select_form">
                             <form:option value="10">10개 씩보기</form:option>
                             <form:option value="50">50개 씩보기</form:option>
@@ -162,10 +162,10 @@
             <!-- //contwrap -->
 
             <%-- paging 태그에서 페이지 번호를 클릭했을때 자바스크립트 함수로 실행하게될 form을 작성한다(읽기전용 form임)--%>
-            <form:form id="pagingForm" name="pagingForm" method="get" modelAttribute="salesListReq">
+            <form:form id="pagingForm" name="pagingForm" method="get" modelAttribute="statsaleListReq">
                 <form:hidden id="pagingSearchStartDt" path="startDt"/>
                 <form:hidden id="pagingSearchEndDt" path="endDt"/>
-                <form:hidden id="pagingSearchType1" path="outWy"/>
+<%--                <form:hidden id="pagingSearchType1" path="outWy"/>--%>
                 <form:hidden id="pagingSearchWord" path="searchWord"/>
                 <form:hidden id="pagingCurrentPageNo" path="pageNo"/>
                 <form:hidden id="pagingRecordCountPerPage" path="pageSize"/>
@@ -222,7 +222,8 @@
 
     // 검색조건 초기화
     function doInit() {
-        $("#outWy option:eq(0)").prop("selected", true);
+        alert("doInit");
+        // $("#outWy option:eq(0)").prop("selected", true);
         $("#searchWord").val("");
         $("#startDt").val("");
         $("#endDt").val("");
