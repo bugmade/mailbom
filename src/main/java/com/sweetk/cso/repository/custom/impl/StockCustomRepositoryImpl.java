@@ -103,7 +103,7 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                     .leftJoin(product)
                     .on(stock.proCd.eq(product.proCd))
                     .where(searchByTextInput(req))
-                    .orderBy(stock.expDt.asc())
+                    .orderBy(stock.expDt.asc(), stock.lotNo.asc())
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetch();

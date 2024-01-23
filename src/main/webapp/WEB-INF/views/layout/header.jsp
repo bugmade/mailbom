@@ -104,17 +104,17 @@
                         </li>
                     </ul>
                 </li>
-                <li class="depth01_li">
-                    <a href="/stats/statsale">통계</a>
-                    <ul class="menu_depth02" style="display: none;">
-                        <li class="depth02_li">
-                            <a href="/stats/statsale" class="sub_d_link">판매실적</a>
-                        </li>
+<%--                <li class="depth01_li">--%>
+<%--                    <a href="/stats/statsale">통계</a>--%>
+<%--                    <ul class="menu_depth02" style="display: none;">--%>
+<%--                        <li class="depth02_li">--%>
+<%--                            <a href="/stats/statsale" class="sub_d_link">판매실적</a>--%>
+<%--                        </li>--%>
 <%--                        <li class="depth02_li">--%>
 <%--                            <a href="/" class="sub_d_link">메뉴3-2</a>--%>
 <%--                        </li>--%>
-                    </ul>
-                </li>
+<%--                    </ul>--%>
+<%--                </li>--%>
 <%--                <li class="depth01_li">--%>
 <%--                    <a href="/">메뉴4</a>--%>
 <%--                    <ul class="menu_depth02" style="display: none;">--%>
