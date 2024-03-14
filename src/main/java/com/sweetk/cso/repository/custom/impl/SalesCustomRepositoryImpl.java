@@ -85,8 +85,6 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
     }
 
     private BooleanExpression searchByTextInput(SalesListReq req){
-        log.info("### searchByTextInput");
-        //private BooleanExpression searchByTextInput(SearchReqDto req){
         BooleanExpression searchExpression = null;
         String outWy = req.getOutWy();
         String searchWord = req.getSearchWord();
@@ -157,13 +155,6 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
 
     public List<SalesListRes> findSalesForExcel(SalesListReq req) {
         log.info("### findSalesForExcel");
-
-//        List<StockListRes> resultList = entityManager
-//                .createNativeQuery("SELECT PRO_CD, IN_OUT, IO_CNT, OUT_WY, CSM_CD, MEMO, REG_ID, REG_DT FROM stock")
-//                //.setParameter("name", "le")
-//                .getResultList();
-//        log.info(resultList);
-
 
         List<SalesListRes> list = jpaQueryFactory
                 .select(Projections.fields(SalesListRes.class,
@@ -347,50 +338,6 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
         }
         log.info("### startDt: " + startDt);
         log.info("### endDt: " + endDt);
-
-//        if (!outWy.equals("ALL")) {
-//            if(!searchWord.equals("")) {
-//                if(startDt.equals("") && endDt.equals("")) {
-//                    searchExpression = sales.outWy.eq(outWy).and(consumer.csmNm.contains(searchWord));
-//                } else if(!startDt.equals("") && endDt.equals("")) {
-//                    searchExpression = sales.regDt.gt(startDt).and(sales.outWy.eq(outWy)).and(consumer.csmNm.contains(searchWord));
-//                } else if(startDt.equals("") && !endDt.equals("")) {
-//                    searchExpression = sales.regDt.lt(endDt).and(sales.outWy.eq(outWy)).and(consumer.csmNm.contains(searchWord));
-//                } else {
-//                    searchExpression = sales.regDt.gt(startDt).and(sales.regDt.lt(endDt)).and(sales.outWy.eq(outWy)).and(consumer.csmNm.contains(searchWord));
-//                }
-//            } else {
-//                if(startDt.equals("") && endDt.equals("")) {
-//                    searchExpression = sales.outWy.eq(outWy);
-//                } else if(!startDt.equals("") && endDt.equals("")) {
-//                    searchExpression = sales.regDt.gt(startDt).and(sales.outWy.eq(outWy));
-//                } else if(startDt.equals("") && !endDt.equals("")) {
-//                    searchExpression = sales.regDt.lt(endDt).and(sales.outWy.eq(outWy));
-//                } else {
-//                    searchExpression = sales.regDt.gt(startDt).and(sales.regDt.lt(endDt)).and(sales.outWy.eq(outWy));
-//                }
-//            }
-//        } else if(!searchWord.equals("")) {
-//            if(startDt.equals("") && endDt.equals("")) {
-//                searchExpression = consumer.csmNm.contains(searchWord);
-//            } else if(!startDt.equals("") && endDt.equals("")) {
-//                searchExpression = sales.regDt.gt(startDt).and(consumer.csmNm.contains(searchWord));
-//            } else if(startDt.equals("") && !endDt.equals("")) {
-//                searchExpression = sales.regDt.lt(endDt).and(consumer.csmNm.contains(searchWord));
-//            } else {
-//                searchExpression = sales.regDt.gt(startDt).and(sales.regDt.lt(endDt)).and(consumer.csmNm.contains(searchWord));
-//            }
-//        } else {
-//            if(startDt.equals("") && endDt.equals("")) {
-//                log.info("### no date specified");
-//            } else if(!startDt.equals("") && endDt.equals("")) {
-//                searchExpression = sales.regDt.gt(startDt);
-//            } else if(startDt.equals("") && !endDt.equals("")) {
-//                searchExpression = sales.regDt.lt(endDt);
-//            } else {
-//                searchExpression = sales.regDt.gt(startDt).and(sales.regDt.lt(endDt));
-//            }
-//        }
 
         return searchExpression;
     }

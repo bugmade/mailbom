@@ -37,6 +37,22 @@ create table product
 )
     comment '제품 정보';
 
+======================================================= 포장지 정보 테이블
+
+create table wrapper
+(
+    WPR_NO bigint auto_increment comment '포장지 순번'
+        primary key,
+    WPR_NM varchar(50)  null comment '포장지명',
+    WPR_DT varchar(50)  null comment '포장지설명',
+    HQ_STORAGE bigint comment '본사재고',
+    REG_ID varchar(32)  null comment '등록 아이디',
+    REG_DT datetime     null comment '등록 일시',
+    MOD_ID varchar(32)  null comment '수정 아이디',
+    MOD_DT datetime     null comment '수정 일시'
+)
+    comment '포장지 정보';
+
 ======================================================= 고객정보 테이블
 
 create table consumer

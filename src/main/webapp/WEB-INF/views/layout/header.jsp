@@ -83,14 +83,15 @@
                             <a href="/infoMng/product" class="sub_d_link">제품정보관리</a>
                         </li>
                         <li class="depth02_li">
+                            <a href="/infoMng/wrapper" class="sub_d_link">포장지정보관리</a>
+                        </li>
+                        <li class="depth02_li">
                             <a href="/infoMng/staff" class="sub_d_link">직원정보관리</a>
                         </li>
                         <li class="depth02_li">
                             <a href="/infoMng/consumer" class="sub_d_link">고객정보관리</a>
                         </li>
-<%--                        <li class="depth02_li">--%>
-<%--                            <a href="/pharmComp/list" class="sub_d_link">의약품 정보 관리</a>--%>
-<%--                        </li>--%>
+
                     </ul>
                 </li>
                 <li class="depth01_li">

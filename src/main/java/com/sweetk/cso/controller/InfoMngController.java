@@ -6,6 +6,7 @@ import com.sweetk.cso.dto.pharmComp.PharmCompListReq;
 import com.sweetk.cso.entity.Adm;
 import com.sweetk.cso.entity.Consumer;
 import com.sweetk.cso.entity.Product;
+import com.sweetk.cso.entity.Wrapper;
 import com.sweetk.cso.service.InfoMngService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +28,54 @@ public class InfoMngController {
 
     private final InfoMngService infoMngService;
 
-    //############################### 제품 정보 관리 #################################
-//    @GetMapping("/product")
-//    public String list(PharmCompListReq req, Model model) {
-//        return "/web/infoMng/product";
-//    }
 
+    //############################### 포장지 정보 관리 #################################
+    @GetMapping("/wrapper")
+    public String wrapper(WrapperListReq req, Model model) {
+        Page<WrapperListRes> result = infoMngService.getWrapperList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
+        model.addAttribute("result", result);
+        return "/web/infoMng/wrapper";
+    }
+
+    // 등록
+    @RequestMapping("/api/createWrapper")
+    @ResponseBody
+    public String createWrapper(@RequestParam Map<String, Object> params, HttpServletRequest request){
+        log.info("### createWrapper");
+
+        return infoMngService.createWrapper(params);
+    }
+
+    // 삭제
+    @RequestMapping("/api/deleteWrapper")
+    @ResponseBody
+    public String  deleteWrapper(@RequestParam Map<String, Object> params, HttpServletRequest request){
+        log.info("### deleteWrapper");
+        log.info(params);
+
+        return infoMngService.deleteWrapper(params);
+    }
+
+    // 상세정보 반환
+    @GetMapping("/api/readWrapperDetail")
+    @ResponseBody
+    public Wrapper readWrapperDetail(@RequestParam Map<String, Object> params, HttpServletRequest request){
+        log.info("### readWrapperDetail");
+        log.info(params);
+        log.info(request);
+        return infoMngService.readWrapperDetail(params);
+    }
+
+    // 수정
+    @RequestMapping("/api/updateWrapper")
+    @ResponseBody
+    public String updateWrapper(@RequestParam Map<String, Object> params, HttpServletRequest request){
+        log.info("### updateWrapper");
+
+        return infoMngService.updateWrapper(params);
+    }
+
+    //############################### 제품 정보 관리 #################################
     @GetMapping("/product")
     public String product(ProductListReq req, Model model) {
         Page<ProductListRes> result = infoMngService.getProductList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
