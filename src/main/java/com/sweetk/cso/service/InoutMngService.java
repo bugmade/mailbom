@@ -2,10 +2,7 @@ package com.sweetk.cso.service;
 
 import com.sweetk.cso.dto.*;
 import com.sweetk.cso.entity.Stock;
-import com.sweetk.cso.repository.AdmRepository;
-import com.sweetk.cso.repository.ProductRepository;
-import com.sweetk.cso.repository.SalesRepository;
-import com.sweetk.cso.repository.StockRepository;
+import com.sweetk.cso.repository.*;
 import com.sweetk.cso.repository.custom.SalesCustomRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +35,7 @@ public class InoutMngService {
     final StockRepository stockRepository;
     final SalesRepository salesRepository;
     final AdmRepository admRepository;
+    final WprIoRepository wprioRepository;
 
     //######################## 제품입출고관리
     @Transactional(readOnly = true)
@@ -166,5 +164,11 @@ public class InoutMngService {
     public Page<SalesListRes> getStatsaleList(StatsaleListReq req, Pageable pageable) {
         // TODO COM_CM 이름
         return salesRepository.getStatsaleListBySearchDtoAndPageable(req, pageable);
+    }
+
+    //######################## 포장지입출고
+    @Transactional(readOnly = true)
+    public Page<WprIoListRes> getWprIoList(WprIoListReq req, Pageable pageable) {
+        return wprioRepository.getListBySearchDtoAndPageable(req, pageable);
     }
 }

@@ -96,7 +96,7 @@
 
 </style>
 <head>
-    <title>포장지정보관리</title>
+    <title>포장지입출고관리</title>
     <link rel="shortcut icon" href="/resources/img/favicon.ico" type="image/png">
 </head>
 <body>
@@ -106,10 +106,10 @@
         <div class="container_inner">
             <div class="contwrap">
                 <h3 class="cont_tit">
-                    포장지정보관리
+                    포장지입출고관리
                 </h3>
                 <div class="white_box bd_gr">
-                    <form:form id="searchForm" name="searchForm" method="get" action="/infoMng/wrapper" modelAttribute="wrapperListReq">
+                    <form:form id="searchForm" name="searchForm" method="get" action="/inoutMng/wpr_io" modelAttribute="wprIoListReq">
                         <table class="gray_table half_table">
                             <colgroup>
                                 <col width="16.5%">
@@ -192,7 +192,7 @@
                 <!-- //white_box -->
 
                 <div class="pagination_area">
-                    <form:form modelAttribute="wrapperListReq">
+                    <form:form modelAttribute="wprIoListReq">
                         <form:select path="pageSize" cssClass="select_form">
                             <form:option value="10">10개 씩보기</form:option>
                             <form:option value="50">50개 씩보기</form:option>
@@ -213,7 +213,7 @@
             <!-- //contwrap -->
 
             <%-- paging 태그에서 페이지 번호를 클릭했을때 자바스크립트 함수로 실행하게될 form을 작성한다(읽기전용 form임)--%>
-            <form:form id="pagingForm" name="pagingForm" method="get" modelAttribute="wrapperListReq">
+            <form:form id="pagingForm" name="pagingForm" method="get" modelAttribute="wprIoListReq">
                 <%--                <form:hidden id="pagingSearchType6" path="searchType"/>--%>
                 <%--                <form:hidden id="pagingSearchType6" path="inOut"/>--%>
                 <%--                <form:hidden id="pagingSearchType8" path="outWy"/>--%>
@@ -371,11 +371,11 @@
             $.ajax({
                 dataType: "html",
                 type: "POST",
-                url: "/infoMng/api/createWrapper",
+                url: "/inoutMng/api/createWprIo",
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 data: params,
                 success: function (data) {
-                    console.log('createWrapper success');
+                    console.log('createWprIo success');
                     console.log(data);
                     if(data === '1')
                         alert("저장되었습니다");
@@ -391,11 +391,11 @@
             $.ajax({
                 dataType: "html",
                 type: "POST",
-                url: "/infoMng/api/updateWrapper",
+                url: "/inoutMng/api/updateWprIo",
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 data: params,
                 success: function (data) {
-                    console.log('updateWrapper success');
+                    console.log('updateWprIo success');
                     console.log(data);
                     alert("저장되었습니다");
                     location.reload();
@@ -428,11 +428,11 @@
         $.ajax({
             dataType : "html",
             type : "POST",
-            url : "/infoMng/api/deleteWrapper",
+            url : "/inoutMng/api/deleteWprIo",
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
             data : params,
             success : function(data) {
-                console.log('deleteWrapper success');
+                console.log('deleteWprIo success');
                 console.log(data);
                 if(data == '1') {
                     alert("삭제되었습니다");
@@ -456,11 +456,11 @@
         $.ajax({
             dataType : "html",
             type : "GET",
-            url : "/infoMng/api/readWrapperDetail",
+            url : "/inoutMng/api/readWprIoDetail",
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
             data : params,
             success : function(data) {
-                console.log('readWrapperDetail success');
+                console.log('readWprIoDetail success');
                 console.log(data);
                 data = JSON.parse(data);
 

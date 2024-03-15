@@ -114,18 +114,14 @@ create table wpr_io
 (
     WPRIO_NO bigint auto_increment comment '순번'
         primary key,
-    WPR_NM varchar(50)  null comment '포장지명',
-    BOX_NO varchar(20)  null comment '박스번호',
+    WPR_NO bigint  null comment '포장지 순번',
     EXP_DT varchar(6)  null comment '사용기한',
-    IO_CNT bigint comment '수량',
-    REST_CNT bigint comment '잔여수량',
-    MEMO varchar(200)  null comment '메모',
     REG_ID varchar(32)  null comment '등록 아이디',
     REG_DT datetime     null comment '등록 일시',
     MOD_ID varchar(32)  null comment '수정 아이디',
     MOD_DT datetime     null comment '수정 일시'
 )
-    comment '제품 입출고 정보';
+    comment '포장지 입출고 정보';
 
 ======================================================= CSO 테이블
 create table cso

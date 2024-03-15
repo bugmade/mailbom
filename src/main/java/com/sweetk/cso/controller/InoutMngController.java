@@ -1,9 +1,6 @@
 package com.sweetk.cso.controller;
 
-import com.sweetk.cso.dto.SalesListReq;
-import com.sweetk.cso.dto.SalesListRes;
-import com.sweetk.cso.dto.StockListReq;
-import com.sweetk.cso.dto.StockListRes;
+import com.sweetk.cso.dto.*;
 import com.sweetk.cso.dto.pharmComp.PharmCompListReq;
 import com.sweetk.cso.dto.pharmComp.PharmCompListRes;
 import com.sweetk.cso.entity.Consumer;
@@ -145,5 +142,26 @@ public class InoutMngController {
         log.info(req);
 
         inoutMngService.excelSalesDownload(req, response);
+    }
+
+    // ###############################  포장지입출고
+    @GetMapping("/wpr_io")
+    public String wpr_io(WprIoListReq req, Model model) {
+        Page<WprIoListRes> result = inoutMngService.getWprIoList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
+        model.addAttribute("result", result);
+//
+//        log.info("### sales : get select list vvv ");
+//
+//        List<Product> product = infoMngService.readProductList();
+//        log.info(product);
+//        model.addAttribute("product", product);
+//
+//        List<Consumer> consumer = infoMngService.readConsumerList();
+//        log.info(consumer);
+//        model.addAttribute("consumer", consumer);
+//
+//        log.info("### sales : get select list ^^^ ");
+
+        return "/web/inoutMng/wpr_io";
     }
 }
