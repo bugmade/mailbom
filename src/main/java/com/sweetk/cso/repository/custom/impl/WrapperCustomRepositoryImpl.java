@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.sweetk.cso.entity.QProduct.product;
 import static com.sweetk.cso.entity.QWrapper.wrapper;
 
 @Log4j2
@@ -92,13 +93,28 @@ public class WrapperCustomRepositoryImpl implements WrapperCustomRepository {
                 .fetchOne();
     }
 
+    public Wrapper findWrapperByWprNm(String wprNm) {
+        log.info("### findWrapperByWprNm");
+        return jpaQueryFactory
+                .selectFrom(wrapper)
+                .where(wrapper.wprNm.eq(wprNm))
+                .fetchOne();
+    }
+
     @Transactional
     @Override
     public String createWrapper(Map<String, Object> params) {
-        Date now = new Date();
-
         log.info("### createWrapper");
         log.info(params);
+
+        // 이미 존재하는지 체크
+        Wrapper wrapper = findWrapperByWprNm(String.valueOf(params.get("wpr_nm")));
+        if(wrapper != null) {
+            log.info("### already exist");
+            return "0";
+        }
+
+        Date now = new Date();
         Long hqStorage = Long.parseLong(String.valueOf(params.get("hq_storage")));
 
         return String.valueOf(entityManager

@@ -1,4 +1,5 @@
 -- DDL
+======================================================= 직원 테이블
 create table ADM
 (
     ADM_NO bigint auto_increment comment '관리자 순번'
@@ -20,7 +21,6 @@ insert into ADM (ADM_ID, ADM_PW, ADM_NM, EMAIL, REG_ID, REG_DT) values
 ('admin', '$2a$10$ms3aOf5FxY2UYszvotrs4ubmxfKvNAJhXL0EbojHg544oktU1VokS', '관리자', 'raccoon@sweetk.co.kr', 'SYSTEM', NOW(3));
 
 ======================================================= 제품정보 테이블
-
 create table product
 (
     PRO_NO bigint auto_increment comment '제품 순번'
@@ -37,24 +37,7 @@ create table product
 )
     comment '제품 정보';
 
-======================================================= 포장지 정보 테이블
-
-create table wrapper
-(
-    WPR_NO bigint auto_increment comment '포장지 순번'
-        primary key,
-    WPR_NM varchar(50)  null comment '포장지명',
-    WPR_DT varchar(50)  null comment '포장지설명',
-    HQ_STORAGE bigint comment '본사재고',
-    REG_ID varchar(32)  null comment '등록 아이디',
-    REG_DT datetime     null comment '등록 일시',
-    MOD_ID varchar(32)  null comment '수정 아이디',
-    MOD_DT datetime     null comment '수정 일시'
-)
-    comment '포장지 정보';
-
 ======================================================= 고객정보 테이블
-
 create table consumer
 (
     CSM_NO bigint auto_increment comment '고객순번'
@@ -75,7 +58,6 @@ create table consumer
     comment '고객 정보';
 
 ======================================================= 제품입출고 테이블
-
 create table stock
 (
     STO_NO bigint auto_increment comment '순번'
@@ -96,7 +78,6 @@ create table stock
     comment '제품 입출고 정보';
 
 ======================================================= 판매이력 테이블
-
 create table sales
 (
     SALES_NO bigint auto_increment comment '순번'
@@ -113,9 +94,40 @@ create table sales
 )
     comment '판매이력';
 
+======================================================= 포장지 정보 테이블
+create table wrapper
+(
+    WPR_NO bigint auto_increment comment '포장지 순번'
+        primary key,
+    WPR_NM varchar(50)  null comment '포장지명',
+    WPR_DT varchar(50)  null comment '포장지설명',
+    HQ_STORAGE bigint comment '본사재고',
+    REG_ID varchar(32)  null comment '등록 아이디',
+    REG_DT datetime     null comment '등록 일시',
+    MOD_ID varchar(32)  null comment '수정 아이디',
+    MOD_DT datetime     null comment '수정 일시'
+)
+    comment '포장지 정보';
+
+======================================================= 포장지입출고 테이블
+create table wpr_io
+(
+    WPRIO_NO bigint auto_increment comment '순번'
+        primary key,
+    WPR_NM varchar(50)  null comment '포장지명',
+    BOX_NO varchar(20)  null comment '박스번호',
+    EXP_DT varchar(6)  null comment '사용기한',
+    IO_CNT bigint comment '수량',
+    REST_CNT bigint comment '잔여수량',
+    MEMO varchar(200)  null comment '메모',
+    REG_ID varchar(32)  null comment '등록 아이디',
+    REG_DT datetime     null comment '등록 일시',
+    MOD_ID varchar(32)  null comment '수정 아이디',
+    MOD_DT datetime     null comment '수정 일시'
+)
+    comment '제품 입출고 정보';
 
 ======================================================= CSO 테이블
-
 create table cso
 (
     CSO_NO         bigint auto_increment comment '제약영업대행사 순번. 제약영업대행사 순번'
@@ -149,36 +161,7 @@ create table cso
 )
     comment '제약영업대행사';
 
-
-======================================================= 제약사 테이블
-
-create table pharm_comp
-(
-    PHARM_COMP_NO bigint auto_increment comment '제약사 순번. 제약사 순번'
-        primary key,
-    PHARM_COMP_CD varchar(5)   null comment '제약사 코드',
-    PHARM_COMP_NM varchar(32)  null comment '제약사명. 제약사명',
-    BIZ_REG_NO    varchar(10)  null comment '사업자등록번호. 사업자등록번호',
-    TAX_TYPE_CCD  varchar(32)  null comment '과세 유형 코드. 과세 유형 코드',
-    REP_NM        varchar(32)  null comment '대표자명. 대표자명',
-    EMAIL         varchar(45)  null,
-    TEL_NO        varchar(13)  null comment '전화번호. 전화번호',
-    FAX_NO        varchar(13)  null comment '팩스번호. 팩스번호',
-    ZIP_NO        varchar(5)   null comment '우편번호. 우편번호',
-    REGION_CCD    varchar(5)   null comment '법정동 시군구 코드',
-    ADDR          varchar(64)  null comment '주소. 주소',
-    ADDR_DTL      varchar(64)  null comment '상세주소. 상세주소',
-    LEAST_AMT     decimal(18)  null comment '소액기준액',
-    ETC           varchar(256) null comment '비고',
-    REG_ID        varchar(32)  null comment '등록 아이디. 등록 아이디',
-    REG_DT        datetime     null comment '등록 일시. 등록 일시',
-    MOD_ID        varchar(32)  null comment '수정 아이디. 수정 아이디',
-    MOD_DT        datetime     null comment '수정 일시. 수정 일시'
-)
-    comment '제약사';
-
 ======================================================= comcd 테이블
-
 create table com_cd
 (
     CD_GRP_ID varchar(32) not null comment '코드 그룹 아이디. 코드 그룹 아이디',

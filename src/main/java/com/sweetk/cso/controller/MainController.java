@@ -22,7 +22,7 @@ public class MainController {
     public String getMainPage(Model model){
         log.info("MainController Log");
         Pageable pageable = PageRequest.of(1, 5);   // 추후 dto request > paging 값을 수정
-        csoService.test(pageable);
+        //csoService.test(pageable);
         model.addAttribute("message", appConfig.getDescription());
         return "/web/main";
     }

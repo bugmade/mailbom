@@ -103,6 +103,12 @@
                         <li class="depth02_li">
                             <a href="/inoutMng/sales" class="sub_d_link">제품출고이력</a>
                         </li>
+                        <li class="depth02_li">
+                            <a href="/inoutMng/wpr_io" class="sub_d_link">포장지입출고관리</a>
+                        </li>
+                        <li class="depth02_li">
+                            <a href="/inoutMng/wpr_hist" class="sub_d_link">포장지출고이력</a>
+                        </li>
                     </ul>
                 </li>
 <%--                <li class="depth01_li">--%>

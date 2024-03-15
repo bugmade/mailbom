@@ -377,7 +377,7 @@
                     if(data === '1')
                         alert("저장되었습니다");
                     else
-                        alert("이미 존재하는 코드입니다");
+                        alert("이미 존재하는 포장지명입니다");
                     location.reload();
                 },
                 error: function (data, status, err) {
