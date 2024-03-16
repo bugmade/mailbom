@@ -14,8 +14,8 @@ public interface WrapperCustomRepository {
 
     List<Wrapper> findAll();
 
-//    Page<Wrapper> findPageAllByProNm(String proNm, Pageable pageable);
-//
+    List<Wrapper> readWrapperList();
+
     Wrapper readWrapperDetail(Map<String, Object> params);
 
     String createWrapper(Map<String, Object> params);

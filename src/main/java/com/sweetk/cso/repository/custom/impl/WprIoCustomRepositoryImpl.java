@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.sweetk.cso.entity.QWrapper.wrapper;
+import static com.sweetk.cso.entity.QProduct.product;
+import static com.sweetk.cso.entity.QStock.stock;
 import static com.sweetk.cso.entity.QWprIo.wprIo;
 
 @Log4j2
@@ -47,30 +49,38 @@ public class WprIoCustomRepositoryImpl implements WprIoCustomRepository {
                 .select(Projections.fields(WprIoListRes.class,
                         wprIo.wprioNo,
                         wprIo.wprNo,
+                        wrapper.wprNm,
                         wprIo.expDt,
                         wprIo.regId,
                         wprIo.regDt
                 )).from(wprIo)
+                .leftJoin(wrapper)
+                .on(wprIo.wprNo.eq(wrapper.wprNo))
                 .where(searchByTextInput(req))
-                .orderBy(wprIo.wprioNo.desc())
+                .orderBy(wprIo.expDt.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        Long totalCount = jpaQueryFactory.select(wrapper.count())
-                .from(wrapper)
+        Long totalCount = jpaQueryFactory.select(wprIo.count())
+                .from(wprIo)
+                .leftJoin(wrapper)
+                .on(wprIo.wprNo.eq(wrapper.wprNo))
                 .where(searchByTextInput(req))
                 .fetchOne();
 
         return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
     }
 
-    private BooleanExpression searchByTextInput(SearchReqDto req){
+    private BooleanExpression searchByTextInput(WprIoListReq req){
         BooleanExpression searchExpression = null;
-        String searchWord = req.getSearchWord();
+        String wprNo = req.getWprNo();
 
-        if(StringUtils.hasText(searchWord)) {
-            searchExpression = wrapper.wprNm.contains(searchWord);
+        if (!StringUtils.hasText(wprNo))    wprNo = "ALL";
+
+        if (!wprNo.equals("ALL")) {
+            Long temp = Long.parseLong(wprNo);
+            searchExpression = wprIo.wprNo.eq(temp);
         }
         return searchExpression;
     }
@@ -106,31 +116,25 @@ public class WprIoCustomRepositoryImpl implements WprIoCustomRepository {
                 .fetchOne();
     }
 
-//    @Transactional
-//    @Override
-//    public String createWrapper(Map<String, Object> params) {
-//        log.info("### createWrapper");
-//        log.info(params);
-//
-//        // 이미 존재하는지 체크
-//        Wrapper wrapper = findWrapperByWprNm(String.valueOf(params.get("wpr_nm")));
-//        if(wrapper != null) {
-//            log.info("### already exist");
-//            return "0";
-//        }
-//
-//        Date now = new Date();
-//        Long hqStorage = Long.parseLong(String.valueOf(params.get("hq_storage")));
-//
-//        return String.valueOf(entityManager
-//                .createNativeQuery("INSERT INTO wrapper (WPR_NM, WPR_DT, HQ_STORAGE, REG_ID, REG_DT) VALUES (?,?,?,?,?)")
-//                .setParameter(1, String.valueOf(params.get("wpr_nm")))
-//                .setParameter(2, String.valueOf(params.get("wpr_dt")))
-//                .setParameter(3, hqStorage)
-//                .setParameter(4, String.valueOf(params.get("login_id")))
-//                .setParameter(5, now)
-//                .executeUpdate());
-//    }
+    @Transactional
+    @Override
+    public String createWprIo(Map<String, Object> params) {
+        log.info("### createWprIo");
+        log.info(params);
+
+        Date now = new Date();
+        Long wprNo = Long.parseLong(String.valueOf(params.get("wpr_no")));
+
+        adjustWrapperStorage(wprNo, "CREATE");
+
+        return String.valueOf(entityManager
+                .createNativeQuery("INSERT INTO wpr_io (WPR_NO, EXP_DT, REG_ID, REG_DT) VALUES (?,?,?,?)")
+                .setParameter(1, wprNo)
+                .setParameter(2, String.valueOf(params.get("exp_dt")))
+                .setParameter(3, String.valueOf(params.get("login_id")))
+                .setParameter(4, now)
+                .executeUpdate());
+    }
 //
 //    @Transactional
 //    @Override
@@ -153,17 +157,47 @@ public class WprIoCustomRepositoryImpl implements WprIoCustomRepository {
 //                .executeUpdate());
 //    }
 //
-//    @Transactional
-//    @Override
-//    public String deleteWrapper(Map<String, Object> params) {
-//        log.info("### deleteWrapper");
-//
-//        Long wprNo = Long.parseLong(String.valueOf(params.get("wpr_no")));
-//        return String.valueOf(jpaQueryFactory
-//                .delete(wrapper)
-//                .where(wrapper.wprNo.eq(wprNo))
-//                .execute());
-//    }
+    @Transactional
+    @Override
+    public String deleteWprIo(Map<String, Object> params) {
+        log.info("### deleteWprIo");
+
+        Long wprioNo = Long.parseLong(String.valueOf(params.get("wprio_no")));
+        Long wprNo = jpaQueryFactory
+                .select(wprIo.wprNo)
+                .from(wprIo)
+                .where(wprIo.wprioNo.eq(wprioNo))
+                .fetchOne();
+
+        adjustWrapperStorage(wprNo, "DELETE");
+
+        return String.valueOf(jpaQueryFactory
+                .delete(wprIo)
+                .where(wprIo.wprioNo.eq(wprioNo))
+                .execute());
+    }
+
+    public void adjustWrapperStorage(Long wprNo, String mode) {
+        log.info("### adjustStockByDelete");
+
+        Long hqStorage = jpaQueryFactory
+                .select(wrapper.hqStorage)
+                .from(wrapper)
+                .where(wrapper.wprNo.eq(wprNo))
+                .fetchOne();
+
+        if(mode.equals("CREATE")) {
+            hqStorage++;
+        } else {
+            if(--hqStorage < 0) hqStorage = 0L;
+        }
+
+        String.valueOf(entityManager
+                .createNativeQuery("UPDATE wrapper SET HQ_STORAGE = ? WHERE WPR_NO = ?")
+                .setParameter(1, hqStorage)
+                .setParameter(2, wprNo)
+                .executeUpdate());
+    }
 
 //    @Override
 //    public Page<Product> findPageAllByProNm(String proNm, Pageable pageable) {

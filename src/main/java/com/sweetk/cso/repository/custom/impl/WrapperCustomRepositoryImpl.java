@@ -160,23 +160,10 @@ public class WrapperCustomRepositoryImpl implements WrapperCustomRepository {
                 .execute());
     }
 
-//    @Override
-//    public Page<Product> findPageAllByProNm(String proNm, Pageable pageable) {
-//        Long totCnt = jpaQueryFactory
-//                .select(product.count())
-//                .from(product)
-//                .where(product.proNm.contains(proNm))
-//                .fetchOne();
-//
-//        List<Product> productList = jpaQueryFactory
-//                .select(product)
-//                .from(product)
-//                .where(product.proNm.contains(proNm))
-//                .orderBy(product.proCd.asc())
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .fetch();
-//
-//        return new PageImpl<>(productList, pageable, totCnt != null ? totCnt : 0L);
-//    }
+    @Override
+    public List<Wrapper> readWrapperList() {
+        return jpaQueryFactory
+                .selectFrom(wrapper)
+                .fetch();
+    }
 }

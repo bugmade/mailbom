@@ -20,10 +20,10 @@ public interface WprIoCustomRepository {
 //    Page<Wrapper> findPageAllByProNm(String proNm, Pageable pageable);
 //
 //    WprIo readWrapperDetail(Map<String, Object> params);
-//
-//    String createWrapper(Map<String, Object> params);
-//
+
+    String createWprIo(Map<String, Object> params);
+
 //    String updateWrapper(Map<String, Object> params);
-//
-//    String deleteWrapper(Map<String, Object> params);
+
+    String deleteWprIo(Map<String, Object> params);
 }

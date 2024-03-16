@@ -7,5 +7,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class WprIoListReq extends SearchReqDto {
-
+    private String wprNo;
 }

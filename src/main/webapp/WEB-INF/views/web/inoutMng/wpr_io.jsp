@@ -123,7 +123,15 @@
                                     <label for="searchWord">검색조건</label>
                                 </th>
                                 <td colspan="3" class="fz0">
-                                    <form:input type="text" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="포장지명 검색어"/>
+                                    <form:select path="wprNo" style="width:350px;" id="wprnoSelect" cssClass="basic_formtype select_form select_sch">
+                                        <form:option value="ALL">전체(포장지)</form:option>
+                                        <c:if test="${fn:length(wrapper) > 0}">
+                                            <c:forEach var="item" items="${wrapper}">
+                                                <form:option value="${item.wprNo}">${item.wprNm}</form:option>
+                                            </c:forEach>
+                                        </c:if>
+                                    </form:select>
+<%--                                    <form:input type="text" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="포장지명 검색어"/>--%>
                                     <button id="searchBtn" class="search_btn">
                                         검색
                                         <span class="ir_so">검색버튼</span>
@@ -145,23 +153,25 @@
                 <%--                </div>--%>
                 <div style="margin-bottom: 5px; margin-top: 5px;">
                     총 <span >${totalCount}</span> 건
-                    <button class="input_btn_j" onclick="showPopup('CREATE')">등록</button>
+                    <button class="input_btn_j" onclick="showPopup('CREATE')">입고</button>
                     <%--                    <button class="excel_btn_j" onclick="excelDownload()">엑셀</button>--%>
                 </div>
 
                 <table class="list_table">
                     <colgroup>
-                        <col width="20%">
-                        <col width="20%">
-                        <col width="20%">
-                        <col width="20%">
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="15%">
                         <col width="*">
                     </colgroup>
                     <thead>
                     <tr>
+                        <th>포장지순번</th>
                         <th>포장지명</th>
-                        <th>포장지설명</th>
-                        <th>재고</th>
+                        <th>사용기한</th>
+                        <th>등록자</th>
                         <th>등록일</th>
                         <th></th>
                     </tr>
@@ -169,19 +179,20 @@
                     <tbody>
                     <c:choose>
                         <c:when test="${totalCount == 0}">
-                            <td colspan="4" class="list_none">등록된 내역이 없습니다.</td>
+                            <td colspan="6" class="list_none">등록된 내역이 없습니다.</td>
                         </c:when>
                         <c:otherwise>
                             <c:set var="idx" value="${totalCount - ((result.getNumber()) * result.getSize())}"/>
                             <c:forEach var="row" items="${result.getContent()}" varStatus="status">
                                 <tr>
+                                    <td>${row.wprioNo}</td>
                                     <td>${row.wprNm}</td>
-                                    <td>${row.wprDt}</td>
-                                    <td>${row.hqStorage}</td>
+                                    <td>${row.expDt}</td>
+                                    <td>${row.regId}</td>
                                     <td>${row.regDt}</td>
                                     <td>
-                                        <button class="delete_btn_j" onclick="deleteThing('${row.wprNo}')">삭제</button>
-                                        <button class="update_btn_j" onclick="updateModal('${row.wprNo}')">수정</button>
+                                        <button class="delete_btn_j" onclick="deleteThing('${row.wprioNo}')">삭제</button>
+<%--                                        <button class="update_btn_j" onclick="updateModal('${row.wprioNo}')">수정</button>--%>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -216,7 +227,7 @@
             <form:form id="pagingForm" name="pagingForm" method="get" modelAttribute="wprIoListReq">
                 <%--                <form:hidden id="pagingSearchType6" path="searchType"/>--%>
                 <%--                <form:hidden id="pagingSearchType6" path="inOut"/>--%>
-                <%--                <form:hidden id="pagingSearchType8" path="outWy"/>--%>
+                <form:hidden id="pagingSearchType8" path="wprNo"/>
                 <form:hidden id="pagingSearchType7" path="searchWord"/>
                 <form:hidden id="pagingCurrentPageNo" path="pageNo"/>
                 <form:hidden id="pagingRecordCountPerPage" path="pageSize"/>
@@ -239,20 +250,24 @@
             <div class="popup_cont">
                 <form method="post" id="frmReg">
                     <input type="hidden" name="login_id" id="login_id" value="${webUtils.getLogin().getAdm().getAdmId()}">
-                    <input type="hidden" name="wpr_no" id="wpr_no">
+                    <input type="hidden" name="wprio_no" id="wprio_no">
                     <table class="popup_table">
                         <tbody>
                         <tr>
                             <td>포장지명 *</td>
-                            <td><input type="text" maxlength='25' name="wpr_nm" id="wpr_nm" style="width: 98%;"></td>
+                            <td>
+                                <select name="wpr_no" class="wpr_no" style="width: 98%; height: 90%">
+                                <c:if test="${fn:length(wrapper) > 0}">
+                                    <c:forEach var="item" items="${wrapper}">
+                                        <option value="${item.wprNo }">${item.wprNm }</option>
+                                        </c:forEach>
+                                    </c:if>
+                                </select>
+                            </td>
                         </tr>
                         <tr>
-                            <td>포장지설명 *</td>
-                            <td><input type="text" maxlength='25' name="wpr_dt" id="wpr_dt" style="width: 98%;"></td>
-                        </tr>
-                        <tr>
-                            <td>재고</td>
-                            <td><input type="number" pattern="[0-9]+" name="hq_storage" id="hq_storage" style="width: 98%;"></td>
+                            <td>사용기한 *</td>
+                            <td><input type="text" maxlength='6' name="exp_dt" id="exp_dt" placeholder="숫자6자리 ==> 예를들어(241231)" style="width: 98%;"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -325,7 +340,7 @@
 
     // 검색조건 초기화
     function doInit() {
-        $("#searchWord").val("");
+        $("#wprnoSelect option:eq(0)").prop("selected", true);
         location.reload();
     }
 
@@ -353,14 +368,14 @@
     // 서버에 등록하기
     function createThing(){
         console.log('create');
-        if($('#wpr_nm').val() =="") {
+        if($('#wpr_no').val() =="") {
             alert("포장지명을 입력하세요");
-            $('#wpr_nm').focus();
+            $('#wpr_no').focus();
             return;
         }
-        if($('#wpr_dt').val() =="") {
-            alert("포장지설명을 입력하세요");
-            $('#wpr_dt').focus();
+        if($('#exp_dt').val() =="") {
+            alert("사용기한을 입력하세요");
+            $('#exp_dt').focus();
             return;
         }
 
@@ -408,22 +423,15 @@
     }
 
     // 삭제하기
-    function deleteThing(wpr_no) {
-        console.log('delete: %s', wpr_no);
-        if(!confirm(wpr_no+" 삭제할까요?")) {
+    function deleteThing(wprio_no) {
+        console.log('delete: %s', wprio_no);
+        if(!confirm(wprio_no+" 삭제할까요?")) {
             return;
         }
-        let pwd = prompt("비밀번호를 입력하세요");
-        if(pwd == null) {
-            return;
-        }
-        else if(pwd.length < 1) {
-            alert("비밀번호는 1자리 이상입니다.")
-            return;
-        }
+
         let login_id = $("#login_id").val();
 
-        let params = {wpr_no: wpr_no, login_id: login_id, pwd: pwd};
+        let params = {wprio_no: wprio_no, login_id: login_id};
 
         $.ajax({
             dataType : "html",
@@ -489,7 +497,7 @@
         $('#layer_popup').show();
         if(mode === 'CREATE') {
             $('#wpr_nm').focus();
-            $('#popup_title').html("포장지등록");
+            $('#popup_title').html("포장지등록(입고)");
             create_or_update = DO_CREATE;
         } else {
             $('#popup_title').html("포장지수정");

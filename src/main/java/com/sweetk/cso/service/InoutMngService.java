@@ -171,4 +171,16 @@ public class InoutMngService {
     public Page<WprIoListRes> getWprIoList(WprIoListReq req, Pageable pageable) {
         return wprioRepository.getListBySearchDtoAndPageable(req, pageable);
     }
+
+    public String createWprIo(Map<String, Object> params) {
+        log.info("### createWprIo");
+        return wprioRepository.createWprIo(params);
+    }
+
+    public String deleteWprIo(Map<String, Object> params) {
+        log.info("### deleteWprIo");
+        log.info(params);
+
+        return wprioRepository.deleteWprIo(params);
+    }
 }

@@ -9,6 +9,7 @@ import lombok.Setter;
 public class WprIoListRes {
     private long wprioNo;
     private long wprNo;
+    private String wprNm;
     private String expDt;
     private String regId;
     private String regDt;

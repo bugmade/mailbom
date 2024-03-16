@@ -6,6 +6,7 @@ import com.sweetk.cso.dto.pharmComp.PharmCompListRes;
 import com.sweetk.cso.entity.Consumer;
 import com.sweetk.cso.entity.Product;
 import com.sweetk.cso.entity.Stock;
+import com.sweetk.cso.entity.Wrapper;
 import com.sweetk.cso.service.InfoMngService;
 import com.sweetk.cso.service.InoutMngService;
 import com.sweetk.cso.service.PharmCompService;
@@ -149,19 +150,30 @@ public class InoutMngController {
     public String wpr_io(WprIoListReq req, Model model) {
         Page<WprIoListRes> result = inoutMngService.getWprIoList(req, PageRequest.of(req.getPageNo()-1, req.getPageSize()));
         model.addAttribute("result", result);
-//
-//        log.info("### sales : get select list vvv ");
-//
-//        List<Product> product = infoMngService.readProductList();
-//        log.info(product);
-//        model.addAttribute("product", product);
-//
-//        List<Consumer> consumer = infoMngService.readConsumerList();
-//        log.info(consumer);
-//        model.addAttribute("consumer", consumer);
-//
-//        log.info("### sales : get select list ^^^ ");
+
+        List<Wrapper> wrapper = infoMngService.readWrapperList();
+        log.info(wrapper);
+        model.addAttribute("wrapper", wrapper);
 
         return "/web/inoutMng/wpr_io";
+    }
+
+    // 입고/등록
+    @RequestMapping("/api/createWprIo")
+    @ResponseBody
+    public String createWprIo(@RequestParam Map<String, Object> params, HttpServletRequest request){
+        log.info("### createWprIo");
+
+        return inoutMngService.createWprIo(params);
+    }
+
+    // 출고/삭제
+    @RequestMapping("/api/deleteWprIo")
+    @ResponseBody
+    public String  deleteWprIo(@RequestParam Map<String, Object> params, HttpServletRequest request){
+        log.info("### deleteWprIo");
+        log.info(params);
+
+        return inoutMngService.deleteWprIo(params);
     }
 }

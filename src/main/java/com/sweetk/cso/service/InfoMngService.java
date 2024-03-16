@@ -64,6 +64,11 @@ public class InfoMngService {
         return wrapperRepository.updateWrapper(params);
     }
 
+    public List<Wrapper> readWrapperList() {
+        log.info("### readWrapperList");
+        return wrapperRepository.readWrapperList();
+    }
+
     //############################### 제품 정보 관리 #################################
     @Transactional(readOnly = true)
     public Page<ProductListRes> getProductList(ProductListReq req, Pageable pageable) {
