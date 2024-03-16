@@ -168,7 +168,7 @@
                     </colgroup>
                     <thead>
                     <tr>
-                        <th>포장지순번</th>
+                        <th>입고순번</th>
                         <th>포장지명</th>
                         <th>사용기한</th>
                         <th>등록자</th>

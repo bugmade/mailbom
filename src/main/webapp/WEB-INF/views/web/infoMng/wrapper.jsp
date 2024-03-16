@@ -151,14 +151,16 @@
 
                 <table class="list_table">
                     <colgroup>
-                        <col width="20%">
-                        <col width="20%">
-                        <col width="20%">
-                        <col width="20%">
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="15%">
                         <col width="*">
                     </colgroup>
                     <thead>
                     <tr>
+                        <th>포장지순번</th>
                         <th>포장지명</th>
                         <th>포장지설명</th>
                         <th>재고</th>
@@ -175,6 +177,7 @@
                             <c:set var="idx" value="${totalCount - ((result.getNumber()) * result.getSize())}"/>
                             <c:forEach var="row" items="${result.getContent()}" varStatus="status">
                                 <tr>
+                                    <td>${row.wprNo}</td>
                                     <td>${row.wprNm}</td>
                                     <td>${row.wprDt}</td>
                                     <td>${row.hqStorage}</td>
