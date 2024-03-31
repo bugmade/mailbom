@@ -11,6 +11,8 @@ public class WprIoListRes {
     private long wprNo;
     private String wprNm;
     private String expDt;
+    private long ioCnt;
+    private long restCnt;
     private String regId;
     private String regDt;
     private String modId;

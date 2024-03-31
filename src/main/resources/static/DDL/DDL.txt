@@ -115,7 +115,9 @@ create table wpr_io
     WPRIO_NO bigint auto_increment comment '순번'
         primary key,
     WPR_NO bigint  null comment '포장지 순번',
-    EXP_DT varchar(6)  null comment '사용기한',
+    EXP_DT varchar(6)  null comment '입고일',
+    IO_CNT bigint comment '수량',
+    REST_CNT bigint comment '잔여수량',
     REG_ID varchar(32)  null comment '등록 아이디',
     REG_DT datetime     null comment '등록 일시',
     MOD_ID varchar(32)  null comment '수정 아이디',

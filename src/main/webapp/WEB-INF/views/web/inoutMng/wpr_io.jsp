@@ -159,18 +159,22 @@
 
                 <table class="list_table">
                     <colgroup>
-                        <col width="15%">
-                        <col width="15%">
-                        <col width="15%">
-                        <col width="15%">
-                        <col width="15%">
+                        <col width="10%">
+                        <col width="20%">
+                        <col width="10%">
+                        <col width="10%">
+                        <col width="10%">
+                        <col width="10%">
+                        <col width="10%">
                         <col width="*">
                     </colgroup>
                     <thead>
                     <tr>
                         <th>입고순번</th>
                         <th>포장지명</th>
-                        <th>사용기한</th>
+                        <th>입고일</th>
+                        <th>수량</th>
+                        <th>잔여수량</th>
                         <th>등록자</th>
                         <th>등록일</th>
                         <th></th>
@@ -179,7 +183,7 @@
                     <tbody>
                     <c:choose>
                         <c:when test="${totalCount == 0}">
-                            <td colspan="6" class="list_none">등록된 내역이 없습니다.</td>
+                            <td colspan="8" class="list_none">등록된 내역이 없습니다.</td>
                         </c:when>
                         <c:otherwise>
                             <c:set var="idx" value="${totalCount - ((result.getNumber()) * result.getSize())}"/>
@@ -188,11 +192,17 @@
                                     <td>${row.wprioNo}</td>
                                     <td>${row.wprNm}</td>
                                     <td>${row.expDt}</td>
+                                    <td>${row.ioCnt}</td>
+                                    <td>${row.restCnt}</td>
                                     <td>${row.regId}</td>
                                     <td>${row.regDt}</td>
                                     <td>
-                                        <button class="delete_btn_j" onclick="deleteThing('${row.wprioNo}')">삭제</button>
-<%--                                        <button class="update_btn_j" onclick="updateModal('${row.wprioNo}')">수정</button>--%>
+                                        <button class="update_btn_j" onclick="showPopup('CREATE_OUTPUT', '${row.wprioNo}', '${row.wprNm}', '${row.wprNo}','${row.expDt}', '${row.restCnt}')">사용</button>
+                                        <c:choose>
+                                            <c:when test="${row.ioCnt == row.restCnt}">
+                                                <button class="delete_btn_j" onclick="deleteThing('${row.wprioNo}')">삭제</button>
+                                            </c:when>
+                                        </c:choose>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -251,23 +261,24 @@
                 <form method="post" id="frmReg">
                     <input type="hidden" name="login_id" id="login_id" value="${webUtils.getLogin().getAdm().getAdmId()}">
                     <input type="hidden" name="wprio_no" id="wprio_no">
+                    <input type="hidden" name="in_out" id="in_out" value="IN">
                     <table class="popup_table">
-                        <tbody>
+                        <tbody id="io_tbody">
                         <tr>
-                            <td>포장지명 *</td>
+                            <td>포장지명</td>
                             <td>
-                                <select name="wpr_no" class="wpr_no" style="width: 98%; height: 90%">
-                                <c:if test="${fn:length(wrapper) > 0}">
-                                    <c:forEach var="item" items="${wrapper}">
-                                        <option value="${item.wprNo }">${item.wprNm }</option>
-                                        </c:forEach>
-                                    </c:if>
-                                </select>
+                                <div id="wpr_no_td_content"></div>
                             </td>
                         </tr>
                         <tr>
-                            <td>사용기한 *</td>
-                            <td><input type="text" maxlength='6' name="exp_dt" id="exp_dt" placeholder="숫자6자리 ==> 예를들어(241231)" style="width: 98%;"></td>
+                            <td>입고일 *</td>
+                            <td>
+                                <div id="exp_dt_td_content"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>수량(팩) *</td>
+                            <td><div id="io_cnt_td_content"></div></td>
                         </tr>
                         </tbody>
                     </table>
@@ -367,59 +378,53 @@
 
     // 서버에 등록하기
     function createThing(){
-        console.log('create');
+        console.log('createThing');
         if($('#wpr_no').val() =="") {
             alert("포장지명을 입력하세요");
             $('#wpr_no').focus();
             return;
         }
         if($('#exp_dt').val() =="") {
-            alert("사용기한을 입력하세요");
+            alert("입고일을 입력하세요");
             $('#exp_dt').focus();
             return;
+        }
+
+        let ioCnt = $('#io_cnt').val();
+        if(ioCnt < 1) {
+            alert("수량(" + ioCnt + ")은 1개 이상 입력하세요");
+            $('#io_cnt').focus();
+            return;
+        }
+
+        if(create_or_update === DO_UPDATE) {
+            let restCnt = $('#rest_cnt').val();
+            if (parseInt(ioCnt) > parseInt(restCnt)) {
+                alert("재고가 부족합니다.");
+                return;
+            }
         }
 
         let params = $('#frmReg').serializeObject();
         console.log(params);
 
-        if(create_or_update === DO_CREATE) {
-            $.ajax({
-                dataType: "html",
-                type: "POST",
-                url: "/inoutMng/api/createWprIo",
-                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                data: params,
-                success: function (data) {
-                    console.log('createWprIo success');
-                    console.log(data);
-                    if(data === '1')
-                        alert("저장되었습니다");
-                    else
-                        alert("이미 존재하는 포장지명입니다");
-                    location.reload();
-                },
-                error: function (data, status, err) {
-                    console.log('error forward : ' + data);
-                }
-            });
-        } else {
-            $.ajax({
-                dataType: "html",
-                type: "POST",
-                url: "/inoutMng/api/updateWprIo",
-                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                data: params,
-                success: function (data) {
-                    console.log('updateWprIo success');
-                    console.log(data);
+        $.ajax({
+            dataType: "html",
+            type: "POST",
+            url: "/inoutMng/api/createWprIo",
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data: params,
+            success: function (data) {
+                console.log('createWprIo success');
+                console.log(data);
+                if(data === '1')
                     alert("저장되었습니다");
-                    location.reload();
-                },
-                error: function (data, status, err) {
-                    console.log('error forward : ' + data);
-                }
-            });
-        }
+                location.reload();
+            },
+            error: function (data, status, err) {
+                console.log('error forward : ' + data);
+            }
+        });
     }
 
     // 삭제하기
@@ -429,9 +434,18 @@
             return;
         }
 
+        let pwd = prompt("비밀번호를 입력하세요");
+        if(pwd == null) {
+            return;
+        }
+        else if(pwd.length < 1) {
+            alert("비밀번호는 1자리 이상입니다.")
+            return;
+        }
+
         let login_id = $("#login_id").val();
 
-        let params = {wprio_no: wprio_no, login_id: login_id};
+        let params = {wprio_no: wprio_no, login_id: login_id, pwd: pwd};
 
         $.ajax({
             dataType : "html",
@@ -455,54 +469,48 @@
         });
     }
 
-    // 수정화면 띄우기
-    function updateModal(wpr_no) {
-        console.log('updataModal: %s', wpr_no);
-
-        let params = {wpr_no: wpr_no};
-
-        $.ajax({
-            dataType : "html",
-            type : "GET",
-            url : "/inoutMng/api/readWprIoDetail",
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            data : params,
-            success : function(data) {
-                console.log('readWprIoDetail success');
-                console.log(data);
-                data = JSON.parse(data);
-
-                $('#wpr_no').val(data.wprNo);
-                $('#wpr_nm').val(data.wprNm);
-                $('#wpr_dt').val(data.wprDt);
-                $('#hq_storage').val(data.hqStorage);
-                showPopup('UPDATE');
-            },
-            error: function(data, status, err) {
-                console.log('error forward : ' + data);
-            }
-        });
-    }
-
     // 등록 팝업을 보여주기
-    function showPopup(mode){
-        console.log('showPopup: '+mode);
+    function showPopup(mode, wprioNo, wprNm, wprNo, expDt, restCnt){
+        let html;
+        console.log('showPopup: '+mode + ":" + wprioNo + ":" + wprNm + ":" + expDt + ":" + restCnt);
 
         if(mode === 'CREATE') {
-            $('#wpr_nm').val("");
-            $('#wpr_dt').val("");
-            $('#hq_storage').val("0");
-            $('#first_storage').val("0");
-        }
-        $('#layer_popup').show();
-        if(mode === 'CREATE') {
-            $('#wpr_nm').focus();
+            $("#in_out").val("IN");
+            enableProcdSelect();
+            html ='<input type="text" maxlength="6" name="exp_dt" id="exp_dt" placeholder="숫자6자리 ==> 예를들어(241231)" style="width: 98%">';
+            $("#exp_dt_td_content").html(html);
             $('#popup_title').html("포장지등록(입고)");
             create_or_update = DO_CREATE;
         } else {
-            $('#popup_title').html("포장지수정");
+            $("#in_out").val("OUT");
+            html = wprNm;
+            html += '<input type="hidden" id="wpr_nm" value="'+wprNm+'">';
+            html += '<input type="hidden" id="wpr_no" name="wpr_no"  value="'+wprNo+'">';
+            html += '<input type="hidden" name="wprio_no" id="wprio_no" value="'+wprioNo+'">';
+            $("#wpr_no_td_content").html(html);
+            html = expDt + ' [잔여수량: ' + restCnt +']';
+            html += '<input type="hidden" name="rest_cnt" id="rest_cnt" value="'+restCnt+'">';
+            $("#exp_dt_td_content").html(html);
+            $('#popup_title').html("포장지사용");
             create_or_update = DO_UPDATE;
         }
+        html ='<input type="number" pattern="[0-9]+" name="io_cnt" id="io_cnt" style="width: 98%">';
+        $("#io_cnt_td_content").html(html);
+
+        $('#layer_popup').show();
+    }
+
+    function enableProcdSelect() {
+        console.log("enableProcdSelect");
+        let html='';
+        html += '<select name="wpr_no" class="wpr_no" style="width: 98%; height: 90%">';
+        html += '<c:if test="${fn:length(wrapper) > 0}">';
+        html += '<c:forEach var="item" items="${wrapper}">';
+        html += '<option value="${item.wprNo }">${item.wprNm }</option>';
+        html += '</c:forEach>';
+        html += '</c:if>';
+        html += '</select>';
+        $("#wpr_no_td_content").html(html);
     }
 
     // 등록 팝업을 닫기

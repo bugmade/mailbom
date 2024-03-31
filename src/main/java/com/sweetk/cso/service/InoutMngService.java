@@ -181,6 +181,10 @@ public class InoutMngService {
         log.info("### deleteWprIo");
         log.info(params);
 
+        if(admRepository.checkUserPwd(params).equals("0")) {
+            return "0";
+        }
+
         return wprioRepository.deleteWprIo(params);
     }
 }

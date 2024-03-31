@@ -51,6 +51,8 @@ public class WprIoCustomRepositoryImpl implements WprIoCustomRepository {
                         wprIo.wprNo,
                         wrapper.wprNm,
                         wprIo.expDt,
+                        wprIo.ioCnt,
+                        wprIo.restCnt,
                         wprIo.regId,
                         wprIo.regDt
                 )).from(wprIo)
@@ -80,7 +82,9 @@ public class WprIoCustomRepositoryImpl implements WprIoCustomRepository {
 
         if (!wprNo.equals("ALL")) {
             Long temp = Long.parseLong(wprNo);
-            searchExpression = wprIo.wprNo.eq(temp);
+            searchExpression = wprIo.wprNo.eq(temp).and(wprIo.restCnt.gt(0L));
+        } else {
+            searchExpression = wprIo.restCnt.gt(0L);
         }
         return searchExpression;
     }
@@ -94,28 +98,6 @@ public class WprIoCustomRepositoryImpl implements WprIoCustomRepository {
                 .fetch();
     }
 
-//    @Override
-//    public WprIo readWrapperDetail(Map<String, Object> params) {
-//        log.info("### readWrapperDetail");
-//        Long wprioNo = Long.parseLong(String.valueOf(params.get("wprio_no")));
-//
-//        return jpaQueryFactory
-//                .selectFrom(wprIo)
-//                .where(wprIo.wprioNo.eq(wprioNo))
-//                .fetchOne();
-//    }
-
-    public WprIo findWrapperByWprNm(String wprNm) {
-        log.info("### findWrapperByWprNm");
-
-        Long temp = Long.parseLong(wprNm);
-
-        return jpaQueryFactory
-                .selectFrom(wprIo)
-                .where(wprIo.wprNo.eq(temp))
-                .fetchOne();
-    }
-
     @Transactional
     @Override
     public String createWprIo(Map<String, Object> params) {
@@ -124,39 +106,37 @@ public class WprIoCustomRepositoryImpl implements WprIoCustomRepository {
 
         Date now = new Date();
         Long wprNo = Long.parseLong(String.valueOf(params.get("wpr_no")));
+        Long ioCnt = Long.parseLong(String.valueOf(params.get("io_cnt")));
+        String inOut = String.valueOf(params.get("in_out"));
 
-        adjustWrapperStorage(wprNo, "CREATE");
+        if(inOut.equals("IN")) {
+            adjustWrapperStorage(wprNo, "CREATE", ioCnt);
 
-        return String.valueOf(entityManager
-                .createNativeQuery("INSERT INTO wpr_io (WPR_NO, EXP_DT, REG_ID, REG_DT) VALUES (?,?,?,?)")
-                .setParameter(1, wprNo)
-                .setParameter(2, String.valueOf(params.get("exp_dt")))
-                .setParameter(3, String.valueOf(params.get("login_id")))
-                .setParameter(4, now)
-                .executeUpdate());
+            return String.valueOf(entityManager
+                    .createNativeQuery("INSERT INTO wpr_io (WPR_NO, EXP_DT, IO_CNT, REST_CNT, REG_ID, REG_DT) VALUES (?,?,?,?,?,?)")
+                    .setParameter(1, wprNo)
+                    .setParameter(2, String.valueOf(params.get("exp_dt")))
+                    .setParameter(3, ioCnt)
+                    .setParameter(4, ioCnt)
+                    .setParameter(5, String.valueOf(params.get("login_id")))
+                    .setParameter(6, now)
+                    .executeUpdate());
+        } else {
+            Long restCnt = Long.parseLong(String.valueOf(params.get("rest_cnt")));
+            adjustWrapperStorage(wprNo, "DELETE", ioCnt);
+            restCnt -= ioCnt;
+            if(restCnt < 0)
+                restCnt = 0L;
+            return String.valueOf(entityManager
+                    .createNativeQuery("UPDATE wpr_io SET REST_CNT = ?, MOD_ID = ?, MOD_DT = ? WHERE WPRIO_NO = ?")
+                    .setParameter(1, restCnt)
+                    .setParameter(2, String.valueOf(params.get("login_id")))
+                    .setParameter(3, now)
+                    .setParameter(4, Long.parseLong(String.valueOf(params.get("wprio_no"))))
+                    .executeUpdate());
+        }
     }
-//
-//    @Transactional
-//    @Override
-//    public String updateWrapper(Map<String, Object> params) {
-//        Date now = new Date();
-//
-//        log.info("### updateWrapper");
-//        log.info(params);
-//        Long wprNo = Long.parseLong(String.valueOf(params.get("wpr_no")));
-//        Long hqStorage = Long.parseLong(String.valueOf(params.get("hq_storage")));
-//
-//        return String.valueOf(entityManager
-//                .createNativeQuery("UPDATE wrapper SET WPR_NM = ?, WPR_DT = ?, HQ_STORAGE = ?, MOD_ID = ?, MOD_DT = ? WHERE WPR_NO = ?")
-//                .setParameter(1, String.valueOf(params.get("wpr_nm")))
-//                .setParameter(2, String.valueOf(params.get("wpr_dt")))
-//                .setParameter(3, hqStorage)
-//                .setParameter(4, String.valueOf(params.get("login_id")))
-//                .setParameter(5, now)
-//                .setParameter(6, wprNo)
-//                .executeUpdate());
-//    }
-//
+
     @Transactional
     @Override
     public String deleteWprIo(Map<String, Object> params) {
@@ -168,8 +148,13 @@ public class WprIoCustomRepositoryImpl implements WprIoCustomRepository {
                 .from(wprIo)
                 .where(wprIo.wprioNo.eq(wprioNo))
                 .fetchOne();
+        Long ioCnt = jpaQueryFactory
+                .select(wprIo.ioCnt)
+                .from(wprIo)
+                .where(wprIo.wprioNo.eq(wprioNo))
+                .fetchOne();
 
-        adjustWrapperStorage(wprNo, "DELETE");
+        adjustWrapperStorage(wprNo, "DELETE", ioCnt);
 
         return String.valueOf(jpaQueryFactory
                 .delete(wprIo)
@@ -177,8 +162,8 @@ public class WprIoCustomRepositoryImpl implements WprIoCustomRepository {
                 .execute());
     }
 
-    public void adjustWrapperStorage(Long wprNo, String mode) {
-        log.info("### adjustStockByDelete");
+    public void adjustWrapperStorage(Long wprNo, String mode, Long ioCnt) {
+        log.info("### adjustWrapperStorage");
 
         Long hqStorage = jpaQueryFactory
                 .select(wrapper.hqStorage)
@@ -187,9 +172,10 @@ public class WprIoCustomRepositoryImpl implements WprIoCustomRepository {
                 .fetchOne();
 
         if(mode.equals("CREATE")) {
-            hqStorage++;
+            hqStorage += ioCnt;
         } else {
-            if(--hqStorage < 0) hqStorage = 0L;
+            hqStorage -= ioCnt;
+            if(hqStorage < 0) hqStorage = 0L;
         }
 
         String.valueOf(entityManager
@@ -198,24 +184,4 @@ public class WprIoCustomRepositoryImpl implements WprIoCustomRepository {
                 .setParameter(2, wprNo)
                 .executeUpdate());
     }
-
-//    @Override
-//    public Page<Product> findPageAllByProNm(String proNm, Pageable pageable) {
-//        Long totCnt = jpaQueryFactory
-//                .select(product.count())
-//                .from(product)
-//                .where(product.proNm.contains(proNm))
-//                .fetchOne();
-//
-//        List<Product> productList = jpaQueryFactory
-//                .select(product)
-//                .from(product)
-//                .where(product.proNm.contains(proNm))
-//                .orderBy(product.proCd.asc())
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .fetch();
-//
-//        return new PageImpl<>(productList, pageable, totCnt != null ? totCnt : 0L);
-//    }
 }
