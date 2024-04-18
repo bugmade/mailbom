@@ -83,7 +83,8 @@
         $('#btnLogin').on('click', () => {
             saveLoginId();
             if(!validateLogin()) return;
-            $('#loginForm').submit();
+            $('#loginForm').submit();   // @@@ URL을 지정하지 않으면 바로 전 URL (~/login)으로 전송함
+                                        // @@@ (~/login)을 받는 애는 SecurityConfig에서 지정한 놈. 내가 관여할 수 없음.
         });
 
         <c:if test="${not empty error}">
