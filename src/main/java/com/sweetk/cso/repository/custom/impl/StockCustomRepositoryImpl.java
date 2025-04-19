@@ -239,9 +239,9 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
         String inOut = String.valueOf(params.get("in_out"));
 
         if(inOut.equals("IN")) {
-            log.info("### IN");
             adjustStorageByIn(params);
-            return String.valueOf(entityManager
+            try {
+                int result = entityManager
                     .createNativeQuery("INSERT INTO stock (PRO_CD, IN_OUT, IO_CNT, REST_CNT, FROM_STORAGE, LOT_NO, EXP_DT, MEMO, REG_ID, REG_DT) VALUES (?,?,?,?,?,?,?,?,?,?)")
                     .setParameter(1, String.valueOf(params.get("pro_cd")))
                     .setParameter(2, inOut)
@@ -253,20 +253,53 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                     .setParameter(8, String.valueOf(params.get("memo")))
                     .setParameter(9, String.valueOf(params.get("login_id")))
                     .setParameter(10, now)
-                    .executeUpdate());
+                    .executeUpdate();
+                log.info("createStock IN ==> INSERT 성공 - result: {}", result);
+                return String.valueOf(result);
+            } catch (Exception e) {
+                log.info("createStock IN ==> INSERT 실패 - 에러: {}", e);
+                return "error_01";
+            }
+//            return String.valueOf(entityManager
+//                    .createNativeQuery("INSERT INTO stock (PRO_CD, IN_OUT, IO_CNT, REST_CNT, FROM_STORAGE, LOT_NO, EXP_DT, MEMO, REG_ID, REG_DT) VALUES (?,?,?,?,?,?,?,?,?,?)")
+//                    .setParameter(1, String.valueOf(params.get("pro_cd")))
+//                    .setParameter(2, inOut)
+//                    .setParameter(3, Long.parseLong(String.valueOf(params.get("io_cnt"))))
+//                    .setParameter(4, Long.parseLong(String.valueOf(params.get("io_cnt"))))
+//                    .setParameter(5, String.valueOf(params.get("from_storage")))
+//                    .setParameter(6, String.valueOf(params.get("lot_no")))
+//                    .setParameter(7, String.valueOf(params.get("exp_dt")))
+//                    .setParameter(8, String.valueOf(params.get("memo")))
+//                    .setParameter(9, String.valueOf(params.get("login_id")))
+//                    .setParameter(10, now)
+//                    .executeUpdate());
         } else if(inOut.equals("TRANSFER")) {
-            log.info("### TRANSFER");
             adjustStorageByTransfer(params);
-            return String.valueOf(entityManager
-                    .createNativeQuery("UPDATE stock SET IN_OUT = ?, FROM_STORAGE = ?, MOD_ID = ?, MOD_DT = ? WHERE STO_NO = ?")
-                    .setParameter(1, "TRANSFER")
-                    .setParameter(2, String.valueOf(params.get("to_storage")))
-                    .setParameter(3, String.valueOf(params.get("login_id")))
-                    .setParameter(4, now)
-                    .setParameter(5, Long.parseLong(String.valueOf(params.get("sto_no"))))
-                    .executeUpdate());
+
+            try {
+                int result = entityManager
+                        .createNativeQuery("UPDATE stock SET IN_OUT = ?, FROM_STORAGE = ?, MOD_ID = ?, MOD_DT = ? WHERE STO_NO = ?")
+                        .setParameter(1, "TRANSFER")
+                        .setParameter(2, String.valueOf(params.get("to_storage")))
+                        .setParameter(3, String.valueOf(params.get("login_id")))
+                        .setParameter(4, now)
+                        .setParameter(5, Long.parseLong(String.valueOf(params.get("sto_no"))))
+                        .executeUpdate();
+                log.info("createStock TRANSFER ==> UPDATE 성공 - result: {}", result);
+                return String.valueOf(result);
+            } catch (Exception e) {
+                log.info("createStock TRANSFER ==> UPDATE 실패 - 에러: {}", e);
+                return "error_02";
+            }
+//            return String.valueOf(entityManager
+//                    .createNativeQuery("UPDATE stock SET IN_OUT = ?, FROM_STORAGE = ?, MOD_ID = ?, MOD_DT = ? WHERE STO_NO = ?")
+//                    .setParameter(1, "TRANSFER")
+//                    .setParameter(2, String.valueOf(params.get("to_storage")))
+//                    .setParameter(3, String.valueOf(params.get("login_id")))
+//                    .setParameter(4, now)
+//                    .setParameter(5, Long.parseLong(String.valueOf(params.get("sto_no"))))
+//                    .executeUpdate());
         } else {
-            log.info("### OUT");
             adjustStorageByOut(params);
 
             //잔여수량 조정
@@ -278,25 +311,55 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                     .fetchOne();
             restCnt -= io_cnt;
             if(restCnt < 0) restCnt = 0L;
-            String.valueOf(entityManager
+
+            try {
+                int result = entityManager
                     .createNativeQuery("UPDATE stock SET REST_CNT = ?, MOD_ID = ?, MOD_DT = ? WHERE STO_NO = ?")
                     .setParameter(1, restCnt)
                     .setParameter(2, String.valueOf(params.get("login_id")))
                     .setParameter(3, now)
                     .setParameter(4, Long.parseLong(String.valueOf(params.get("sto_no"))))
-                    .executeUpdate());
+                    .executeUpdate();
+                log.info("createStock OUT ==> UPDATE 성공 - result: {}", result);
+            } catch (Exception e) {
+                log.info("createStock OUT ==> UPDATE 실패 - 에러: {}", e);
+            }
+//            String.valueOf(entityManager
+//                    .createNativeQuery("UPDATE stock SET REST_CNT = ?, MOD_ID = ?, MOD_DT = ? WHERE STO_NO = ?")
+//                    .setParameter(1, restCnt)
+//                    .setParameter(2, String.valueOf(params.get("login_id")))
+//                    .setParameter(3, now)
+//                    .setParameter(4, Long.parseLong(String.valueOf(params.get("sto_no"))))
+//                    .executeUpdate());
 
             //출고이력 생성
-            return String.valueOf(entityManager
-                    .createNativeQuery("INSERT INTO sales (STO_NO, OUT_CNT, OUT_WY, CSM_CD, MEMO, REG_ID, REG_DT) VALUES (?,?,?,?,?,?,?)")
-                    .setParameter(1, String.valueOf(params.get("sto_no")))
-                    .setParameter(2, io_cnt)
-                    .setParameter(3, String.valueOf(params.get("out_wy")))
-                    .setParameter(4, String.valueOf(params.get("csm_cd")))
-                    .setParameter(5, String.valueOf(params.get("memo")))
-                    .setParameter(6, String.valueOf(params.get("login_id")))
-                    .setParameter(7, now)
-                    .executeUpdate());
+            try {
+                int result = entityManager
+                        .createNativeQuery("INSERT INTO sales (STO_NO, OUT_CNT, OUT_WY, CSM_CD, MEMO, REG_ID, REG_DT) VALUES (?,?,?,?,?,?,?)")
+                        .setParameter(1, String.valueOf(params.get("sto_no")))
+                        .setParameter(2, io_cnt)
+                        .setParameter(3, String.valueOf(params.get("out_wy")))
+                        .setParameter(4, String.valueOf(params.get("csm_cd")))
+                        .setParameter(5, String.valueOf(params.get("memo")))
+                        .setParameter(6, String.valueOf(params.get("login_id")))
+                        .setParameter(7, now)
+                        .executeUpdate();
+                log.info("createStock OUT ==> INSERT 성공 - result: {}", result);
+                return String.valueOf(result);
+            } catch (Exception e) {
+                log.info("createStock OUT ==> INSERT 실패 - 에러: {}", e);
+                return "error_03";
+            }
+//            return String.valueOf(entityManager
+//                    .createNativeQuery("INSERT INTO sales (STO_NO, OUT_CNT, OUT_WY, CSM_CD, MEMO, REG_ID, REG_DT) VALUES (?,?,?,?,?,?,?)")
+//                    .setParameter(1, String.valueOf(params.get("sto_no")))
+//                    .setParameter(2, io_cnt)
+//                    .setParameter(3, String.valueOf(params.get("out_wy")))
+//                    .setParameter(4, String.valueOf(params.get("csm_cd")))
+//                    .setParameter(5, String.valueOf(params.get("memo")))
+//                    .setParameter(6, String.valueOf(params.get("login_id")))
+//                    .setParameter(7, now)
+//                    .executeUpdate());
         }
     }
 
@@ -315,11 +378,22 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
 
         hqStorage += io_cnt;  // 입고는 본사창고에만
 
-        String.valueOf(entityManager
-                .createNativeQuery("UPDATE product SET HQ_STORAGE = ? WHERE PRO_CD = ?")
-                .setParameter(1, hqStorage)
-                .setParameter(2, pro_cd)
-                .executeUpdate());
+        try {
+            int result = entityManager
+                    .createNativeQuery("UPDATE product SET HQ_STORAGE = ? WHERE PRO_CD = ?")
+                    .setParameter(1, hqStorage)
+                    .setParameter(2, pro_cd)
+                    .executeUpdate();
+            log.info("adjustStorageByIn ==> UPDATE 성공 - result: {}", result);
+        } catch (Exception e) {
+            log.info("adjustStorageByIn ==> UPDATE 실패 - 에러: {}", e);
+        }
+
+//        String.valueOf(entityManager
+//                .createNativeQuery("UPDATE product SET HQ_STORAGE = ? WHERE PRO_CD = ?")
+//                .setParameter(1, hqStorage)
+//                .setParameter(2, pro_cd)
+//                .executeUpdate());
     }
 
     //창고이동 시 storage 갯수를 조정
@@ -344,12 +418,24 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
         if (hqStorage < 0) hqStorage = 0L;
         firstStorage += io_cnt;
 
-        String.valueOf(entityManager
-                .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
-                .setParameter(1, hqStorage)
-                .setParameter(2, firstStorage)
-                .setParameter(3, pro_cd)
-                .executeUpdate());
+        try {
+            int result = entityManager
+                    .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
+                    .setParameter(1, hqStorage)
+                    .setParameter(2, firstStorage)
+                    .setParameter(3, pro_cd)
+                    .executeUpdate();
+            log.info("adjustStorageByTransfer ==> UPDATE 성공 - result: {}", result);
+        } catch (Exception e) {
+            log.info("adjustStorageByTransfer ==> UPDATE 실패 - 에러: {}", e);
+        }
+
+//        String.valueOf(entityManager
+//                .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
+//                .setParameter(1, hqStorage)
+//                .setParameter(2, firstStorage)
+//                .setParameter(3, pro_cd)
+//                .executeUpdate());
     }
 
     //출고 시 storage 갯수를 조정
@@ -383,12 +469,24 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
         if (hqStorage < 0) hqStorage = 0L;
         if (firstStorage < 0) firstStorage = 0L;
 
-        String.valueOf(entityManager
-                .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
-                .setParameter(1, hqStorage)
-                .setParameter(2, firstStorage)
-                .setParameter(3, pro_cd)
-                .executeUpdate());
+        try {
+            int result = entityManager
+                    .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
+                    .setParameter(1, hqStorage)
+                    .setParameter(2, firstStorage)
+                    .setParameter(3, pro_cd)
+                    .executeUpdate();
+            log.info("adjustStorageByOut ==> UPDATE 성공 - result: {}", result);
+        } catch (Exception e) {
+            log.info("adjustStorageByOut ==> UPDATE 실패 - 에러: {}", e);
+        }
+
+//        String.valueOf(entityManager
+//                .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
+//                .setParameter(1, hqStorage)
+//                .setParameter(2, firstStorage)
+//                .setParameter(3, pro_cd)
+//                .executeUpdate());
     }
 
     @Transactional
@@ -401,15 +499,28 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
         // vvv product 테이블의 제품수량을 조정
         adjustStorageByDelete(stoNo);
 
-        return String.valueOf(jpaQueryFactory
-                .delete(stock)
-                .where(stock.stoNo.eq(Long.parseLong(stoNo)))
-                .execute());
+        try {
+            long result = jpaQueryFactory
+                    .delete(stock)
+                    .where(stock.stoNo.eq(Long.parseLong(stoNo)))
+                    .execute();
+
+            log.info("deleteStockByStoNo ==> DELETE 성공 - result: {}", result);
+            return String.valueOf(result);
+
+        } catch (Exception e) {
+            log.info("deleteStockByStoNo ==> DELETE 실패 - 에러: {}", e);
+            return "error_04";
+        }
+
+//        return String.valueOf(jpaQueryFactory
+//                .delete(stock)
+//                .where(stock.stoNo.eq(Long.parseLong(stoNo)))
+//                .execute());
     }
 
     //삭제 시 storage 갯수를 조정
-    public String adjustStorageByDelete(String stoNo) {
-        log.info("### adjustStorageByDelete");
+    public void adjustStorageByDelete(String stoNo) {
 
         // vvv stock, product 테이블의 현재 정보
         String proCd = jpaQueryFactory
@@ -446,12 +557,24 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
             if (firstStorage < 0) firstStorage = 0L;
         }
 
-        return String.valueOf(entityManager
-                .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
-                .setParameter(1, hqStorage)
-                .setParameter(2, firstStorage)
-                .setParameter(3, proCd)
-                .executeUpdate());
+        try {
+            int result = entityManager
+                    .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
+                    .setParameter(1, hqStorage)
+                    .setParameter(2, firstStorage)
+                    .setParameter(3, proCd)
+                    .executeUpdate();
+            log.info("adjustStorageByDelete ==> UPDATE 성공 - result: {}", result);
+        } catch (Exception e) {
+            log.info("adjustStorageByDelete ==> UPDATE 실패 - 에러: {}", e);
+        }
+
+//        String.valueOf(entityManager
+//                .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
+//                .setParameter(1, hqStorage)
+//                .setParameter(2, firstStorage)
+//                .setParameter(3, proCd)
+//                .executeUpdate());
     }
 
     @Override

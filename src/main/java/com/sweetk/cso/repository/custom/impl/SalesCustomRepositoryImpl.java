@@ -188,22 +188,34 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
     @Transactional
     @Override
     public String deleteSalesBySalesNo(Map<String, Object> params) {
-        log.info("### deleteSalesBySalesNo");
 
         String salesNo = String.valueOf(params.get("sales_no"));
 
         // vvv product 테이블의 제품수량을 조정
         adjustStockByDelete(salesNo);
 
-        return String.valueOf(jpaQueryFactory
-                .delete(sales)
-                .where(sales.salesNo.eq(Long.parseLong(salesNo)))
-                .execute());
+        try {
+            long result = jpaQueryFactory
+                    .delete(sales)
+                    .where(sales.salesNo.eq(Long.parseLong(salesNo)))
+                    .execute();
+
+            log.info("deleteSalesBySalesNo ==> DELETE 성공 - result: {}", result);
+            return String.valueOf(result);
+
+        } catch (Exception e) {
+            log.info("deleteSalesBySalesNo ==> DELETE 실패 - 에러: {}", e);
+            return "error_04";
+        }
+
+//        return String.valueOf(jpaQueryFactory
+//                .delete(sales)
+//                .where(sales.salesNo.eq(Long.parseLong(salesNo)))
+//                .execute());
     }
 
     //삭제 시 storage 갯수를 조정
     public String adjustStockByDelete(String salesNo) {
-        log.info("### adjustStockByDelete");
 
         Long stoNo = jpaQueryFactory
                 .select(sales.stoNo)
@@ -225,11 +237,22 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
 
         restCnt += outCnt;
 
-        String.valueOf(entityManager
-        .createNativeQuery("UPDATE stock SET REST_CNT = ? WHERE STO_NO = ?")
-        .setParameter(1, restCnt)
-        .setParameter(2, stoNo)
-        .executeUpdate());
+        try {
+            int result = entityManager
+                    .createNativeQuery("UPDATE stock SET REST_CNT = ? WHERE STO_NO = ?")
+                    .setParameter(1, restCnt)
+                    .setParameter(2, stoNo)
+                    .executeUpdate();
+            log.info("adjustStockByDelete ==> UPDATE stock 성공 - result: {}", result);
+        } catch (Exception e) {
+            log.info("adjustStockByDelete ==> UPDATE stock 실패 - 에러: {}", e);
+        }
+
+//        String.valueOf(entityManager
+//        .createNativeQuery("UPDATE stock SET REST_CNT = ? WHERE STO_NO = ?")
+//        .setParameter(1, restCnt)
+//        .setParameter(2, stoNo)
+//        .executeUpdate());
 
         // product 테이블 hqStorage, firstStorage 현행화
         String proCd = jpaQueryFactory
@@ -259,12 +282,26 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
             firstStorage += outCnt;
         }
 
-        return String.valueOf(entityManager
-                .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
-                .setParameter(1, hqStorage)
-                .setParameter(2, firstStorage)
-                .setParameter(3, proCd)
-                .executeUpdate());
+        try {
+            int result = entityManager
+                    .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
+                    .setParameter(1, hqStorage)
+                    .setParameter(2, firstStorage)
+                    .setParameter(3, proCd)
+                    .executeUpdate();
+            log.info("adjustStockByDelete ==> UPDATE product 성공 - result: {}", result);
+            return String.valueOf(result);
+        } catch (Exception e) {
+            log.info("adjustStockByDelete ==> UPDATE product 실패 - 에러: {}", e);
+            return "error_05";
+        }
+
+//        return String.valueOf(entityManager
+//                .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
+//                .setParameter(1, hqStorage)
+//                .setParameter(2, firstStorage)
+//                .setParameter(3, proCd)
+//                .executeUpdate());
     }
 
 
