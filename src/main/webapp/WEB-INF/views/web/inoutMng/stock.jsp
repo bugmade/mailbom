@@ -502,6 +502,12 @@
             return;
         }
 
+        if (!/^\d{6}$/.test($('#exp_dt').val())) {
+            alert("유통기한은 YYMMDD 형식의 숫자 6자리여야 합니다 (예: 241231)");
+            $('#exp_dt').focus();
+            return;
+        }
+
         let ioCnt = $('#io_cnt').val();
         if(CREATE_MODE !== CREATE_TRANSFER && ioCnt < 1) {
             alert("수량(" + ioCnt + ")은 1개 이상 입력하세요");
