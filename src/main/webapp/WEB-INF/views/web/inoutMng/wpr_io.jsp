@@ -390,7 +390,7 @@
             return;
         }
 
-        if (!/^\d{6}$/.test($('#exp_dt').val())) {
+        if (create_or_update === DO_CREATE && !/^\d{6}$/.test($('#exp_dt').val())) {
             alert("입고일은 YYMMDD 형식의 숫자 6자리여야 합니다 (예: 241231)");
             $('#exp_dt').focus();
             return;
