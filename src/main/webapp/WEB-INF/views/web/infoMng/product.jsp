@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
+%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <style>
     /* popup style 설정 vvv */
@@ -152,10 +153,11 @@
                 <table class="list_table">
                     <colgroup>
                         <col width="10%">
-                        <col width="25%">
-                        <col width="25%">
+                        <col width="20%">
+                        <col width="20%">
                         <col width="10%">
-                        <col width="10%">
+                        <col width="15%">
+                        <col width="15%">
                         <col width="*">
                     </colgroup>
                     <thead>
@@ -163,8 +165,9 @@
                         <th>제품코드</th>
                         <th>제품명</th>
                         <th>제품설명</th>
-                        <th>본사창고재고<br>(HQ)</th>
-                        <th>위탁창고1재고<br>(FIRST)</th>
+                        <th>박스 당 봉지수량</th>
+                        <th>본사창고재고(HQ)<br>박스/봉</th>
+                        <th>위탁창고1재고(FIRST)<br>박스/봉</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -180,8 +183,33 @@
                                     <td>${row.proCd}</td>
                                     <td>${row.proNm}</td>
                                     <td>${row.proDt}</td>
-                                    <td>${row.hqStorage}</td>
-                                    <td>${row.firstStorage}</td>
+                                    <td>${row.bongBox}</td>
+                                    <td>
+                                        <fmt:formatNumber value="${row.hqStorage}" type="number" groupingUsed="true" />
+                                        <br>
+                                        <script>
+                                            (function () {
+                                                const ioCnt = parseInt('${row.hqStorage}');
+                                                const divisor = parseInt('${row.bongBox}');
+                                                const box = Math.floor(ioCnt / divisor);
+                                                const remain = Math.floor(ioCnt % divisor);
+                                                document.write(box.toFixed(0) + ' / ' + remain.toFixed(0));
+                                            })();
+                                        </script>
+                                    </td>
+                                    <td>
+                                        <fmt:formatNumber value="${row.firstStorage}" type="number" groupingUsed="true" />
+                                        <br>
+                                        <script>
+                                            (function () {
+                                                const ioCnt = parseInt('${row.firstStorage}');
+                                                const divisor = parseInt('${row.bongBox}');
+                                                const box = Math.floor(ioCnt / divisor);
+                                                const remain = Math.floor(ioCnt % divisor);
+                                                document.write(box.toFixed(0) + ' / ' + remain.toFixed(0));
+                                            })();
+                                        </script>
+                                    </td>
                                     <td>
                                         <button class="delete_btn_j" onclick="deleteProduct('${row.proCd}')">삭제</button>
                                         <button class="update_btn_j" onclick="updateModal('${row.proCd}')">수정</button>

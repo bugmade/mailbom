@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
+%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <style>
     /* popup style 설정 vvv */
@@ -181,8 +182,8 @@
                         <th>입고번호</th>
                         <th>제품명</th>
                         <th>구분</th>
-                        <th>수량</th>
-                        <th>잔여수량</th>
+                        <th>수량<br>박스/봉</th>
+                        <th>잔여수량<br>박스/봉</th>
                         <th>보관창고</th>
                         <th>로트번호</th>
                         <th>유통기한</th>
@@ -217,8 +218,32 @@
                                             <td>이동</td>
                                         </c:otherwise>
                                     </c:choose>
-                                    <td>${row.ioCnt}</td>
-                                    <td>${row.restCnt}</td>
+                                    <td>
+                                        <fmt:formatNumber value="${row.ioCnt}" type="number" groupingUsed="true" />
+                                        <br>
+                                        <script>
+                                            (function () {
+                                                const ioCnt = parseInt('${row.ioCnt}');
+                                                const divisor = 10; // @@@ 수정필요
+                                                const box = Math.floor(ioCnt / divisor);
+                                                const remain = Math.floor(ioCnt % divisor);
+                                                document.write(box.toFixed(0) + ' / ' + remain.toFixed(0));
+                                            })();
+                                        </script>
+                                    </td>
+                                    <td>
+                                        <fmt:formatNumber value="${row.restCnt}" type="number" groupingUsed="true" />
+                                        <br>
+                                        <script>
+                                            (function () {
+                                                const ioCnt = parseInt('${row.restCnt}');
+                                                const divisor = 10; // @@@ 수정필요
+                                                const box = Math.floor(ioCnt / divisor);
+                                                const remain = Math.floor(ioCnt % divisor);
+                                                document.write(box.toFixed(0) + ' / ' + remain.toFixed(0));
+                                            })();
+                                        </script>
+                                    </td>
                                     <td>${row.fromStorage}</td>
                                     <td>${row.lotNo}</td>
                                     <td>${row.expDt}</td>
@@ -325,7 +350,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>수량 *</td>
+                            <td><span style="color: red;">봉지 수량 *</span></td>
                             <td><div id="io_cnt_td_content"></div></td>
                         </tr>
                         <tr>

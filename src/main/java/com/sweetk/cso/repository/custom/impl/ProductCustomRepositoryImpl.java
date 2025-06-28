@@ -49,6 +49,7 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
                         product.proDt,
                         product.hqStorage,
                         product.firstStorage,
+                        product.bongBox,
                         product.regId,
                         product.regDt
                 )).from(product)

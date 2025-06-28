@@ -32,6 +32,9 @@ public class Product {  // 별도로 명시하지 않으면 이것이 테이블 
     private long firstStorage;
 
     @Column(nullable = false, unique = false)
+    private long bongBox;
+
+    @Column(nullable = false, unique = false)
     private String regId;
 
     @Column(nullable = false, unique = false)

@@ -30,6 +30,7 @@ create table product
     PRO_DT varchar(200)  null comment '제품설명',
     HQ_STORAGE bigint comment '본사재고',
     FIRST_STORAGE bigint comment '수탁창고1 재고',
+    BONG_BOX bigint comment '박스당 봉지 개수',
     REG_ID varchar(32)  null comment '등록 아이디',
     REG_DT datetime     null comment '등록 일시',
     MOD_ID varchar(32)  null comment '수정 아이디',

@@ -178,7 +178,7 @@
                         <th>유통기한</th>
                         <th>출고사유</th>
                         <th>납품처</th>
-                        <th>수량</th>
+                        <th><span style="color: red;">봉지수량</span></th>
                         <th>메모</th>
                         <th>등록자</th>
                         <th>등록일</th>
