@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
-%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <style>
     /* popup style 설정 vvv */
@@ -299,6 +299,10 @@
                             <td>위탁창고1 재고</td>
                             <td><input type="number" pattern="[0-9]+" name="first_storage" id="first_storage" style="width: 98%;"></td>
                         </tr>
+                        <tr>
+                            <td>박스 당 봉지수량</td>
+                            <td><input type="number" pattern="[0-9]+" name="bong_box" id="bong_box" style="width: 98%;"></td>
+                        </tr>
                         </tbody>
                     </table>
                     <%--                    <input type="submit" value="등록하기">--%>
@@ -415,6 +419,11 @@
             $('#pro_dt').focus();
             return;
         }
+        if ($('#bong_box').val() === "" || Number($('#bong_box').val()) <= 0) {
+            alert("박스 당 봉지수량을 1 이상 입력하세요");
+            $('#bong_box').focus();
+            return;
+        }
 
         let params = $('#frmReg').serializeObject();
         console.log(params);
@@ -522,6 +531,7 @@
                 $('#pro_dt').val(data.proDt);
                 $('#hq_storage').val(data.hqStorage);
                 $('#first_storage').val(data.firstStorage);
+                $('#bong_box').val(data.bongBox);
                 showProductPopup('UPDATE');
             },
             error: function(data, status, err) {
@@ -541,6 +551,7 @@
             $('#pro_dt').val("");
             $('#hq_storage').val("0");
             $('#first_storage').val("0");
+            $('#bong_box').val("0");
         }
         $('#layer_popup').show();
         if(mode === 'CREATE') {

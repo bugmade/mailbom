@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="UTF-8"%>
-%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <style>
     /* popup style 설정 vvv */
@@ -224,7 +224,7 @@
                                         <script>
                                             (function () {
                                                 const ioCnt = parseInt('${row.ioCnt}');
-                                                const divisor = 10; // @@@ 수정필요
+                                                const divisor = parseInt('${row.bongBox}');
                                                 const box = Math.floor(ioCnt / divisor);
                                                 const remain = Math.floor(ioCnt % divisor);
                                                 document.write(box.toFixed(0) + ' / ' + remain.toFixed(0));
@@ -237,7 +237,7 @@
                                         <script>
                                             (function () {
                                                 const ioCnt = parseInt('${row.restCnt}');
-                                                const divisor = 10; // @@@ 수정필요
+                                                const divisor = parseInt('${row.bongBox}');
                                                 const box = Math.floor(ioCnt / divisor);
                                                 const remain = Math.floor(ioCnt % divisor);
                                                 document.write(box.toFixed(0) + ' / ' + remain.toFixed(0));
