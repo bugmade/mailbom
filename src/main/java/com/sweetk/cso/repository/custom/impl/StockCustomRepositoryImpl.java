@@ -379,6 +379,13 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .from(product)
                 .where(product.proCd.eq(pro_cd))
                 .fetchOne();
+        Long firstStorage = jpaQueryFactory
+                .select(product.firstStorage)
+                .from(product)
+                .where(product.proCd.eq(pro_cd))
+                .fetchOne();
+
+        log.info("PRODUCT_CNT:PRO_CD:{} HQ:{} FIRST:{} CNT:{} STOCK INPUT", pro_cd, hqStorage, firstStorage, io_cnt);
 
         hqStorage += io_cnt;  // 입고는 본사창고에만
 
@@ -417,6 +424,8 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .from(product)
                 .where(product.proCd.eq(pro_cd))
                 .fetchOne();
+
+        log.info("PRODUCT_CNT:PRO_CD:{} HQ:{} FIRST:{} CNT:{} STOCK TRANSFER", pro_cd, hqStorage, firstStorage, io_cnt);
 
         hqStorage -= io_cnt;
         if (hqStorage < 0) hqStorage = 0L;
@@ -463,6 +472,8 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .from(product)
                 .where(product.proCd.eq(pro_cd))
                 .fetchOne();
+
+        log.info("PRODUCT_CNT:PRO_CD:{} HQ:{} FIRST:{} CNT:{} STOCK OUTPUT {}", pro_cd, hqStorage, firstStorage, io_cnt, from_storage);
 
         if (from_storage.equals("HQ")) {
             hqStorage -= io_cnt;
@@ -552,6 +563,8 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .from(product)
                 .where(product.proCd.eq(proCd))
                 .fetchOne();
+
+        log.info("PRODUCT_CNT:PRO_CD:{} HQ:{} FIRST:{} CNT:{} STOCK DELETE", proCd, hqStorage, firstStorage, ioCnt);
 
         if (fromStorage.equals("HQ")) {
             hqStorage -= ioCnt;

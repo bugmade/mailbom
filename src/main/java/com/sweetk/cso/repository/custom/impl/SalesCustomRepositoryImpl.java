@@ -214,7 +214,7 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
 //                .execute());
     }
 
-    //삭제 시 storage 갯수를 조정
+    //삭제 시 stock, product 갯수를 조정
     public String adjustStockByDelete(String salesNo) {
 
         Long stoNo = jpaQueryFactory
@@ -276,6 +276,8 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
                 .where(product.proCd.eq(proCd))
                 .fetchOne();
 
+        log.info("PRODUCT_CNT:PRO_CD:{} HQ:{} FIRST:{} CNT:{} SALES DELETE {}", proCd, hqStorage, firstStorage, outCnt, fromStorage);
+
         if (fromStorage.equals("HQ")) {
             hqStorage += outCnt;
         } else if (fromStorage.equals("FIRST")) {
@@ -289,10 +291,10 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
                     .setParameter(2, firstStorage)
                     .setParameter(3, proCd)
                     .executeUpdate();
-            log.info("adjustStockByDelete ==> UPDATE product 성공 - result: {}", result);
+            log.info("adjustProductByDelete ==> UPDATE product 성공 - result: {}", result);
             return String.valueOf(result);
         } catch (Exception e) {
-            log.info("adjustStockByDelete ==> UPDATE product 실패 - 에러: {}", e);
+            log.info("adjustProductByDelete ==> UPDATE product 실패 - 에러: {}", e);
             return "error_05";
         }
 
