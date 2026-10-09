@@ -4,6 +4,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sweetk.cso.dto.*;
+import com.sweetk.cso.entity.Product;
 import com.sweetk.cso.entity.Stock;
 import com.sweetk.cso.repository.custom.SalesCustomRepository;
 import com.sweetk.cso.repository.custom.StockCustomRepository;
@@ -207,11 +208,6 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
             log.info("deleteSalesBySalesNo ==> DELETE 실패 - 에러: {}", e);
             return "error_04";
         }
-
-//        return String.valueOf(jpaQueryFactory
-//                .delete(sales)
-//                .where(sales.salesNo.eq(Long.parseLong(salesNo)))
-//                .execute());
     }
 
     //삭제 시 stock, product 갯수를 조정
@@ -248,48 +244,40 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
             log.info("adjustStockByDelete ==> UPDATE stock 실패 - 에러: {}", e);
         }
 
-//        String.valueOf(entityManager
-//        .createNativeQuery("UPDATE stock SET REST_CNT = ? WHERE STO_NO = ?")
-//        .setParameter(1, restCnt)
-//        .setParameter(2, stoNo)
-//        .executeUpdate());
-
         // product 테이블 hqStorage, firstStorage 현행화
-        String proCd = jpaQueryFactory
-                .select(stock.proCd)
-                .from(stock)
+        Stock findStock = jpaQueryFactory
+                .selectFrom(stock)
                 .where(stock.stoNo.eq(stoNo))
                 .fetchOne();
-        String fromStorage = jpaQueryFactory
-                .select(stock.fromStorage)
-                .from(stock)
-                .where(stock.stoNo.eq(stoNo))
-                .fetchOne();
-        Long hqStorage = jpaQueryFactory
-                .select(product.hqStorage)
-                .from(product)
-                .where(product.proCd.eq(proCd))
-                .fetchOne();
-        Long firstStorage = jpaQueryFactory
-                .select(product.firstStorage)
-                .from(product)
+
+        String proCd = findStock != null ? findStock.getProCd() : null;
+        String fromStorage = findStock != null ? findStock.getFromStorage() : null;
+        Product findProduct = jpaQueryFactory
+                .selectFrom(product)
                 .where(product.proCd.eq(proCd))
                 .fetchOne();
 
-        log.info("PRODUCT_CNT:PRO_CD:{} HQ:{} FIRST:{} CNT:{} SALES DELETE {}", proCd, hqStorage, firstStorage, outCnt, fromStorage);
+        Long hqStorage = findProduct != null ? findProduct.getHqStorage() : 0L;
+        Long firstStorage = findProduct != null ? findProduct.getFirstStorage() : 0L;
+        Long secondStorage = findProduct != null ? findProduct.getSecondStorage() : 0L;
+
+        log.info("PRODUCT_CNT:PRO_CD:{} HQ:{} FIRST:{} SECOND:{} CNT:{} SALES DELETE from:{}", proCd, hqStorage, firstStorage, secondStorage, outCnt, fromStorage);
 
         if (fromStorage.equals("HQ")) {
             hqStorage += outCnt;
         } else if (fromStorage.equals("FIRST")) {
             firstStorage += outCnt;
+        } else if (fromStorage.equals("SECOND")) {
+            secondStorage += outCnt;
         }
 
         try {
             int result = entityManager
-                    .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
+                    .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? , SECOND_STORAGE = ? WHERE PRO_CD = ?")
                     .setParameter(1, hqStorage)
                     .setParameter(2, firstStorage)
-                    .setParameter(3, proCd)
+                    .setParameter(3, secondStorage)
+                    .setParameter(4, proCd)
                     .executeUpdate();
             log.info("adjustProductByDelete ==> UPDATE product 성공 - result: {}", result);
             return String.valueOf(result);
@@ -297,13 +285,6 @@ public class SalesCustomRepositoryImpl implements SalesCustomRepository {
             log.info("adjustProductByDelete ==> UPDATE product 실패 - 에러: {}", e);
             return "error_05";
         }
-
-//        return String.valueOf(entityManager
-//                .createNativeQuery("UPDATE product SET HQ_STORAGE = ?, FIRST_STORAGE = ? WHERE PRO_CD = ?")
-//                .setParameter(1, hqStorage)
-//                .setParameter(2, firstStorage)
-//                .setParameter(3, proCd)
-//                .executeUpdate());
     }
 
 

@@ -167,7 +167,7 @@
                         <col width="5%">
                         <col width="5%">
                         <col width="5%">
-                        <col width="5%">
+                        <col width="7%">
                         <col width="5%">
                         <col width="5%">
                         <col width="10%">
@@ -572,10 +572,19 @@
             msg += "] ";
             msg += params['io_cnt'];
             msg += "개 ";
-            if(params['from_storage'] == 'HQ') {
+            // if(params['from_storage'] == 'HQ') {
+            //     msg += "본사창고(HQ)";
+            // } else {
+            //     msg += "위탁창고1(FIRST)";
+            // }
+            if (params['from_storage'] === 'HQ') {
                 msg += "본사창고(HQ)";
-            } else {
+            } else if (params['from_storage'] === 'FIRST') {
                 msg += "위탁창고1(FIRST)";
+            } else if (params['from_storage'] === 'SECOND') {
+                msg += "위탁창고2(SECOND)";
+            } else {
+                msg += "기타창고"; // 필요에 따라 기본값이나 빈 문자열 처리
             }
             msg += "로부터 출고[";
             if(params['out_wy'] == 'BTOB') {
@@ -755,6 +764,8 @@
             $("#content2_td_title").html(html);
             html = '<select id="to_storage" name="to_storage" class="to_storage" style="width: 98%; height: 90%">';
             html += '<option value="FIRST">위탁창고1(FIRST)</option>';
+            html += '<option value="SECOND">위탁창고2(SECOND)</option>'; // 261009
+            html += '</select>';
             // html += '<option value="HQ">본사창고(HQ)</option>';
             $("#content2_td_content").html(html);
 

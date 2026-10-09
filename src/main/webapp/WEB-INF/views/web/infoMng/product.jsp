@@ -156,8 +156,9 @@
                         <col width="20%">
                         <col width="20%">
                         <col width="10%">
-                        <col width="15%">
-                        <col width="15%">
+                        <col width="10%">
+                        <col width="10%">
+                        <col width="10%">
                         <col width="*">
                     </colgroup>
                     <thead>
@@ -166,8 +167,9 @@
                         <th>제품명</th>
                         <th>제품설명</th>
                         <th>박스 당 봉지수량</th>
-                        <th>본사창고재고(HQ)<br>박스/봉</th>
-                        <th>위탁창고1재고(FIRST)<br>박스/봉</th>
+                        <th>본사창고재고<br>박스/봉</th>
+                        <th>위탁창고1재고<br>박스/봉</th>
+                        <th>위탁창고2재고<br>박스/봉</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -203,6 +205,19 @@
                                         <script>
                                             (function () {
                                                 const ioCnt = parseInt('${row.firstStorage}');
+                                                const divisor = parseInt('${row.bongBox}');
+                                                const box = Math.floor(ioCnt / divisor);
+                                                const remain = Math.floor(ioCnt % divisor);
+                                                document.write(box.toFixed(0) + ' / ' + remain.toFixed(0));
+                                            })();
+                                        </script>
+                                    </td>
+                                    <td>
+                                        <fmt:formatNumber value="${row.secondStorage}" type="number" groupingUsed="true" />
+                                        <br>
+                                        <script>
+                                            (function () {
+                                                const ioCnt = parseInt('${row.secondStorage}');
                                                 const divisor = parseInt('${row.bongBox}');
                                                 const box = Math.floor(ioCnt / divisor);
                                                 const remain = Math.floor(ioCnt % divisor);
@@ -298,6 +313,10 @@
                         <tr>
                             <td>위탁창고1 재고</td>
                             <td><input type="number" pattern="[0-9]+" name="first_storage" id="first_storage" style="width: 98%;"></td>
+                        </tr>
+                        <tr>
+                            <td>위탁창고2 재고</td>
+                            <td><input type="number" pattern="[0-9]+" name="second_storage" id="second_storage" style="width: 98%;"></td>
                         </tr>
                         <tr>
                             <td>박스 당 봉지수량</td>
@@ -531,6 +550,7 @@
                 $('#pro_dt').val(data.proDt);
                 $('#hq_storage').val(data.hqStorage);
                 $('#first_storage').val(data.firstStorage);
+                $('#second_storage').val(data.secondStorage);
                 $('#bong_box').val(data.bongBox);
                 showProductPopup('UPDATE');
             },
@@ -551,6 +571,7 @@
             $('#pro_dt').val("");
             $('#hq_storage').val("0");
             $('#first_storage').val("0");
+            $('#second_storage').val("0");
             $('#bong_box').val("0");
         }
         $('#layer_popup').show();

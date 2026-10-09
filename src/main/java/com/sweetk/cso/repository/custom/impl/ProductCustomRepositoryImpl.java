@@ -49,6 +49,7 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
                         product.proDt,
                         product.hqStorage,
                         product.firstStorage,
+                        product.secondStorage,
                         product.bongBox,
                         product.regId,
                         product.regDt
@@ -105,24 +106,29 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
         log.info(params);
         Long hqStorage = Long.parseLong(String.valueOf(params.get("hq_storage")));
         Long firstStorage = Long.parseLong(String.valueOf(params.get("first_storage")));
+        Long secondStorage = Long.parseLong(String.valueOf(params.get("second_storage")));
+        String proCd = String.valueOf(params.get("pro_cd"));
+
+        log.info("PRODUCT_CNT:PRO_CD:{} HQ:{} FIRST:{} SECOND:{} PRODUCT CREATE", proCd, hqStorage, firstStorage, secondStorage);
 
         // PRO_CD가 이미 존재하는지 체크
-        Product product = findProductByProCd(String.valueOf(params.get("pro_cd")));
+        Product product = findProductByProCd(proCd);
         if(product != null) {
             log.info("### already exist");
             return "0";
         }
 
         return String.valueOf(entityManager
-                .createNativeQuery("INSERT INTO product (PRO_CD, PRO_NM, PRO_DT, HQ_STORAGE, FIRST_STORAGE, BONG_BOX, REG_ID, REG_DT) VALUES (?,?,?,?,?,?,?,?)")
-                .setParameter(1, String.valueOf(params.get("pro_cd")))
+                .createNativeQuery("INSERT INTO product (PRO_CD, PRO_NM, PRO_DT, HQ_STORAGE, FIRST_STORAGE, SECOND_STORAGE, BONG_BOX, REG_ID, REG_DT) VALUES (?,?,?,?,?,?,?,?,?)")
+                .setParameter(1, proCd)
                 .setParameter(2, String.valueOf(params.get("pro_nm")))
                 .setParameter(3, String.valueOf(params.get("pro_dt")))
                 .setParameter(4, hqStorage)
                 .setParameter(5, firstStorage)
-                .setParameter(6, String.valueOf(params.get("bong_box")))
-                .setParameter(7, String.valueOf(params.get("login_id")))
-                .setParameter(8, now)
+                .setParameter(6, secondStorage)
+                .setParameter(7, String.valueOf(params.get("bong_box")))
+                .setParameter(8, String.valueOf(params.get("login_id")))
+                .setParameter(9, now)
                 .executeUpdate());
     }
 
@@ -135,17 +141,22 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
         log.info(params);
         Long hqStorage = Long.parseLong(String.valueOf(params.get("hq_storage")));
         Long firstStorage = Long.parseLong(String.valueOf(params.get("first_storage")));
+        Long secondStorage = Long.parseLong(String.valueOf(params.get("second_storage")));
+        String proCd = String.valueOf(params.get("pro_cd"));
+
+        log.info("PRODUCT_CNT:PRO_CD:{} HQ:{} FIRST:{} SECOND:{} PRODUCT UPDATE", proCd, hqStorage, firstStorage, secondStorage);
 
         return String.valueOf(entityManager
-                .createNativeQuery("UPDATE product SET PRO_NM = ?, HQ_STORAGE = ?, FIRST_STORAGE = ?, PRO_DT = ?, MOD_ID = ?, MOD_DT = ?, BONG_BOX = ? WHERE PRO_CD = ?")
+                .createNativeQuery("UPDATE product SET PRO_NM = ?, HQ_STORAGE = ?, FIRST_STORAGE = ?, SECOND_STORAGE = ?, PRO_DT = ?, MOD_ID = ?, MOD_DT = ?, BONG_BOX = ? WHERE PRO_CD = ?")
                 .setParameter(1, String.valueOf(params.get("pro_nm")))
                 .setParameter(2, hqStorage)
                 .setParameter(3, firstStorage)
-                .setParameter(4, String.valueOf(params.get("pro_dt")))
-                .setParameter(5, String.valueOf(params.get("login_id")))
-                .setParameter(6, now)
-                .setParameter(7, String.valueOf(params.get("bong_box")))
-                .setParameter(8, String.valueOf(params.get("pro_cd")))
+                .setParameter(4, secondStorage)
+                .setParameter(5, String.valueOf(params.get("pro_dt")))
+                .setParameter(6, String.valueOf(params.get("login_id")))
+                .setParameter(7, now)
+                .setParameter(8, String.valueOf(params.get("bong_box")))
+                .setParameter(9, proCd)
                 .executeUpdate());
     }
 

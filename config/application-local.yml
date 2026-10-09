@@ -12,7 +12,10 @@ spring:
     #url: jdbc:log4jdbc:mariadb://183.111.196.133:3306/cso
     #username: sweetk-dev
     #password: sweetk2014!
-    url: jdbc:log4jdbc:mariadb://barcode-database.cr0wod3wq88g.ap-northeast-2.rds.amazonaws.com/barcode_db
+
+    # 기존 AWS RDS
+    #url: jdbc:log4jdbc:mariadb://barcode-database.cr0wod3wq88g.ap-northeast-2.rds.amazonaws.com/
+    url: jdbc:log4jdbc:mariadb://127.0.0.1:3306/barcode_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: admin
     password: admin1234!
 
