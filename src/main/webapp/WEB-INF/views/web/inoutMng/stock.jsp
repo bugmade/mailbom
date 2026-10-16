@@ -133,7 +133,14 @@
                                                 </c:forEach>
                                             </c:if>
                                         </form:select>
+                                        <form:select path="stoCd" style="width:200px;" id="stoCdSelect" cssClass="basic_formtype select_form select_sch">
+                                            <form:option value="ALL">전체(창고)</form:option>
+                                            <form:option value="FIRST">FIRST</form:option>
+                                            <form:option value="SECOND">SECOND</form:option>
+                                        </form:select>
                                         <form:input type="hidden" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="특정 납품처 검색시 납품처 입력 필요!"/>
+                                        <!-- pageSize를 유지하기 위한 hidden 태그 추가 -->
+                                        <form:hidden path="pageSize" id="searchPageSize" />
                                         <button id="searchBtn" class="search_btn">
                                             검색
                                             <span class="ir_so">검색버튼</span>
@@ -302,6 +309,7 @@
             <form:form id="pagingForm" name="pagingForm" method="get" modelAttribute="stockListReq">
 <%--                <form:hidden id="pagingSearchType6" path="searchType"/>--%>
                 <form:hidden id="pagingSearchType5" path="proCd"/>
+                <form:hidden id="pagingSearchTypeSto" path="stoCd"/>
 <%--                <form:hidden id="pagingSearchType6" path="inOut"/>--%>
 <%--                <form:hidden id="pagingSearchType8" path="outWy"/>--%>
 <%--                <form:hidden id="pagingSearchType9" path="datepicker"/>--%>
@@ -429,6 +437,8 @@
         $("#searchBtn").on("click", (e) => {
             e.preventDefault();
             $("#pagingCurrentPageNo").val(1);
+            // 현재 선택된 pageSize 값을 searchForm의 hidden 필드에 주입
+            $("#searchPageSize").val($("#pageSize").val());
             $("#searchForm").submit();
         });
 
@@ -648,6 +658,7 @@
     // 검색조건 초기화
     function doInit() {
         $("#procdSelect option:eq(0)").prop("selected", true);
+        $("#stoCdSelect option:eq(0)").prop("selected", true);
         //$("#searchWord").val("");
         location.reload();
     }
@@ -841,28 +852,23 @@
     function excelStockDownload() {
         console.log('excelStockDownload');
 
+        // 1. 화면 상단 searchForm의 현재 선택된 셀렉트박스 값을 가져옵니다.
+        const currentProCd = $("#procdSelect").val();
+        const currentStoCd = $("#stoCdSelect").val();
+        const currentSearchWord = $("#searchWord").val();
+
+        // 2. pagingForm의 hidden 값에 주입합니다.
+        $("#pagingSearchType5").val(currentProCd);
+        $("#pagingSearchTypeSto").val(currentStoCd); // id="pagingSearchTypeSto" 또는 name="stoCd"
+        $("#pagingSearchType7").val(currentSearchWord);
+
+        // 3. 만약 input hidden 태그가 제대로 작동하지 않을 경우를 대비해 직접 name으로 설정
+        $("#pagingForm input[name='proCd']").val(currentProCd);
+        $("#pagingForm input[name='stoCd']").val(currentStoCd);
+        $("#pagingForm input[name='searchWord']").val(currentSearchWord);
+
+        // 4. 전송
         $('#pagingForm').attr("action", "/inoutMng/api/excelStockDownload");
         $('#pagingForm').submit();
-        //location.reload();
-
-        // @@@ 엑셀다운로드에서 ajax를 쓰려면 특수처리가 필요하다???
-        // let params = $('#pagingForm').serializeObject();
-        // console.log(params);
-        // $.ajax({
-        //     dataType : "html",
-        //     type : "POST",
-        //     url : "/inoutMng/api/excelStockDownload",
-        //     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-        //     data : params,
-        //     success : function(data) {
-        //         console.log('excelStockDownload success');
-        //         console.log(data);
-        //         alert("엑셀저장성공");
-        //         location.reload();
-        //     },
-        //     error: function(data, status, err) {
-        //         console.log('error forward : ' + data);
-        //     }
-        // });
     }
 </script>

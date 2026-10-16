@@ -1,5 +1,6 @@
 package com.sweetk.cso.repository.custom.impl;
 
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -45,99 +46,206 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
     public Page<StockListRes> getListBySearchDtoAndPageable(StockListReq req, Pageable pageable) {
         log.info("### getListBySearchDtoAndPageable");
 
-        String proCd = req.getProCd();
-        if (!StringUtils.hasText(proCd)) proCd = "ALL";
+        // 1. 조건에 따라 정렬 기준 동적 결정
+        OrderSpecifier<?>[] orderSpecifiers = resolveOrderSpecifiers(req);
 
-        //@@@ 맘에들지않음
-        if (proCd.equals("ALL")) {
-            List<StockListRes> list = jpaQueryFactory
-                    .select(Projections.fields(StockListRes.class,
-                            stock.stoNo,
-                            stock.proCd,
-                            product.proNm,
-                            stock.inOut,
-                            stock.ioCnt,
-                            stock.restCnt,
-                            product.bongBox,
-                            stock.fromStorage,
-                            stock.lotNo,
-                            stock.expDt,
-                            stock.memo,
-                            stock.regId,
-                            stock.regDt,
-                            stock.modId,
-                            stock.modDt
-                    )).from(stock)
-                    .leftJoin(product)
-                    .on(stock.proCd.eq(product.proCd))
-                    .where(searchByTextInput(req))
-                    .orderBy(stock.stoNo.desc())
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetch();
-            Long totalCount = jpaQueryFactory.select(stock.count())
-                    .from(stock)
-                    .leftJoin(product)
-                    .on(stock.proCd.eq(product.proCd))
-                    .where(searchByTextInput(req))
-                    .fetchOne();
+        // 2. 메인 데이터 조회 (단일 쿼리)
+        List<StockListRes> list = jpaQueryFactory
+                .select(Projections.fields(StockListRes.class,
+                        stock.stoNo,
+                        stock.proCd,
+                        product.proNm,
+                        stock.inOut,
+                        stock.ioCnt,
+                        stock.restCnt,
+                        product.bongBox,
+                        stock.fromStorage,
+                        stock.lotNo,
+                        stock.expDt,
+                        stock.memo,
+                        stock.regId,
+                        stock.regDt,
+                        stock.modId,
+                        stock.modDt
+                ))
+                .from(stock)
+                .leftJoin(product).on(stock.proCd.eq(product.proCd))
+                .where(searchByTextInput(req))
+                .orderBy(orderSpecifiers)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
-            return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
+        // 3. 전체 카운트 조회
+        Long totalCount = jpaQueryFactory
+                .select(stock.count())
+                .from(stock)
+                .leftJoin(product).on(stock.proCd.eq(product.proCd))
+                .where(searchByTextInput(req))
+                .fetchOne();
 
-        } else {
-            List<StockListRes> list = jpaQueryFactory
-                    .select(Projections.fields(StockListRes.class,
-                            stock.stoNo,
-                            stock.proCd,
-                            product.proNm,
-                            stock.inOut,
-                            stock.ioCnt,
-                            stock.restCnt,
-                            product.bongBox,
-                            stock.fromStorage,
-                            stock.lotNo,
-                            stock.expDt,
-                            stock.memo,
-                            stock.regId,
-                            stock.regDt,
-                            stock.modId,
-                            stock.modDt
-                    )).from(stock)
-                    .leftJoin(product)
-                    .on(stock.proCd.eq(product.proCd))
-                    .where(searchByTextInput(req))
-                    .orderBy(stock.expDt.asc(), stock.lotNo.asc())
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetch();
-            Long totalCount = jpaQueryFactory.select(stock.count())
-                    .from(stock)
-                    .leftJoin(product)
-                    .on(stock.proCd.eq(product.proCd))
-                    .where(searchByTextInput(req))
-                    .fetchOne();
-
-            return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
-        }
+        return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
     }
 
-    private BooleanExpression searchByTextInput(StockListReq req){
-        BooleanExpression searchExpression = null;
+    /**
+     * proCd 및 stoCd 선택 여부에 따른 정렬 기준 반환
+     */
+    private OrderSpecifier<?>[] resolveOrderSpecifiers(StockListReq req) {
         String proCd = req.getProCd();
+        String stoCd = req.getStoCd();
+
+        boolean isSpecificPro = StringUtils.hasText(proCd) && !"ALL".equalsIgnoreCase(proCd);
+        boolean isSpecificSto = StringUtils.hasText(stoCd) && !"ALL".equalsIgnoreCase(stoCd);
+
+        // 특정 제품 또는 특정 창고를 지정해서 검색한 경우: 선입선출/관리 편의를 위한 유통기한·LOT 순
+        if (isSpecificPro || isSpecificSto) {
+            return new OrderSpecifier<?>[]{
+                    stock.expDt.asc(),
+                    stock.lotNo.asc()
+            };
+        }
+
+        // 둘 다 전체(ALL)인 경우: 최신 입출고 번호 역순
+        return new OrderSpecifier<?>[]{
+                stock.stoNo.desc()
+        };
+    }
+
+    // 원래코드
+//    public Page<StockListRes> getListBySearchDtoAndPageable(StockListReq req, Pageable pageable) {
+//        log.info("### getListBySearchDtoAndPageable");
+//
+//        String proCd = req.getProCd();
+//        if (!StringUtils.hasText(proCd)) proCd = "ALL";
+//
+//        //@@@ 맘에들지않음
+//        if (proCd.equals("ALL")) {
+//            List<StockListRes> list = jpaQueryFactory
+//                    .select(Projections.fields(StockListRes.class,
+//                            stock.stoNo,
+//                            stock.proCd,
+//                            product.proNm,
+//                            stock.inOut,
+//                            stock.ioCnt,
+//                            stock.restCnt,
+//                            product.bongBox,
+//                            stock.fromStorage,
+//                            stock.lotNo,
+//                            stock.expDt,
+//                            stock.memo,
+//                            stock.regId,
+//                            stock.regDt,
+//                            stock.modId,
+//                            stock.modDt
+//                    )).from(stock)
+//                    .leftJoin(product)
+//                    .on(stock.proCd.eq(product.proCd))
+//                    .where(searchByTextInput(req))
+//                    .orderBy(stock.stoNo.desc())
+//                    .offset(pageable.getOffset())
+//                    .limit(pageable.getPageSize())
+//                    .fetch();
+//            Long totalCount = jpaQueryFactory.select(stock.count())
+//                    .from(stock)
+//                    .leftJoin(product)
+//                    .on(stock.proCd.eq(product.proCd))
+//                    .where(searchByTextInput(req))
+//                    .fetchOne();
+//
+//            return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
+//
+//        } else {
+//            List<StockListRes> list = jpaQueryFactory
+//                    .select(Projections.fields(StockListRes.class,
+//                            stock.stoNo,
+//                            stock.proCd,
+//                            product.proNm,
+//                            stock.inOut,
+//                            stock.ioCnt,
+//                            stock.restCnt,
+//                            product.bongBox,
+//                            stock.fromStorage,
+//                            stock.lotNo,
+//                            stock.expDt,
+//                            stock.memo,
+//                            stock.regId,
+//                            stock.regDt,
+//                            stock.modId,
+//                            stock.modDt
+//                    )).from(stock)
+//                    .leftJoin(product)
+//                    .on(stock.proCd.eq(product.proCd))
+//                    .where(searchByTextInput(req))
+//                    .orderBy(stock.expDt.asc(), stock.lotNo.asc())
+//                    .offset(pageable.getOffset())
+//                    .limit(pageable.getPageSize())
+//                    .fetch();
+//            Long totalCount = jpaQueryFactory.select(stock.count())
+//                    .from(stock)
+//                    .leftJoin(product)
+//                    .on(stock.proCd.eq(product.proCd))
+//                    .where(searchByTextInput(req))
+//                    .fetchOne();
+//
+//            return new PageImpl<>(list, pageable, totalCount != null ? totalCount : 0L);
+//        }
+//    }
+    private BooleanExpression searchByTextInput(StockListReq req) {
+        String proCd = req.getProCd();
+        String stoCd = req.getStoCd();
         String searchWord = req.getSearchWord();
 
-        if (!StringUtils.hasText(proCd))    proCd = "ALL";
-        if (!StringUtils.hasText(searchWord))    searchWord = "";
+        if (!StringUtils.hasText(proCd))      proCd = "ALL";
+        if (!StringUtils.hasText(stoCd))      stoCd = "ALL";
+        if (!StringUtils.hasText(searchWord))  searchWord = "";
 
-        log.info("### searchByTextInput [proCd:" + proCd + ", searchWord:" + searchWord + "]");
+        log.info("### searchByTextInput [proCd:{}, stoCd:{}, searchWord:{}]", proCd, stoCd, searchWord);
 
-        if (!proCd.equals("ALL")) {
-            searchExpression = stock.proCd.eq(proCd).and(stock.restCnt.gt(0L));
-        } else {
-            searchExpression = stock.restCnt.gt(0L);
+        // 기본 조건: 재고 수량 > 0
+        BooleanExpression searchExpression = stock.restCnt.gt(0L);
+
+        // 제품 코드 조건 추가
+        if (!"ALL".equalsIgnoreCase(proCd)) {
+            searchExpression = searchExpression.and(stock.proCd.eq(proCd));
         }
+
+        // 창고 코드 조건 추가 (fromStorage 매핑)
+        if (!"ALL".equalsIgnoreCase(stoCd)) {
+            searchExpression = searchExpression.and(stock.fromStorage.eq(stoCd));
+        }
+
+        // 검색어(searchWord) 조건이 필요할 경우 여기에 추가 (예: 메모, LOT 번호 검색)
+//        if (StringUtils.hasText(searchWord)) {
+//            searchExpression = searchExpression.and(
+//                    stock.lotNo.containsIgnoreCase(searchWord)
+//                            .or(stock.memo.containsIgnoreCase(searchWord))
+//            );
+//        }
+
         return searchExpression;
     }
+
+// 원래코드
+//    private BooleanExpression searchByTextInput(StockListReq req){
+//        BooleanExpression searchExpression = null;
+//        String proCd = req.getProCd();
+//        String stoCd = req.getStoCd();
+//        String searchWord = req.getSearchWord();
+//
+//        if (!StringUtils.hasText(proCd))    proCd = "ALL";
+//        if (!StringUtils.hasText(stoCd))    stoCd = "ALL";
+//        if (!StringUtils.hasText(searchWord))    searchWord = "";
+//
+//        log.info("### searchByTextInput [proCd:" + proCd + ", stoCd:" + stoCd + ", searchWord:" + searchWord + "]");
+//
+//        if (!proCd.equals("ALL")) {
+//            searchExpression = stock.proCd.eq(proCd).and(stock.restCnt.gt(0L));
+//        } else {
+//            searchExpression = stock.restCnt.gt(0L);
+//        }
+//        return searchExpression;
+//    }
+
 
     @Override
     public List<StockListRes> findAllStock() {
@@ -175,7 +283,7 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
     public List<StockListRes> findStockForExcel(StockListReq req) {
         log.info("### findStockForExcel");
 
-        List<StockListRes> list = jpaQueryFactory
+        return jpaQueryFactory
                 .select(Projections.fields(StockListRes.class,
                         stock.stoNo,
                         stock.proCd,
@@ -196,26 +304,115 @@ public class StockCustomRepositoryImpl implements StockCustomRepository {
                 .leftJoin(product)
                 .on(stock.proCd.eq(product.proCd))
                 .where(searchByTextInputExcel(req))
-                .orderBy(stock.stoNo.desc())
+                .orderBy(resolveExcelOrderSpecifiers(req)) // 조건에 맞는 정렬 적용
                 .fetch();
-        return list;
     }
 
-    private BooleanExpression searchByTextInputExcel(StockListReq req){
+    private BooleanExpression searchByTextInputExcel(StockListReq req) {
         BooleanExpression searchExpression = null;
         String proCd = req.getProCd();
+        String stoCd = req.getStoCd();
         String searchWord = req.getSearchWord();
 
-        if (!StringUtils.hasText(proCd))    proCd = "ALL";
-        if (!StringUtils.hasText(searchWord))    searchWord = "";
+        if (!StringUtils.hasText(proCd))      proCd = "ALL";
+        if (!StringUtils.hasText(stoCd))      stoCd = "ALL";
+        if (!StringUtils.hasText(searchWord))  searchWord = "";
 
-        log.info("### searchByTextInput [proCd:" + proCd + ", searchWord:" + searchWord + "]");
+        log.info("### searchByTextInputExcel [proCd:{}, stoCd:{}, searchWord:{}]", proCd, stoCd, searchWord);
 
-        if (!proCd.equals("ALL")) {
-            searchExpression = stock.proCd.eq(proCd);
+        // 기본 조건: 재고 수량 > 0
+        searchExpression = stock.restCnt.gt(0L);
+
+        // 제품 코드 조건 (ALL이 아닐 때)
+        if (!"ALL".equalsIgnoreCase(proCd)) {
+            searchExpression = searchExpression.and(stock.proCd.eq(proCd));
         }
+
+        // 창고 코드 조건 추가 (ALL이 아닐 때)
+        if (!"ALL".equalsIgnoreCase(stoCd)) {
+            BooleanExpression stoCondition = stock.fromStorage.eq(stoCd);
+            searchExpression = (searchExpression == null) ? stoCondition : searchExpression.and(stoCondition);
+        }
+
+        // 검색어 조건 (필요 시)
+        if (StringUtils.hasText(searchWord)) {
+            BooleanExpression wordCondition = stock.lotNo.containsIgnoreCase(searchWord)
+                    .or(stock.memo.containsIgnoreCase(searchWord));
+            searchExpression = (searchExpression == null) ? wordCondition : searchExpression.and(wordCondition);
+        }
+
         return searchExpression;
     }
+
+    /**
+     * 엑셀 다운로드 정렬 기준 (화면 목록과 일치)
+     */
+    private OrderSpecifier<?>[] resolveExcelOrderSpecifiers(StockListReq req) {
+        String proCd = req.getProCd();
+        String stoCd = req.getStoCd();
+
+        boolean isSpecificPro = StringUtils.hasText(proCd) && !"ALL".equalsIgnoreCase(proCd);
+        boolean isSpecificSto = StringUtils.hasText(stoCd) && !"ALL".equalsIgnoreCase(stoCd);
+
+        // 제품이나 창고를 지정한 경우: 유통기한 -> LOT 순
+        if (isSpecificPro || isSpecificSto) {
+            return new OrderSpecifier<?>[]{
+                    stock.expDt.asc(),
+                    stock.lotNo.asc()
+            };
+        }
+
+        // 전체(ALL)인 경우: 입고번호 역순
+        return new OrderSpecifier<?>[]{
+                stock.stoNo.desc()
+        };
+    }
+
+// 원래코드
+//    public List<StockListRes> findStockForExcel(StockListReq req) {
+//        log.info("### findStockForExcel");
+//
+//        List<StockListRes> list = jpaQueryFactory
+//                .select(Projections.fields(StockListRes.class,
+//                        stock.stoNo,
+//                        stock.proCd,
+//                        product.proNm,
+//                        stock.inOut,
+//                        stock.ioCnt,
+//                        stock.restCnt,
+//                        product.bongBox,
+//                        stock.fromStorage,
+//                        stock.lotNo,
+//                        stock.expDt,
+//                        stock.memo,
+//                        stock.regId,
+//                        stock.regDt,
+//                        stock.modId,
+//                        stock.modDt
+//                )).from(stock)
+//                .leftJoin(product)
+//                .on(stock.proCd.eq(product.proCd))
+//                .where(searchByTextInputExcel(req))
+//                .orderBy(stock.stoNo.desc())
+//                .fetch();
+//        return list;
+//    }
+//
+//    private BooleanExpression searchByTextInputExcel(StockListReq req){
+//        BooleanExpression searchExpression = null;
+//        String proCd = req.getProCd();
+//        String searchWord = req.getSearchWord();
+//
+//        if (!StringUtils.hasText(proCd))    proCd = "ALL";
+//        if (!StringUtils.hasText(searchWord))    searchWord = "";
+//
+//        log.info("### searchByTextInput [proCd:" + proCd + ", searchWord:" + searchWord + "]");
+//
+//        if (!proCd.equals("ALL")) {
+//            searchExpression = stock.proCd.eq(proCd);
+//        }
+//        return searchExpression;
+//    }
 
     @Override
     public Stock findStockByProCd(String proCd) {

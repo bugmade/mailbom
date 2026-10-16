@@ -8,5 +8,6 @@ import lombok.Setter;
 @Setter
 public class StockListReq extends SearchReqDto {
     private String proCd;
+    private String stoCd;
     private String inOut;
 }
