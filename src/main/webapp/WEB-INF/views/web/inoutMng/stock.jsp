@@ -135,8 +135,9 @@
                                         </form:select>
                                         <form:select path="stoCd" style="width:200px;" id="stoCdSelect" cssClass="basic_formtype select_form select_sch">
                                             <form:option value="ALL">전체(창고)</form:option>
-                                            <form:option value="FIRST">FIRST</form:option>
-                                            <form:option value="SECOND">SECOND</form:option>
+                                            <form:option value="HQ">본사창고(HQ)</form:option>
+                                            <form:option value="FIRST">위탁창고1(FIRST)</form:option>
+                                            <form:option value="SECOND">위탁창고2(SECOND)</form:option>
                                         </form:select>
                                         <form:input type="hidden" path="searchWord" value="" style="width:300px;" id="searchWord" cssClass="basic_formtype search_form" placeholder="특정 납품처 검색시 납품처 입력 필요!"/>
                                         <!-- pageSize를 유지하기 위한 hidden 태그 추가 -->
